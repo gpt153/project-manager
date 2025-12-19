@@ -1,0 +1,117 @@
+"""
+Main FastAPI application for the Project Orchestrator.
+
+This module initializes the FastAPI app, configures middleware, and sets up routes.
+"""
+
+import logging
+from contextlib import asynccontextmanager
+from typing import AsyncGenerator
+
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
+
+from src.config import settings
+from src.database.connection import close_db, init_db
+
+# Configure logging
+logging.basicConfig(
+    level=getattr(logging, settings.log_level.upper()),
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+)
+logger = logging.getLogger(__name__)
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI) -> AsyncGenerator:
+    """
+    Application lifespan events.
+
+    Handles startup and shutdown tasks like database initialization.
+    """
+    # Startup
+    logger.info(f"Starting {settings.app_name} in {settings.app_env} mode")
+
+    if settings.app_env == "development":
+        logger.info("Initializing database tables (development mode)")
+        await init_db()
+
+    logger.info("Application startup complete")
+
+    yield
+
+    # Shutdown
+    logger.info("Shutting down application")
+    await close_db()
+    logger.info("Application shutdown complete")
+
+
+# Create FastAPI application
+app = FastAPI(
+    title=settings.app_name,
+    description="AI agent that helps non-coders build software projects",
+    version="0.1.0",
+    lifespan=lifespan,
+)
+
+# Configure CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"] if settings.app_env == "development" else [],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
+# Health check endpoint
+@app.get("/health", tags=["Health"])
+async def health_check():
+    """
+    Health check endpoint.
+
+    Returns:
+        dict: Application health status
+    """
+    return JSONResponse(
+        content={
+            "status": "healthy",
+            "app_name": settings.app_name,
+            "environment": settings.app_env,
+            "version": "0.1.0",
+        }
+    )
+
+
+# Root endpoint
+@app.get("/", tags=["Root"])
+async def root():
+    """
+    Root endpoint with API information.
+
+    Returns:
+        dict: API welcome message and documentation link
+    """
+    return {
+        "message": f"Welcome to {settings.app_name}",
+        "docs": "/docs",
+        "health": "/health",
+    }
+
+
+# Include API routers (will be added in later phases)
+# from src.api.routes import router as api_router
+# app.include_router(api_router, prefix="/api")
+
+
+if __name__ == "__main__":
+    import uvicorn
+
+    uvicorn.run(
+        "src.main:app",
+        host=settings.api_host,
+        port=settings.api_port,
+        reload=settings.api_reload,
+        log_level=settings.log_level.lower(),
+    )

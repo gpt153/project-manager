@@ -1,0 +1,79 @@
+[project]
+name = "project-orchestrator"
+version = "0.1.0"
+description = "AI agent that helps non-coders build software projects"
+requires-python = ">=3.11"
+authors = [
+    {name = "SCAR Team"}
+]
+readme = "README.md"
+
+dependencies = [
+    # Core framework
+    "fastapi>=0.115.0",
+    "uvicorn[standard]>=0.32.0",
+
+    # AI Agent
+    "pydantic-ai>=0.0.14",
+    "anthropic>=0.42.0",  # For Claude Sonnet 4.5
+
+    # Database
+    "sqlalchemy[asyncio]>=2.0.36",
+    "asyncpg>=0.30.0",  # Async PostgreSQL driver
+    "alembic>=1.14.0",  # Migrations
+
+    # Telegram Bot
+    "python-telegram-bot>=22.5",
+
+    # GitHub Integration
+    "PyGithub>=2.5.0",
+    "httpx>=0.28.0",  # For async GitHub API calls
+
+    # Utilities
+    "pydantic>=2.10.0",
+    "pydantic-settings>=2.7.0",
+    "python-dotenv>=1.0.0",
+    "tenacity>=9.0.0",  # Retry logic
+    "python-multipart>=0.0.20",  # For file uploads
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.3.0",
+    "pytest-asyncio>=0.24.0",
+    "pytest-cov>=6.0.0",
+    "pytest-mock>=3.14.0",
+    "ruff>=0.8.0",
+    "mypy>=1.13.0",
+    "black>=24.10.0",
+]
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "W"]
+ignore = ["E501"]  # Line too long
+
+[tool.mypy]
+python_version = "3.11"
+strict = false
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = false
+
+[tool.black]
+line-length = 100
+target-version = ['py311']
