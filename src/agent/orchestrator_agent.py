@@ -9,7 +9,6 @@ from typing import Optional
 from uuid import UUID
 
 from pydantic_ai import Agent, RunContext
-from pydantic_ai.models.anthropic import AnthropicModel
 
 from src.agent.prompts import ORCHESTRATOR_SYSTEM_PROMPT
 from src.agent.tools import (
@@ -20,17 +19,14 @@ from src.agent.tools import (
     update_project_status,
     update_project_vision,
 )
-from src.config import settings
 from src.database.models import MessageRole, ProjectStatus
 from src.services.workflow_orchestrator import advance_workflow, get_workflow_state
 from src.services.scar_executor import get_command_history
 
 # Initialize the PydanticAI agent
+# Note: Uses ANTHROPIC_API_KEY environment variable
 orchestrator_agent = Agent(
-    model=AnthropicModel(
-        "claude-sonnet-4-20250514",
-        api_key=settings.anthropic_api_key,
-    ),
+    model="anthropic:claude-sonnet-4-20250514",
     deps_type=AgentDependencies,
     system_prompt=ORCHESTRATOR_SYSTEM_PROMPT,
     retries=2,

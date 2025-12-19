@@ -5,6 +5,7 @@ This module provides shared fixtures for testing.
 """
 
 import asyncio
+import os
 from typing import AsyncGenerator, Generator
 
 import pytest
@@ -14,6 +15,9 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_asyn
 from sqlalchemy.pool import NullPool
 
 from src.database.models import Base
+
+# Set dummy API key for testing
+os.environ.setdefault("ANTHROPIC_API_KEY", "test_api_key_for_testing")
 
 
 # Configure test database URL
