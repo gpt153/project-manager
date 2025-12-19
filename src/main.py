@@ -100,9 +100,10 @@ async def root():
     }
 
 
-# Include API routers (will be added in later phases)
-# from src.api.routes import router as api_router
-# app.include_router(api_router, prefix="/api")
+# Include API routers
+from src.integrations.github_webhook import router as github_webhook_router
+
+app.include_router(github_webhook_router)
 
 
 if __name__ == "__main__":
