@@ -1,12 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { api } from '@/services/api';
 import { Project } from '@/types/project';
+import { DocumentViewer } from '@/components/DocumentViewer/DocumentViewer';
 
 interface ProjectNavigatorProps {
   onProjectSelect: (projectId: string) => void;
 }
 
 export const ProjectNavigator: React.FC<ProjectNavigatorProps> = ({ onProjectSelect }) => {
+  const [showDocumentViewer, setShowDocumentViewer] = useState<{
+    projectId: string;
+    type: 'vision' | 'plan';
+  } | null>(null);
   const [projects, setProjects] = useState<Project[]>([]);
   const [expandedProjects, setExpandedProjects] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
@@ -60,12 +65,35 @@ export const ProjectNavigator: React.FC<ProjectNavigatorProps> = ({ onProjectSel
               <ul className="issue-list">
                 <li>Open Issues ({project.open_issues_count || 0})</li>
                 <li>Closed Issues ({project.closed_issues_count || 0})</li>
-                <li>Documents</li>
+                <li className="documents-section">
+                  <span>Documents</span>
+                  <ul className="document-list">
+                    <li
+                      className="document-item"
+                      onClick={() => setShowDocumentViewer({ projectId: project.id, type: 'vision' })}
+                    >
+                      📄 Vision Document
+                    </li>
+                    <li
+                      className="document-item"
+                      onClick={() => setShowDocumentViewer({ projectId: project.id, type: 'plan' })}
+                    >
+                      📋 Implementation Plan
+                    </li>
+                  </ul>
+                </li>
               </ul>
             )}
           </li>
         ))}
       </ul>
+      {showDocumentViewer && (
+        <DocumentViewer
+          projectId={showDocumentViewer.projectId}
+          documentType={showDocumentViewer.type}
+          onClose={() => setShowDocumentViewer(null)}
+        />
+      )}
     </div>
   );
 };

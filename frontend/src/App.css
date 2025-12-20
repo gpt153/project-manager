@@ -90,6 +90,36 @@
   margin-top: 0.5rem;
 }
 
+.documents-section {
+  list-style: none;
+}
+
+.document-list {
+  list-style: none;
+  padding-left: 1rem;
+  margin-top: 0.25rem;
+}
+
+.document-item {
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  transition: background 0.2s;
+  margin: 0.25rem 0;
+}
+
+.document-item:hover {
+  background: #e3f2fd;
+  color: #1976D2;
+}
+
+.loading-state {
+  text-align: center;
+  padding: 2rem;
+  color: #666;
+  font-style: italic;
+}
+
 /* Chat Interface */
 .chat-interface .chat-header {
   display: flex;
