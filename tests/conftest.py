@@ -74,6 +74,23 @@ async def db_session(test_engine) -> AsyncGenerator[AsyncSession, None]:
         await session.rollback()
 
 
+# Alias for backward compatibility with web UI tests
+@pytest_asyncio.fixture(scope="function")
+async def test_session(test_engine) -> AsyncGenerator[AsyncSession, None]:
+    """
+    Create a test database session (alias for db_session).
+    """
+    async_session_maker_test = async_sessionmaker(
+        test_engine,
+        class_=AsyncSession,
+        expire_on_commit=False,
+    )
+
+    async with async_session_maker_test() as session:
+        yield session
+        await session.rollback()
+
+
 @pytest_asyncio.fixture(scope="function")
 async def client() -> AsyncGenerator[AsyncClient, None]:
     """

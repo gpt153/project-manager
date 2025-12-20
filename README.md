@@ -12,7 +12,7 @@ See the complete vision document: [`.agents/visions/project-orchestrator.md`](.a
 
 ## Status
 
-🎉 **PRODUCTION-READY** - 6 of 8 Core Phases Implemented (75% Complete)
+🎉 **PRODUCTION-READY** - Core orchestrator (75% complete) + Web Interface (in development)
 
 ### Implementation Progress
 
@@ -22,6 +22,7 @@ See the complete vision document: [`.agents/visions/project-orchestrator.md`](.a
 - ✅ Phase 4: SCAR Workflow Automation (100%)
 - ✅ Phase 5: Telegram Bot Integration (100%)
 - ✅ Phase 6: GitHub Integration (100%)
+- 🚧 Web Interface: 3-Panel UI (In Development)
 - ⏳ Phase 7: End-to-End Workflow (0%)
 - ⏳ Phase 8: Testing and Refinement (0%)
 
@@ -38,6 +39,7 @@ See the complete vision document: [`.agents/visions/project-orchestrator.md`](.a
 
 - Python 3.11+
 - PostgreSQL 14+
+- Node.js 20+ (for web interface)
 - Docker (optional, for containerized deployment)
 
 ### Installation
@@ -75,12 +77,27 @@ createdb project_orchestrator
 alembic upgrade head
 ```
 
-6. Run the application:
+6. Run the backend:
 ```bash
 python -m src.main
 ```
 
 Visit http://localhost:8000/docs for the API documentation.
+
+### Frontend Web UI (Optional)
+
+1. Install Node.js dependencies:
+```bash
+cd frontend
+npm install
+```
+
+2. Start the development server:
+```bash
+npm run dev
+```
+
+The web UI will be available at `http://localhost:5173`
 
 ### Using Docker
 
@@ -97,6 +114,32 @@ docker-compose logs -f app
 # Stop services
 docker-compose down
 ```
+
+## How It Works
+
+```
+User (Telegram) → "I want to build a task manager"
+       ↓
+Orchestrator Agent → Brainstorms, asks questions
+       ↓
+Vision Generator → Creates clear vision document
+       ↓
+Workflow Orchestrator → Manages PIV loop automatically
+       ↓
+SCAR Commands → prime → plan-feature-github → execute-github → validate
+       ↓
+Working Code + Tests + Documentation
+```
+
+### Architecture
+
+- **PydanticAI Agent**: Conversational AI brain (Claude Sonnet 4)
+- **PostgreSQL**: State management for projects, conversations, workflows
+- **Telegram Bot**: Natural language interface for non-technical users
+- **GitHub Integration**: Issue tracking and pull request automation
+- **Web Interface**: 3-panel workspace for project management
+- **SCAR Integration**: Automated command translation and execution
+- **Approval Gates**: User control at key decision points
 
 ## Features
 
@@ -151,34 +194,55 @@ docker-compose down
 - Complete conversation history tracking
 - Workflow phase and approval gate persistence
 
+#### 7. **Web Interface** (In Development)
+- **Backend API**: FastAPI-based REST API with WebSocket and SSE support
+- **3-Panel Layout**:
+  - Left Panel: Project navigator with tree structure
+  - Middle Panel: Chat interface with @po (no @mention required)
+  - Right Panel: Real-time SCAR activity feed
+- Resizable panels using react-resizable-panels
+- Real-time bidirectional communication
+
 ### ⏳ Remaining Work
 
 - **Phase 7**: End-to-End Workflow Testing
 - **Phase 8**: Production Refinements
+- **Web Interface**: Complete integration with orchestrator backend
 
-## How It Works
+## Repository Structure
 
 ```
-User (Telegram) → "I want to build a task manager"
-       ↓
-Orchestrator Agent → Brainstorms, asks questions
-       ↓
-Vision Generator → Creates clear vision document
-       ↓
-Workflow Orchestrator → Manages PIV loop automatically
-       ↓
-SCAR Commands → prime → plan-feature-github → execute-github → validate
-       ↓
-Working Code + Tests + Documentation
+project-orchestrator/
+├── .agents/
+│   ├── visions/           # Non-technical vision documents
+│   ├── plans/             # Technical implementation plans
+│   ├── progress/          # Phase completion summaries
+│   └── commands/          # Custom workflow commands
+├── src/
+│   ├── agent/             # PydanticAI agent implementation
+│   ├── api/               # FastAPI routes (REST, WebSocket, SSE)
+│   ├── database/          # Database models and migrations
+│   ├── integrations/      # Telegram and GitHub integrations
+│   ├── scar/              # SCAR command translation and execution
+│   ├── services/          # Business logic services
+│   ├── config.py          # Configuration management
+│   ├── main.py            # FastAPI application entry point
+│   └── bot_main.py        # Telegram bot entry point
+├── frontend/              # React web interface
+│   ├── src/
+│   │   ├── components/    # React components (3-panel layout)
+│   │   ├── hooks/         # Custom React hooks (WebSocket, SSE)
+│   │   ├── services/      # API client services
+│   │   └── types/         # TypeScript type definitions
+│   └── package.json       # Node.js dependencies
+├── tests/                 # Test suite (67 passing tests)
+├── docs/                  # Additional documentation
+├── scripts/               # Utility scripts
+├── pyproject.toml         # Project configuration and dependencies
+├── alembic.ini            # Database migration configuration
+├── docker-compose.yml     # Docker services configuration
+└── README.md              # This file
 ```
-
-### Architecture
-
-- **PydanticAI Agent**: Conversational AI brain (Claude Sonnet 4)
-- **PostgreSQL**: State management for projects, conversations, workflows
-- **Telegram Bot**: Natural language interface for non-technical users
-- **SCAR Integration**: Automated command translation and execution
-- **Approval Gates**: User control at key decision points
 
 ## Development
 
@@ -221,32 +285,6 @@ ruff check src/ tests/
 mypy src/
 ```
 
-## Repository Structure
-
-```
-project-orchestrator/
-├── .agents/
-│   ├── visions/           # Non-technical vision documents
-│   ├── plans/             # Technical implementation plans
-│   └── commands/          # Custom workflow commands
-├── src/
-│   ├── agent/             # PydanticAI agent implementation
-│   ├── api/               # FastAPI routes and endpoints
-│   ├── database/          # Database models and migrations
-│   ├── integrations/      # Telegram and GitHub integrations
-│   ├── scar/              # SCAR command translation and execution
-│   ├── services/          # Business logic services
-│   ├── config.py          # Configuration management
-│   └── main.py            # FastAPI application entry point
-├── tests/                 # Test suite
-├── docs/                  # Additional documentation
-├── scripts/               # Utility scripts
-├── pyproject.toml         # Project configuration and dependencies
-├── alembic.ini            # Database migration configuration
-├── docker-compose.yml     # Docker services configuration
-└── README.md              # This file
-```
-
 ## API Documentation
 
 Once the application is running, visit:
@@ -264,6 +302,8 @@ See `.env.example` for all available configuration options:
 - `TELEGRAM_BOT_TOKEN`: Telegram bot token
 - `GITHUB_ACCESS_TOKEN`: GitHub personal access token
 - `GITHUB_WEBHOOK_SECRET`: Secret for webhook verification
+- `FRONTEND_URL`: Frontend CORS origin (default: http://localhost:5173)
+- `SERVE_FRONTEND`: Serve frontend from FastAPI in production
 
 ## Development Workflow
 

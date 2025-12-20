@@ -124,6 +124,12 @@ class Project(Base):
         "ScarCommandExecution", back_populates="project", cascade="all, delete-orphan"
     )
 
+    # Alias for backward compatibility with web UI
+    @property
+    def messages(self):
+        """Alias for conversation_messages (web UI compatibility)"""
+        return self.conversation_messages
+
     def __repr__(self) -> str:
         return f"<Project(id={self.id}, name={self.name}, status={self.status})>"
 
@@ -142,6 +148,17 @@ class ConversationMessage(Base):
 
     # Relationships
     project = relationship("Project", back_populates="conversation_messages")
+
+    # Alias for backward compatibility with web UI
+    @property
+    def metadata(self):
+        """Alias for message_metadata (web UI compatibility)"""
+        return self.message_metadata
+
+    @property
+    def created_at(self):
+        """Alias for timestamp (web UI compatibility)"""
+        return self.timestamp
 
     def __repr__(self) -> str:
         return f"<ConversationMessage(id={self.id}, role={self.role}, timestamp={self.timestamp})>"
@@ -171,6 +188,27 @@ class WorkflowPhase(Base):
         "ScarCommandExecution", back_populates="phase", cascade="all, delete-orphan"
     )
 
+    # Backward compatibility properties for web UI
+    @property
+    def order(self):
+        """Alias for phase_number (web UI compatibility)"""
+        return self.phase_number
+
+    @property
+    def is_completed(self):
+        """Check if phase is completed (web UI compatibility)"""
+        return self.status == PhaseStatus.COMPLETED
+
+    @property
+    def is_current(self):
+        """Check if phase is current (web UI compatibility)"""
+        return self.status == PhaseStatus.IN_PROGRESS
+
+    @property
+    def created_at(self):
+        """Alias for started_at (web UI compatibility)"""
+        return self.started_at
+
     def __repr__(self) -> str:
         return f"<WorkflowPhase(id={self.id}, name={self.name}, status={self.status})>"
 
@@ -193,6 +231,17 @@ class ApprovalGate(Base):
 
     # Relationships
     project = relationship("Project", back_populates="approval_gates")
+
+    # Backward compatibility properties for web UI
+    @property
+    def approved(self):
+        """Check if gate is approved (web UI compatibility)"""
+        return self.status == GateStatus.APPROVED if self.status else None
+
+    @property
+    def decided_at(self):
+        """Alias for responded_at (web UI compatibility)"""
+        return self.responded_at
 
     def __repr__(self) -> str:
         return f"<ApprovalGate(id={self.id}, type={self.gate_type}, status={self.status})>"
@@ -218,6 +267,37 @@ class ScarCommandExecution(Base):
     # Relationships
     project = relationship("Project", back_populates="scar_executions")
     phase = relationship("WorkflowPhase", back_populates="scar_executions")
+
+    # Backward compatibility properties for web UI
+    @property
+    def command(self):
+        """Get command name (web UI compatibility)"""
+        return self.command_type.value if self.command_type else None
+
+    @property
+    def source(self):
+        """Default source (web UI compatibility)"""
+        return "scar"
+
+    @property
+    def message(self):
+        """Get message from output or command args (web UI compatibility)"""
+        return self.output or self.command_args
+
+    @property
+    def verbosity_level(self):
+        """Default verbosity level (web UI compatibility)"""
+        return 2
+
+    @property
+    def metadata(self):
+        """Return empty metadata dict (web UI compatibility)"""
+        return {}
+
+    @property
+    def created_at(self):
+        """Alias for started_at (web UI compatibility)"""
+        return self.started_at or datetime.utcnow()
 
     def __repr__(self) -> str:
         return f"<ScarCommandExecution(id={self.id}, type={self.command_type}, status={self.status})>"

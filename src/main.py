@@ -58,7 +58,7 @@ app = FastAPI(
 # Configure CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"] if settings.app_env == "development" else [],
+    allow_origins=["*"] if settings.app_env == "development" else [settings.frontend_url],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -101,9 +101,29 @@ async def root():
 
 
 # Include API routers
-from src.integrations.github_webhook import router as github_webhook_router
 
-app.include_router(github_webhook_router)
+# GitHub webhook integration (from master)
+try:
+    from src.integrations.github_webhook import router as github_webhook_router
+    app.include_router(github_webhook_router)
+    logger.info("GitHub webhook router registered")
+except ImportError:
+    logger.warning("GitHub webhook router not available")
+
+# Web UI routers (from feature-webui)
+try:
+    from src.api.projects import router as projects_router
+    from src.api.documents import router as documents_router
+    from src.api.websocket import router as websocket_router
+    from src.api.sse import router as sse_router
+
+    app.include_router(projects_router, prefix="/api", tags=["Projects"])
+    app.include_router(documents_router, prefix="/api", tags=["Documents"])
+    app.include_router(websocket_router, prefix="/api", tags=["WebSocket"])
+    app.include_router(sse_router, prefix="/api", tags=["SSE"])
+    logger.info("Web UI routers registered")
+except ImportError as e:
+    logger.warning(f"Web UI routers not available: {e}")
 
 
 if __name__ == "__main__":

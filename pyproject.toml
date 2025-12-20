@@ -29,6 +29,9 @@ dependencies = [
     "PyGithub>=2.5.0",
     "httpx>=0.28.0",  # For async GitHub API calls
 
+    # Web Interface Support
+    "sse-starlette>=2.1.0",  # Server-Sent Events
+
     # Utilities
     "pydantic>=2.10.0",
     "pydantic-settings>=2.7.0",

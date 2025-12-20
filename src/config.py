@@ -17,6 +17,7 @@ class Settings(BaseSettings):
     app_env: str = "development"  # development, staging, production, test
     log_level: str = "INFO"
     secret_key: str = "change-me-in-production"
+    debug: bool = False  # Legacy support for web UI
 
     # Database
     database_url: str = "postgresql+asyncpg://orchestrator:dev_password@localhost:5432/project_orchestrator"
@@ -29,9 +30,11 @@ class Settings(BaseSettings):
 
     # Telegram Bot
     telegram_bot_token: Optional[str] = None
+    telegram_webhook_url: Optional[str] = None  # Legacy support
 
     # GitHub
     github_access_token: Optional[str] = None
+    github_token: Optional[str] = None  # Legacy alias
     github_webhook_secret: Optional[str] = None
 
     # Redis (optional, for caching)
@@ -44,6 +47,10 @@ class Settings(BaseSettings):
     api_host: str = "0.0.0.0"
     api_port: int = 8000
     api_reload: bool = True  # Auto-reload in development
+
+    # Frontend (Web Interface)
+    frontend_url: str = "http://localhost:5173"  # Vite dev server
+    serve_frontend: bool = False  # Set to True in production
 
     model_config = SettingsConfigDict(
         env_file=".env",
