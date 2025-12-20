@@ -5,7 +5,7 @@ services:
     image: postgres:15
     environment:
       POSTGRES_USER: orchestrator
-      POSTGRES_PASSWORD: dev_password
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-dev_password}
       POSTGRES_DB: project_orchestrator
     ports:
       - "5432:5432"
@@ -32,7 +32,7 @@ services:
     ports:
       - "8000:8000"
     environment:
-      - DATABASE_URL=postgresql+asyncpg://orchestrator:dev_password@postgres:5432/project_orchestrator
+      - DATABASE_URL=postgresql+asyncpg://orchestrator:${POSTGRES_PASSWORD:-dev_password}@postgres:5432/project_orchestrator
       - REDIS_URL=redis://redis:6379/0
       - APP_ENV=development
       - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
