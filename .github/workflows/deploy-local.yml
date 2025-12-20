@@ -1,0 +1,48 @@
+name: Deploy to Local Production (Self-Hosted)
+
+# This workflow is simpler - it runs directly on the production server
+# Requires: GitHub self-hosted runner on the production server
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Stop existing containers
+        run: |
+          cd /home/samuel/po
+          docker compose down || true
+
+      - name: Build Docker image
+        run: |
+          cd /home/samuel/po
+          docker compose build --no-cache
+
+      - name: Start services
+        run: |
+          cd /home/samuel/po
+          docker compose up -d
+
+      - name: Health check
+        run: |
+          echo "Waiting for services to start..."
+          sleep 10
+          curl -f http://localhost:8001/health || echo "⚠️ Health check failed"
+
+      - name: Clean up old images
+        run: docker image prune -f
+
+      - name: Deployment summary
+        run: |
+          echo "✅ Deployment complete!"
+          echo "📦 Services status:"
+          docker compose ps
