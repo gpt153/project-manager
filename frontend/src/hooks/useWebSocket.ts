@@ -6,6 +6,7 @@ export const useWebSocket = (projectId: string) => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isConnected, setIsConnected] = useState(false);
   const [isLoadingHistory, setIsLoadingHistory] = useState(true);
+  const [isTyping, setIsTyping] = useState(false);
   const wsRef = useRef<WebSocket | null>(null);
 
   // Load conversation history on mount
@@ -45,7 +46,12 @@ export const useWebSocket = (projectId: string) => {
     ws.onmessage = (event) => {
       const wsMessage: WebSocketMessage = JSON.parse(event.data);
       if (wsMessage.type === 'chat') {
-        setMessages((prev) => [...prev, wsMessage.data as ChatMessage]);
+        const chatMessage = wsMessage.data as ChatMessage;
+        setMessages((prev) => [...prev, chatMessage]);
+        // Turn off typing indicator when we receive a message
+        if (chatMessage.role === 'assistant') {
+          setIsTyping(false);
+        }
       }
     };
 
@@ -67,9 +73,11 @@ export const useWebSocket = (projectId: string) => {
 
   const sendMessage = (content: string) => {
     if (wsRef.current?.readyState === WebSocket.OPEN) {
+      // Show typing indicator when user sends a message
+      setIsTyping(true);
       wsRef.current.send(JSON.stringify({ content }));
     }
   };
 
-  return { messages, isConnected, sendMessage, isLoadingHistory };
+  return { messages, isConnected, sendMessage, isLoadingHistory, isTyping };
 };
