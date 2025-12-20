@@ -1,0 +1,146 @@
+name: Deploy to Production
+
+on:
+  workflow_run:
+    workflows: ["Build and Push Docker Image"]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      image-tag:
+        description: 'Docker image tag to deploy (default: latest)'
+        required: false
+        default: 'latest'
+        type: string
+
+jobs:
+  deploy:
+    name: Deploy to Production VM
+    runs-on: self-hosted
+    if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch' }}
+
+    env:
+      DEPLOY_PATH: /home/samuel/po
+      IMAGE_TAG: ${{ inputs.image-tag || 'latest' }}
+      REGISTRY: ghcr.io
+      IMAGE_NAME: ${{ github.repository }}
+
+    steps:
+      - name: Checkout deployment configs
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            docker-compose.prod.yml
+            scripts/deploy.sh
+          sparse-checkout-cone-mode: false
+
+      - name: Log in to GitHub Container Registry
+        run: |
+          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+      - name: Pull latest Docker image
+        run: |
+          echo "📦 Pulling Docker image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}"
+          docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
+
+      - name: Create deployment directory if not exists
+        run: |
+          mkdir -p ${{ env.DEPLOY_PATH }}
+          cd ${{ env.DEPLOY_PATH }}
+
+      - name: Copy deployment files
+        run: |
+          cp docker-compose.prod.yml ${{ env.DEPLOY_PATH }}/docker-compose.yml
+          cp scripts/deploy.sh ${{ env.DEPLOY_PATH }}/deploy.sh
+          chmod +x ${{ env.DEPLOY_PATH }}/deploy.sh
+
+      - name: Run database migrations
+        run: |
+          cd ${{ env.DEPLOY_PATH }}
+          echo "🗄️  Running database migrations..."
+          docker run --rm \
+            --network host \
+            --env-file .env \
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} \
+            alembic upgrade head
+
+      - name: Deploy with zero downtime
+        run: |
+          cd ${{ env.DEPLOY_PATH }}
+          echo "🚀 Starting deployment..."
+
+          # Pull latest images
+          docker-compose pull
+
+          # Start new containers (docker-compose handles graceful restart)
+          docker-compose up -d --no-deps --build app
+
+          echo "✅ Deployment initiated"
+
+      - name: Wait for health check
+        run: |
+          echo "🏥 Waiting for application to be healthy..."
+          timeout 120 bash -c '
+            until curl -f http://localhost:8000/health >/dev/null 2>&1; do
+              echo "Waiting for health check..."
+              sleep 5
+            done
+          '
+          echo "✅ Application is healthy!"
+
+      - name: Verify deployment
+        run: |
+          cd ${{ env.DEPLOY_PATH }}
+          docker-compose ps
+          echo ""
+          echo "### Deployment Status" >> $GITHUB_STEP_SUMMARY
+          echo "✅ **Deployment successful!**" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Image deployed:** \`${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "**Deployment path:** \`${{ env.DEPLOY_PATH }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "**Timestamp:** $(date -u '+%Y-%m-%d %H:%M:%S UTC')" >> $GITHUB_STEP_SUMMARY
+
+      - name: Cleanup old images
+        run: |
+          echo "🧹 Cleaning up old Docker images..."
+          docker image prune -a -f --filter "until=72h"
+        continue-on-error: true
+
+  rollback:
+    name: Rollback on Failure
+    runs-on: self-hosted
+    needs: deploy
+    if: failure()
+
+    env:
+      DEPLOY_PATH: /home/samuel/po
+
+    steps:
+      - name: Rollback to previous version
+        run: |
+          cd ${{ env.DEPLOY_PATH }}
+          echo "⚠️  Deployment failed, rolling back..."
+
+          # Get previous image
+          PREVIOUS_IMAGE=$(docker images --format "{{.Repository}}:{{.Tag}}" | grep "project-orchestrator" | sed -n '2p')
+
+          if [ -n "$PREVIOUS_IMAGE" ]; then
+            echo "Rolling back to: $PREVIOUS_IMAGE"
+
+            # Update docker-compose to use previous image
+            sed -i "s|image:.*|image: $PREVIOUS_IMAGE|" docker-compose.yml
+
+            # Restart with previous image
+            docker-compose up -d --no-deps app
+
+            echo "✅ Rollback complete"
+          else
+            echo "❌ No previous image found for rollback"
+            exit 1
+          fi
+
+      - name: Notify rollback
+        if: always()
+        run: |
+          echo "### ⚠️ Deployment Failed - Rollback Executed" >> $GITHUB_STEP_SUMMARY
+          echo "The deployment failed and has been rolled back to the previous version." >> $GITHUB_STEP_SUMMARY

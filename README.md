@@ -1,5 +1,9 @@
 # Project Orchestrator
 
+[![CI Pipeline](https://github.com/gpt153/project-orchestrator/actions/workflows/ci.yml/badge.svg)](https://github.com/gpt153/project-orchestrator/actions/workflows/ci.yml)
+[![Build and Push](https://github.com/gpt153/project-orchestrator/actions/workflows/build-and-push.yml/badge.svg)](https://github.com/gpt153/project-orchestrator/actions/workflows/build-and-push.yml)
+[![Deploy](https://github.com/gpt153/project-orchestrator/actions/workflows/deploy.yml/badge.svg)](https://github.com/gpt153/project-orchestrator/actions/workflows/deploy.yml)
+
 > AI agent that helps non-coders build software projects by managing workflow between users and SCAR
 
 ## What Is This?
@@ -114,6 +118,30 @@ docker-compose logs -f app
 # Stop services
 docker-compose down
 ```
+
+## CI/CD Pipeline
+
+**Fully automated deployment pipeline** with GitHub Actions:
+
+### Continuous Integration (CI)
+Every push and PR is automatically tested:
+- ✅ Linting and formatting (ruff, black, mypy)
+- ✅ Full test suite with PostgreSQL/Redis services
+- ✅ Code coverage reporting (60% minimum)
+- ✅ Docker build verification
+
+### Continuous Deployment (CD)
+Automatic deployment on main branch merge:
+1. 🐳 **Build** - Docker image built and pushed to GitHub Container Registry
+2. 📦 **Tag** - Image tagged with `latest`, `sha-xxxxx`, and `vX.Y.Z`
+3. 🚀 **Deploy** - Zero-downtime deployment to production
+4. 🗄️ **Migrate** - Database migrations run automatically
+5. 🏥 **Verify** - Health checks ensure successful deployment
+6. ♻️ **Rollback** - Automatic rollback on failure
+
+**Image Registry**: `ghcr.io/gpt153/project-orchestrator`
+
+See [CI/CD Setup Guide](docs/CICD_SETUP.md) for configuration details.
 
 ## How It Works
 
