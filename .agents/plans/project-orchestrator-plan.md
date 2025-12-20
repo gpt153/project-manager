@@ -316,7 +316,7 @@ class GitHubIntegration:
     async def handle_issue_comment(self, payload: dict):
         """Handle issue comment webhook - detect @mentions"""
         comment_body = payload["comment"]["body"]
-        if "@project-orchestrator" in comment_body:
+        if "@po" in comment_body:
             # Extract user request
             # Route to agent
             # Post response as comment
@@ -1158,7 +1158,7 @@ async def handle_issue_comment(payload: dict):
     comment = payload["comment"]["body"]
 
     # Check for @mention
-    if "@project-orchestrator" not in comment:
+    if "@po" not in comment:
         return
 
     # Extract repo and issue info
@@ -2421,7 +2421,7 @@ Bot: "✅ User authentication complete!"
 ```
 User creates GitHub issue:
 Title: "Add recipe import from URL"
-Body: "@project-orchestrator can you add the ability to import recipes from URLs?"
+Body: "@po can you add the ability to import recipes from URLs?"
 
 Bot comments on issue:
 "I'll help you add recipe import functionality! Let me plan this feature..."

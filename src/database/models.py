@@ -138,7 +138,7 @@ class ConversationMessage(Base):
     role = Column(Enum(MessageRole), nullable=False)
     content = Column(Text, nullable=False)
     timestamp = Column(DateTime, nullable=False, default=datetime.utcnow)
-    metadata = Column(JSONB, nullable=True)
+    message_metadata = Column(JSONB, nullable=True)
 
     # Relationships
     project = relationship("Project", back_populates="conversation_messages")

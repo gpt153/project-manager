@@ -5,6 +5,7 @@ This module provides shared fixtures for testing.
 """
 
 import asyncio
+import os
 from typing import AsyncGenerator, Generator
 
 import pytest
@@ -13,9 +14,10 @@ from httpx import ASGITransport, AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.pool import NullPool
 
-from src.config import settings
 from src.database.models import Base
-from src.main import app
+
+# Set dummy API key for testing
+os.environ.setdefault("ANTHROPIC_API_KEY", "test_api_key_for_testing")
 
 
 # Configure test database URL
@@ -77,18 +79,10 @@ async def client() -> AsyncGenerator[AsyncClient, None]:
     """
     Create a test HTTP client.
     """
+    from src.main import app
+
     async with AsyncClient(
         transport=ASGITransport(app=app),
         base_url="http://test",
     ) as ac:
         yield ac
-
-
-@pytest.fixture
-def mock_settings(monkeypatch):
-    """
-    Mock settings for testing.
-    """
-    monkeypatch.setattr(settings, "app_env", "test")
-    monkeypatch.setattr(settings, "database_url", TEST_DATABASE_URL)
-    return settings
