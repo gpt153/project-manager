@@ -1,19 +1,23 @@
 """
-Main FastAPI application for Project Orchestrator.
+Main FastAPI application for the Project Orchestrator.
+
+This module initializes the FastAPI app, configures middleware, and sets up routes.
 """
+
 import logging
 from contextlib import asynccontextmanager
 from typing import AsyncGenerator
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 
 from src.config import settings
-from src.database.connection import init_db
+from src.database.connection import close_db, init_db
 
 # Configure logging
 logging.basicConfig(
-    level=logging.DEBUG if settings.debug else logging.INFO,
+    level=getattr(logging, settings.log_level.upper()),
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
 )
 logger = logging.getLogger(__name__)
@@ -22,76 +26,104 @@ logger = logging.getLogger(__name__)
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator:
     """
-    Lifespan context manager for FastAPI application.
-    Handles startup and shutdown events.
+    Application lifespan events.
+
+    Handles startup and shutdown tasks like database initialization.
     """
     # Startup
-    logger.info("Application starting up...")
+    logger.info(f"Starting {settings.app_name} in {settings.app_env} mode")
 
-    # Initialize database
-    await init_db()
-    logger.info("Database initialized")
+    if settings.app_env == "development":
+        logger.info("Initializing database tables (development mode)")
+        await init_db()
 
     logger.info("Application startup complete")
 
     yield
 
     # Shutdown
-    logger.info("Application shutting down...")
+    logger.info("Shutting down application")
+    await close_db()
+    logger.info("Application shutdown complete")
 
 
 # Create FastAPI application
 app = FastAPI(
     title=settings.app_name,
-    version="0.1.0",
     description="AI agent that helps non-coders build software projects",
+    version="0.1.0",
     lifespan=lifespan,
 )
 
 # Configure CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        settings.frontend_url,
-        "http://localhost:5173",  # Vite dev server
-        "http://localhost:3000",  # Alternative frontend port
-    ],
+    allow_origins=["*"] if settings.app_env == "development" else [settings.frontend_url],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
 
-@app.get("/")
+# Health check endpoint
+@app.get("/health", tags=["Health"])
+async def health_check():
+    """
+    Health check endpoint.
+
+    Returns:
+        dict: Application health status
+    """
+    return JSONResponse(
+        content={
+            "status": "healthy",
+            "app_name": settings.app_name,
+            "environment": settings.app_env,
+            "version": "0.1.0",
+        }
+    )
+
+
+# Root endpoint
+@app.get("/", tags=["Root"])
 async def root():
-    """Health check endpoint."""
+    """
+    Root endpoint with API information.
+
+    Returns:
+        dict: API welcome message and documentation link
+    """
     return {
-        "app": settings.app_name,
-        "status": "healthy",
-        "version": "0.1.0",
+        "message": f"Welcome to {settings.app_name}",
+        "docs": "/docs",
+        "health": "/health",
     }
 
 
-@app.get("/health")
-async def health():
-    """Detailed health check."""
-    return {
-        "status": "healthy",
-        "database": "connected",
-        "version": "0.1.0",
-    }
+# Include API routers
 
+# GitHub webhook integration (from master)
+try:
+    from src.integrations.github_webhook import router as github_webhook_router
+    app.include_router(github_webhook_router)
+    logger.info("GitHub webhook router registered")
+except ImportError:
+    logger.warning("GitHub webhook router not available")
 
-# Register API routers
-from src.api.projects import router as projects_router
-from src.api.documents import router as documents_router
-from src.api.websocket import router as websocket_router
-from src.api.sse import router as sse_router
+# Web UI routers (from feature-webui)
+try:
+    from src.api.projects import router as projects_router
+    from src.api.documents import router as documents_router
+    from src.api.websocket import router as websocket_router
+    from src.api.sse import router as sse_router
 
-app.include_router(projects_router, prefix="/api", tags=["Projects"])
-app.include_router(documents_router, prefix="/api", tags=["Documents"])
-app.include_router(websocket_router, prefix="/api", tags=["WebSocket"])
-app.include_router(sse_router, prefix="/api", tags=["SSE"])
+    app.include_router(projects_router, prefix="/api", tags=["Projects"])
+    app.include_router(documents_router, prefix="/api", tags=["Documents"])
+    app.include_router(websocket_router, prefix="/api", tags=["WebSocket"])
+    app.include_router(sse_router, prefix="/api", tags=["SSE"])
+    logger.info("Web UI routers registered")
+except ImportError as e:
+    logger.warning(f"Web UI routers not available: {e}")
 
 
 if __name__ == "__main__":
@@ -101,5 +133,6 @@ if __name__ == "__main__":
         "src.main:app",
         host=settings.api_host,
         port=settings.api_port,
-        reload=settings.debug,
+        reload=settings.api_reload,
+        log_level=settings.log_level.lower(),
     )
