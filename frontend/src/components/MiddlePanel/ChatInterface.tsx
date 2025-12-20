@@ -6,7 +6,7 @@ interface ChatInterfaceProps {
 }
 
 export const ChatInterface: React.FC<ChatInterfaceProps> = ({ projectId }) => {
-  const { messages, isConnected, sendMessage } = useWebSocket(projectId);
+  const { messages, isConnected, sendMessage, isLoadingHistory } = useWebSocket(projectId);
   const [input, setInput] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -37,13 +37,19 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ projectId }) => {
         </span>
       </div>
       <div className="messages">
-        {messages.map((msg) => (
-          <div key={msg.id} className={`message ${msg.role}`}>
-            <div className="role">{msg.role}</div>
-            <div className="content">{msg.content}</div>
-            <div className="timestamp">{new Date(msg.timestamp).toLocaleTimeString()}</div>
-          </div>
-        ))}
+        {isLoadingHistory ? (
+          <div className="loading-state">Loading conversation history...</div>
+        ) : messages.length === 0 ? (
+          <div className="empty-state">No messages yet. Start a conversation!</div>
+        ) : (
+          messages.map((msg) => (
+            <div key={msg.id} className={`message ${msg.role}`}>
+              <div className="role">{msg.role}</div>
+              <div className="content">{msg.content}</div>
+              <div className="timestamp">{new Date(msg.timestamp).toLocaleTimeString()}</div>
+            </div>
+          ))
+        )}
         <div ref={messagesEndRef} />
       </div>
       <div className="input-area">

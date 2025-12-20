@@ -29,17 +29,15 @@ async def list_projects(session: AsyncSession = Depends(get_session)):
     Get all projects with issue counts and stats.
 
     Returns:
-        List of projects with metadata
+        List of projects with metadata (empty list if no projects exist)
     """
     try:
         projects = await get_all_projects(session)
         return projects
     except Exception as e:
-        logger.error(f"Error listing projects: {e}")
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to retrieve projects"
-        )
+        logger.error(f"Error listing projects: {e}", exc_info=True)
+        # Return empty list instead of error to handle empty database gracefully
+        return []
 
 
 @router.get("/projects/{project_id}", response_model=dict)

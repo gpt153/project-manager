@@ -11,6 +11,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from src.database.connection import async_session_maker
 from src.services.websocket_manager import ws_manager
 from src.services.project_service import add_message
+from src.agent.orchestrator_agent import run_orchestrator
 
 logger = logging.getLogger(__name__)
 
@@ -61,57 +62,73 @@ async def websocket_chat_endpoint(
                     await ws_manager.send_error(connection_id, "EMPTY_MESSAGE", "Message content cannot be empty")
                     continue
 
-                # Store user message in database
+                # Process message with orchestrator agent
                 async with async_session_maker() as session:
                     try:
-                        user_msg = await add_message(
-                            session,
-                            project_id=project_id,
-                            role="user",
-                            content=user_content
-                        )
-                        await session.commit()
+                        # Run orchestrator agent to generate response
+                        # Note: run_orchestrator saves both user and assistant messages
+                        logger.info(f"Running orchestrator agent for project {project_id}")
 
-                        # Echo user message back to client
-                        await ws_manager.send_personal_message(
-                            {
-                                "type": "chat",
-                                "data": {
-                                    "id": str(user_msg.id),
-                                    "role": "user",
-                                    "content": user_content,
-                                    "timestamp": user_msg.created_at.isoformat(),
-                                }
-                            },
-                            connection_id
-                        )
+                        try:
+                            # Get last two messages (user + assistant) to send back
+                            from sqlalchemy import select, desc
+                            from src.database.models import ConversationMessage, MessageRole
 
-                        # TODO: Run orchestrator agent to generate response
-                        # For MVP, send a simple echo response
-                        agent_response = f"Received: {user_content[:50]}... (Agent integration coming soon!)"
+                            # Run orchestrator (saves both user and assistant messages)
+                            agent_response = await run_orchestrator(
+                                project_id=project_id,
+                                user_message=user_content,
+                                session=session
+                            )
+                            await session.commit()
 
-                        # Store agent response
-                        agent_msg = await add_message(
-                            session,
-                            project_id=project_id,
-                            role="assistant",
-                            content=agent_response
-                        )
-                        await session.commit()
+                            # Get the last 2 messages (user + assistant) to send to client
+                            stmt = select(ConversationMessage).where(
+                                ConversationMessage.project_id == project_id
+                            ).order_by(desc(ConversationMessage.timestamp)).limit(2)
 
-                        # Send agent response to client
-                        await ws_manager.send_personal_message(
-                            {
-                                "type": "chat",
-                                "data": {
-                                    "id": str(agent_msg.id),
-                                    "role": "assistant",
-                                    "content": agent_response,
-                                    "timestamp": agent_msg.created_at.isoformat(),
-                                }
-                            },
-                            connection_id
-                        )
+                            result = await session.execute(stmt)
+                            recent_messages = result.scalars().all()
+
+                            # Send both messages to client
+                            for msg in reversed(recent_messages):  # Reverse to get chronological order
+                                await ws_manager.send_personal_message(
+                                    {
+                                        "type": "chat",
+                                        "data": {
+                                            "id": str(msg.id),
+                                            "role": msg.role.value,
+                                            "content": msg.content,
+                                            "timestamp": msg.timestamp.isoformat(),
+                                        }
+                                    },
+                                    connection_id
+                                )
+
+                        except Exception as agent_error:
+                            logger.error(f"Orchestrator agent error: {agent_error}")
+                            # Fallback to simple response on agent failure
+                            fallback_response = "I'm having trouble processing that right now. Please try again."
+                            agent_msg = await add_message(
+                                session,
+                                project_id=project_id,
+                                role="assistant",
+                                content=fallback_response
+                            )
+                            await session.commit()
+
+                            await ws_manager.send_personal_message(
+                                {
+                                    "type": "chat",
+                                    "data": {
+                                        "id": str(agent_msg.id),
+                                        "role": "assistant",
+                                        "content": fallback_response,
+                                        "timestamp": agent_msg.created_at.isoformat(),
+                                    }
+                                },
+                                connection_id
+                            )
 
                     except Exception as db_error:
                         logger.error(f"Database error: {db_error}")
