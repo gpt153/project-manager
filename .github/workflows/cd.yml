@@ -76,8 +76,8 @@ jobs:
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          GITHUB_ACCESS_TOKEN: ${{ secrets.GITHUB_ACCESS_TOKEN }}
-          GITHUB_WEBHOOK_SECRET: ${{ secrets.GITHUB_WEBHOOK_SECRET }}
+          GITHUB_ACCESS_TOKEN: ${{ secrets.GH_ACCESS_TOKEN }}
+          GITHUB_WEBHOOK_SECRET: ${{ secrets.GH_WEBHOOK_SECRET }}
           SECRET_KEY: ${{ secrets.SECRET_KEY }}
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: |
