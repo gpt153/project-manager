@@ -95,24 +95,23 @@ async def stream_scar_activity(
         await asyncio.sleep(2)  # Poll every 2 seconds
 
         # Query for activities newer than last_id
+        # Note: verbosity filtering done in Python (line 54) since it's a @property
         if last_id:
             query = (
                 select(ScarCommandExecution)
                 .where(
                     ScarCommandExecution.project_id == project_id,
-                    ScarCommandExecution.verbosity_level <= verbosity_level,
                     ScarCommandExecution.id > UUID(last_id)
                 )
-                .order_by(ScarCommandExecution.created_at.asc())
+                .order_by(ScarCommandExecution.started_at.asc())
             )
         else:
             query = (
                 select(ScarCommandExecution)
                 .where(
-                    ScarCommandExecution.project_id == project_id,
-                    ScarCommandExecution.verbosity_level <= verbosity_level
+                    ScarCommandExecution.project_id == project_id
                 )
-                .order_by(desc(ScarCommandExecution.created_at))
+                .order_by(desc(ScarCommandExecution.started_at))
                 .limit(1)
             )
 

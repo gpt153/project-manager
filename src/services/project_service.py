@@ -198,7 +198,7 @@ async def get_conversation_history(
     query = (
         select(ConversationMessage)
         .where(ConversationMessage.project_id == project_id)
-        .order_by(ConversationMessage.created_at.asc())
+        .order_by(ConversationMessage.timestamp.asc())
         .limit(limit)
     )
 
@@ -210,8 +210,8 @@ async def get_conversation_history(
             "id": str(msg.id),
             "role": msg.role.value,
             "content": msg.content,
-            "timestamp": msg.created_at.isoformat(),
-            "metadata": msg.metadata,
+            "timestamp": msg.timestamp.isoformat(),
+            "metadata": msg.message_metadata,
         }
         for msg in messages
     ]
@@ -243,7 +243,7 @@ async def add_message(
         project_id=project_id,
         role=MessageRole(role),
         content=content,
-        metadata=metadata,
+        message_metadata=metadata,
     )
 
     session.add(message)
