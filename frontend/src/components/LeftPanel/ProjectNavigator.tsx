@@ -14,6 +14,7 @@ export const ProjectNavigator: React.FC<ProjectNavigatorProps> = ({ onProjectSel
   } | null>(null);
   const [projects, setProjects] = useState<Project[]>([]);
   const [expandedProjects, setExpandedProjects] = useState<Set<string>>(new Set());
+  const [projectIssues, setProjectIssues] = useState<Map<string, any[]>>(new Map());
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -30,7 +31,21 @@ export const ProjectNavigator: React.FC<ProjectNavigatorProps> = ({ onProjectSel
     fetchProjects();
   }, []);
 
-  const toggleProject = (projectId: string) => {
+  const toggleProject = async (projectId: string) => {
+    const isExpanding = !expandedProjects.has(projectId);
+
+    // Fetch issues when expanding (if not already fetched)
+    if (isExpanding && !projectIssues.has(projectId)) {
+      try {
+        const issues = await api.getProjectIssues(projectId, 'all');
+        setProjectIssues(prev => new Map(prev).set(projectId, issues));
+      } catch (error) {
+        console.error('Failed to fetch issues:', error);
+        // Set empty array on error so we don't retry
+        setProjectIssues(prev => new Map(prev).set(projectId, []));
+      }
+    }
+
     setExpandedProjects((prev) => {
       const next = new Set(prev);
       if (next.has(projectId)) {
@@ -63,8 +78,35 @@ export const ProjectNavigator: React.FC<ProjectNavigatorProps> = ({ onProjectSel
             </div>
             {expandedProjects.has(project.id) && (
               <ul className="issue-list">
-                <li>Open Issues ({project.open_issues_count || 0})</li>
-                <li>Closed Issues ({project.closed_issues_count || 0})</li>
+                <li className="issue-section">
+                  <div className="issue-section-header">
+                    📂 Open Issues ({projectIssues.get(project.id)?.filter(i => i.state === 'open').length || 0})
+                  </div>
+                  {projectIssues.get(project.id)?.filter(i => i.state === 'open').slice(0, 5).map(issue => (
+                    <div key={issue.number} className="issue-item">
+                      <a href={issue.url} target="_blank" rel="noopener noreferrer" title={issue.title}>
+                        #{issue.number}: {issue.title.length > 40 ? issue.title.substring(0, 40) + '...' : issue.title}
+                      </a>
+                    </div>
+                  ))}
+                  {(projectIssues.get(project.id)?.filter(i => i.state === 'open').length || 0) > 5 && (
+                    <div className="issue-item more">
+                      +{(projectIssues.get(project.id)?.filter(i => i.state === 'open').length || 0) - 5} more...
+                    </div>
+                  )}
+                </li>
+                <li className="issue-section">
+                  <div className="issue-section-header">
+                    ✅ Closed Issues ({projectIssues.get(project.id)?.filter(i => i.state === 'closed').length || 0})
+                  </div>
+                  {projectIssues.get(project.id)?.filter(i => i.state === 'closed').slice(0, 3).map(issue => (
+                    <div key={issue.number} className="issue-item">
+                      <a href={issue.url} target="_blank" rel="noopener noreferrer" title={issue.title}>
+                        #{issue.number}: {issue.title.length > 40 ? issue.title.substring(0, 40) + '...' : issue.title}
+                      </a>
+                    </div>
+                  ))}
+                </li>
                 <li className="documents-section">
                   <span>Documents</span>
                   <ul className="document-list">

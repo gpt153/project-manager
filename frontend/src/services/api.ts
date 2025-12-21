@@ -38,4 +38,17 @@ export const api = {
     if (!response.ok) throw new Error('Failed to fetch documents');
     return response.json();
   },
+
+  // GitHub Issues
+  getProjectIssues: async (projectId: string, state: string = "all"): Promise<any[]> => {
+    const response = await fetch(`${API_BASE_URL}/projects/${projectId}/issues?state=${state}`);
+    if (!response.ok) throw new Error('Failed to fetch issues');
+    return response.json();
+  },
+
+  getProjectIssueCounts: async (projectId: string): Promise<{open_issues_count: number, closed_issues_count: number}> => {
+    const response = await fetch(`${API_BASE_URL}/projects/${projectId}/issue-counts`);
+    if (!response.ok) throw new Error('Failed to fetch issue counts');
+    return response.json();
+  },
 };
