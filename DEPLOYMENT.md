@@ -36,7 +36,7 @@ The application consists of three main services:
    ```
 
 4. **Access the application**:
-   - Frontend: http://localhost:3000
+   - Frontend: http://localhost:3002
    - Backend API: http://localhost:8000
    - API Docs: http://localhost:8000/docs
 
@@ -97,7 +97,7 @@ server {
 
     # Proxy to frontend container
     location / {
-        proxy_pass http://localhost:3000;
+        proxy_pass http://localhost:3002;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -122,7 +122,7 @@ Create `/etc/caddy/Caddyfile`:
 
 ```caddyfile
 po.153.se {
-    reverse_proxy localhost:3000
+    reverse_proxy localhost:3002
 }
 ```
 
@@ -205,7 +205,7 @@ sudo certbot renew --dry-run
    ```
    NAME       SERVICE    STATUS       PORTS
    backend    app        running      0.0.0.0:8000->8000/tcp
-   frontend   frontend   running      0.0.0.0:3000->80/tcp
+   frontend   frontend   running      0.0.0.0:3002->80/tcp
    postgres   postgres   running      0.0.0.0:5432->5432/tcp
    redis      redis      running      0.0.0.0:6379->6379/tcp
    ```

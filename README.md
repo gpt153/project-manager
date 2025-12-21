@@ -101,7 +101,7 @@ npm install
 npm run dev
 ```
 
-The web UI will be available at `http://localhost:5173`
+The web UI will be available at `http://localhost:3002`
 
 **Production Build**:
 
@@ -127,7 +127,7 @@ docker-compose up -d
 docker-compose logs -f
 
 # Access the application
-# - WebUI: http://localhost:3000
+# - WebUI: http://localhost:3002
 # - Backend API: http://localhost:8000
 # - API Docs: http://localhost:8000/docs
 
