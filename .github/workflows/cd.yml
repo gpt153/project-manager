@@ -55,7 +55,7 @@ jobs:
           SECRET_KEY=$SECRET_KEY
           POSTGRES_PASSWORD=$POSTGRES_PASSWORD
           API_PORT=8000
-          FRONTEND_URL=http://localhost:5173
+          FRONTEND_URL=http://localhost:3002
           SERVE_FRONTEND=false
           EOF
 

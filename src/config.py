@@ -49,7 +49,7 @@ class Settings(BaseSettings):
     api_reload: bool = True  # Auto-reload in development
 
     # Frontend (Web Interface)
-    frontend_url: str = "http://localhost:5173"  # Vite dev server
+    frontend_url: str = "http://localhost:3002"  # Vite dev server
     serve_frontend: bool = False  # Set to True in production
 
     model_config = SettingsConfigDict(

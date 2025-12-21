@@ -52,7 +52,7 @@ The API will be available at `http://localhost:8000`.
 ### 4. Access the WebUI
 
 Open your browser to:
-- **Development**: `http://localhost:5173` (if running `npm run dev`)
+- **Development**: `http://localhost:3002` (if running `npm run dev`)
 - **Production**: `https://po.153.se`
 
 ---
