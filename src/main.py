@@ -37,6 +37,31 @@ async def lifespan(app: FastAPI) -> AsyncGenerator:
         logger.info("Initializing database tables (development mode)")
         await init_db()
 
+    # Auto-import SCAR projects
+    if settings.scar_auto_import:
+        logger.info("Auto-importing SCAR projects...")
+        try:
+            from src.database.connection import async_session_maker
+            from src.services.project_import_service import auto_import_projects
+
+            async with async_session_maker() as session:
+                result = await auto_import_projects(session)
+                if result['count'] > 0:
+                    logger.info(
+                        f"✅ Auto-import complete: {result['count']} projects from {result['source']}"
+                    )
+                else:
+                    logger.info("No new projects to import")
+
+                if result['errors']:
+                    logger.warning(f"Import errors occurred: {result['errors']}")
+
+        except Exception as e:
+            logger.error(f"Error during auto-import: {e}", exc_info=True)
+            # Don't fail startup on import errors
+    else:
+        logger.info("SCAR auto-import disabled")
+
     logger.info("Application startup complete")
 
     yield

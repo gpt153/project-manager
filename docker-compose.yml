@@ -41,6 +41,10 @@ services:
       - GITHUB_ACCESS_TOKEN=${GITHUB_ACCESS_TOKEN}
       - GITHUB_WEBHOOK_SECRET=${GITHUB_WEBHOOK_SECRET}
       - SECRET_KEY=${SECRET_KEY}
+      - SCAR_AUTO_IMPORT=${SCAR_AUTO_IMPORT:-true}
+      - SCAR_IMPORT_REPOS=${SCAR_IMPORT_REPOS:-}
+      - SCAR_IMPORT_USER=${SCAR_IMPORT_USER:-}
+      - SCAR_IMPORT_ORG=${SCAR_IMPORT_ORG:-}
     depends_on:
       postgres:
         condition: service_healthy

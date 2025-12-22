@@ -52,6 +52,13 @@ class Settings(BaseSettings):
     frontend_url: str = "http://localhost:3002"  # Vite dev server
     serve_frontend: bool = False  # Set to True in production
 
+    # SCAR Project Import Settings
+    scar_auto_import: bool = True  # Enable/disable auto-import on startup
+    scar_import_repos: Optional[str] = None  # Comma-separated list of "owner/repo"
+    scar_import_user: Optional[str] = None  # GitHub username to import all repos
+    scar_import_org: Optional[str] = None  # GitHub org to import all repos
+    scar_projects_config: str = ".scar/projects.json"  # Config file path
+
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",

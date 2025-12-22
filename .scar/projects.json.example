@@ -1,0 +1,18 @@
+{
+  "version": "1.0",
+  "description": "SCAR projects to import on container startup",
+  "projects": [
+    {
+      "name": "Project Orchestrator",
+      "github_repo": "gpt153/project-orchestrator",
+      "description": "AI agent that helps non-coders build software projects",
+      "telegram_chat_id": null
+    },
+    {
+      "name": "Example Project",
+      "github_repo": "owner/repo-name",
+      "description": "Description of the project",
+      "telegram_chat_id": -1001234567890
+    }
+  ]
+}
