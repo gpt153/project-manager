@@ -1,5 +1,26 @@
 {
   "version": "1.0",
   "description": "SCAR projects to import on container startup",
-  "projects": []
+  "projects": [
+    {
+      "name": "SCAR",
+      "github_repo": "gpt153/scar",
+      "description": "Sam's Coding Agent Remote - AI-powered development assistant"
+    },
+    {
+      "name": "Platform Orchestrator",
+      "github_repo": "gpt153/platform-orchestrator",
+      "description": "AI Workflow Manager for non-technical users"
+    },
+    {
+      "name": "Health Agent",
+      "github_repo": "gpt153/health-agent",
+      "description": "Health monitoring and wellness agent"
+    },
+    {
+      "name": "OpenHorizon",
+      "github_repo": "gpt153/openhorizon",
+      "description": "Open horizon project"
+    }
+  ]
 }

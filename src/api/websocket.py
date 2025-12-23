@@ -112,7 +112,7 @@ async def websocket_chat_endpoint(
                             agent_msg = await add_message(
                                 session,
                                 project_id=project_id,
-                                role="assistant",
+                                role=MessageRole.ASSISTANT,
                                 content=fallback_response
                             )
                             await session.commit()
@@ -122,7 +122,7 @@ async def websocket_chat_endpoint(
                                     "type": "chat",
                                     "data": {
                                         "id": str(agent_msg.id),
-                                        "role": "assistant",
+                                        "role": MessageRole.ASSISTANT.value,
                                         "content": fallback_response,
                                         "timestamp": agent_msg.created_at.isoformat(),
                                     }
