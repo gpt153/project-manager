@@ -9,7 +9,6 @@ from uuid import UUID
 
 from fastapi import APIRouter, Query
 from sse_starlette.sse import EventSourceResponse
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.database.connection import async_session_maker
 from src.services.scar_feed_service import stream_scar_activity

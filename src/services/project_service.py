@@ -2,14 +2,14 @@
 Service layer for project data aggregation and business logic.
 """
 import logging
-from typing import List, Dict, Optional
+from typing import Dict, List, Optional
 from uuid import UUID
 
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, func
 from pydantic import BaseModel
+from sqlalchemy import func, select
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.database.models import Project, ProjectStatus, ConversationMessage, WorkflowPhase
+from src.database.models import ConversationMessage, Project, ProjectStatus, WorkflowPhase
 
 logger = logging.getLogger(__name__)
 
@@ -62,7 +62,7 @@ async def get_all_projects(session: AsyncSession) -> List[Dict]:
         # Count workflow phases
         phase_query = select(func.count(WorkflowPhase.id)).where(
             WorkflowPhase.project_id == project.id,
-            WorkflowPhase.is_completed == True
+            WorkflowPhase.is_completed
         )
         phase_result = await session.execute(phase_query)
         completed_phases = phase_result.scalar() or 0

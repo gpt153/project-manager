@@ -8,7 +8,7 @@ on application startup.
 import json
 import logging
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import Dict, Optional
 
 import httpx
 from sqlalchemy import select
@@ -103,7 +103,7 @@ async def import_from_config(session: AsyncSession, config: Dict) -> int:
 
             if not description and settings.github_access_token:
                 try:
-                    github = GitHubClient()
+                    GitHubClient()
                     repo = GitHubRepo.from_url(repo_url)
 
                     async with httpx.AsyncClient() as client:

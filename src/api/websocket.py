@@ -1,17 +1,16 @@
 """
 WebSocket endpoint for bidirectional chat communication.
 """
-import logging
 import json
+import logging
 from uuid import UUID, uuid4
 
-from fastapi import APIRouter, WebSocket, WebSocketDisconnect, Depends
-from sqlalchemy.ext.asyncio import AsyncSession
+from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 
-from src.database.connection import async_session_maker
-from src.services.websocket_manager import ws_manager
-from src.services.project_service import add_message
 from src.agent.orchestrator_agent import run_orchestrator
+from src.database.connection import async_session_maker
+from src.services.project_service import add_message
+from src.services.websocket_manager import ws_manager
 
 logger = logging.getLogger(__name__)
 
@@ -71,11 +70,12 @@ async def websocket_chat_endpoint(
 
                         try:
                             # Get last two messages (user + assistant) to send back
-                            from sqlalchemy import select, desc
+                            from sqlalchemy import desc, select
+
                             from src.database.models import ConversationMessage, MessageRole
 
                             # Run orchestrator (saves both user and assistant messages)
-                            agent_response = await run_orchestrator(
+                            await run_orchestrator(
                                 project_id=project_id,
                                 user_message=user_content,
                                 session=session

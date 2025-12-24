@@ -1,0 +1,44 @@
+services:
+  codex-telegram-bot:
+    build: .
+    container_name: codex-telegram-bot
+    restart: unless-stopped
+
+    environment:
+      # Telegram Bot Configuration
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+
+      # Codex Authentication
+      - CODEX_ID_TOKEN=${CODEX_ID_TOKEN}
+      - CODEX_ACCESS_TOKEN=${CODEX_ACCESS_TOKEN}
+      - CODEX_REFRESH_TOKEN=${CODEX_REFRESH_TOKEN}
+      - CODEX_ACCOUNT_ID=${CODEX_ACCOUNT_ID}
+
+      # GitHub CLI Authentication
+      - GH_TOKEN=${GH_TOKEN}
+
+      # Stagehand MCP (Browserbase)
+      - BROWSERBASE_API_KEY=${BROWSERBASE_API_KEY}
+      - BROWSERBASE_PROJECT_ID=${BROWSERBASE_PROJECT_ID}
+
+      # OpenAI API Key
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+
+    volumes:
+      # User projects workspace
+      - ./workspace:/workspace
+
+      # Telegram session storage
+      - ./telegram_sessions:/app/telegram_sessions
+
+      # Codex sessions persistence
+      - codex_sessions:/root/.codex/sessions
+
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+volumes:
+  codex_sessions:

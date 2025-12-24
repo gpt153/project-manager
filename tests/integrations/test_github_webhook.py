@@ -4,9 +4,7 @@ Tests for GitHub webhook integration.
 
 import hashlib
 import hmac
-import json
-from unittest.mock import AsyncMock, MagicMock, patch
-from uuid import uuid4
+from unittest.mock import patch
 
 import pytest
 
@@ -22,6 +20,7 @@ from src.integrations.github_webhook import (
 def test_client():
     """Create test client for FastAPI app."""
     from fastapi.testclient import TestClient
+
     from src.main import app
 
     return TestClient(app)

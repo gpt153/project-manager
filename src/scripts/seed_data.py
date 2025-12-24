@@ -7,21 +7,20 @@ and workflow phases to populate the WebUI with demo content.
 import asyncio
 import logging
 from datetime import datetime, timedelta
-from uuid import uuid4
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.database.connection import async_session_maker
 from src.database.models import (
-    Project,
-    ProjectStatus,
+    CommandStatus,
+    CommandType,
     ConversationMessage,
     MessageRole,
-    WorkflowPhase,
     PhaseStatus,
+    Project,
+    ProjectStatus,
     ScarCommandExecution,
-    CommandType,
-    CommandStatus,
+    WorkflowPhase,
 )
 
 logging.basicConfig(level=logging.INFO)

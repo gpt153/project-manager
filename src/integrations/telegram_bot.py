@@ -6,7 +6,6 @@ Users can interact with the orchestrator through natural language in Telegram.
 """
 
 import logging
-from typing import Optional
 from uuid import UUID
 
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
@@ -20,8 +19,8 @@ from telegram.ext import (
 )
 
 from src.agent.orchestrator_agent import run_orchestrator
-from src.database.models import GateStatus, Project, ProjectStatus
-from src.services.approval_gate import approve_gate, get_pending_gates, reject_gate
+from src.database.models import Project, ProjectStatus
+from src.services.approval_gate import get_pending_gates
 from src.services.vision_generator import (
     check_conversation_completeness,
     generate_vision_document,

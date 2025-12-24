@@ -11,12 +11,11 @@ from datetime import datetime
 from typing import Optional
 from uuid import UUID
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.database.models import (
-    CommandType,
     GateStatus,
     GateType,
     PhaseStatus,
@@ -26,10 +25,8 @@ from src.database.models import (
 )
 from src.services.approval_gate import ApprovalRequest, create_approval_gate
 from src.services.scar_executor import (
-    CommandResult,
     ScarCommand,
     execute_scar_command,
-    get_last_successful_command,
 )
 
 
@@ -205,7 +202,7 @@ async def advance_workflow(
         tuple: (success, message) - success flag and status message
     """
     # Get current state
-    state = await get_workflow_state(session, project_id)
+    await get_workflow_state(session, project_id)
 
     # Get project
     result = await session.execute(select(Project).where(Project.id == project_id))
@@ -317,10 +314,9 @@ async def handle_approval_response(
     Returns:
         tuple: (success, message) - success flag and status message
     """
-    from src.services.approval_gate import approve_gate, reject_gate
-
     # Get the approval gate to find project
     from src.database.models import ApprovalGate
+    from src.services.approval_gate import approve_gate, reject_gate
 
     result = await session.execute(select(ApprovalGate).where(ApprovalGate.id == gate_id))
     gate = result.scalar_one_or_none()

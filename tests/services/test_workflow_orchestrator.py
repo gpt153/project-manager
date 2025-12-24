@@ -74,6 +74,7 @@ async def test_advance_workflow_creates_phase(db_session):
 
     # Check that phase was created
     from sqlalchemy import select
+
     from src.database.models import WorkflowPhase
 
     result = await db_session.execute(

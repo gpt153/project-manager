@@ -6,8 +6,8 @@ to create comments, manage pull requests, and perform other repository operation
 """
 
 import logging
-from typing import Optional
 from dataclasses import dataclass
+from typing import Optional
 
 import httpx
 

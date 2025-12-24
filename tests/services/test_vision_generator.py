@@ -2,9 +2,11 @@
 Tests for vision document generation service.
 """
 
-import pytest
 from unittest.mock import AsyncMock, patch
 
+import pytest
+
+from src.agent.tools import save_conversation_message
 from src.database.models import MessageRole, Project, ProjectStatus
 from src.services.vision_generator import (
     Feature,
@@ -15,7 +17,6 @@ from src.services.vision_generator import (
     vision_document_to_dict,
     vision_document_to_markdown,
 )
-from src.agent.tools import save_conversation_message
 
 
 @pytest.mark.asyncio
@@ -69,7 +70,7 @@ async def test_check_conversation_completeness_with_messages(db_session):
         mock_result.data.next_question = "What problem does this solve?"
         mock_run.return_value = mock_result
 
-        result = await check_conversation_completeness(db_session, project.id)
+        await check_conversation_completeness(db_session, project.id)
 
         assert mock_run.called
 

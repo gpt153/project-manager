@@ -4,14 +4,14 @@ Tests for project service layer.
 import pytest
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from src.database.models import ProjectStatus
 from src.services.project_service import (
+    add_message,
     create_project,
     get_all_projects,
-    get_project_with_stats,
-    add_message,
     get_conversation_history,
+    get_project_with_stats,
 )
-from src.database.models import ProjectStatus
 
 
 @pytest.mark.asyncio

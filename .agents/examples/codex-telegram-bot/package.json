@@ -1,0 +1,38 @@
+{
+  "name": "codex-telegram-bot",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Telegram bot providing remote access to OpenAI Codex SDK with browser automation via Stagehand MCP",
+  "main": "dist/index.js",
+  "scripts": {
+    "setup-auth": "tsx scripts/setup-auth.ts",
+    "setup-config": "tsx scripts/setup-config.ts",
+    "validate": "tsx scripts/validate-config.ts",
+    "create-bot": "tsx scripts/create-bot.ts",
+    "dev": "tsx src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "test": "tsx test-codex.ts",
+    "test:basic": "TEST_MODE=basic tsx test-codex.ts",
+    "test:resume": "TEST_MODE=resume tsx test-codex.ts",
+    "test:all": "TEST_MODE=all tsx test-codex.ts",
+    "test:permissions": "TEST_MODE=permissions tsx test-codex.ts",
+    "test:conversation": "TEST_MODE=conversation tsx test-codex.ts",
+    "test:error": "TEST_MODE=error tsx test-codex.ts",
+    "test:resume-simple": "npx tsx test-resume-simple.ts",
+    "validate": "tsx validate-fixes.ts"
+  },
+  "keywords": ["telegram", "bot", "codex", "ai", "typescript"],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@openai/codex-sdk": "^0.47.0",
+    "dotenv": "^17.2.3",
+    "telegraf": "^4.16.3",
+    "tsx": "^4.20.6"
+  },
+  "devDependencies": {
+    "@types/node": "^24.8.1",
+    "typescript": "^5.9.3"
+  }
+}

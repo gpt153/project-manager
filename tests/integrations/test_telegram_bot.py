@@ -5,9 +5,9 @@ Note: These are unit tests that mock the Telegram API.
 Full integration tests would require a real Telegram bot token.
 """
 
-import pytest
 from unittest.mock import AsyncMock, MagicMock, patch
-from uuid import uuid4
+
+import pytest
 
 from src.database.models import Project, ProjectStatus
 from src.integrations.telegram_bot import OrchestratorTelegramBot
@@ -182,8 +182,8 @@ async def test_callback_generate_vision(db_session, mock_context):
     await db_session.refresh(project)
 
     # Add some conversation messages
-    from src.database.models import MessageRole
     from src.agent.tools import save_conversation_message
+    from src.database.models import MessageRole
 
     await save_conversation_message(
         db_session, project.id, MessageRole.USER, "I want to build a task manager"
@@ -211,7 +211,7 @@ async def test_callback_generate_vision(db_session, mock_context):
 
     # Mock vision generation (since it requires completeness)
     with patch("src.integrations.telegram_bot.generate_vision_document") as mock_gen:
-        from src.services.vision_generator import VisionDocument, Feature
+        from src.services.vision_generator import Feature, VisionDocument
 
         mock_vision = VisionDocument(
             what_it_is="A task manager",

@@ -1,10 +1,11 @@
 """
 WebSocket connection manager for tracking active sessions and broadcasting.
 """
-import logging
 import json
-from typing import Dict, Optional
+import logging
 from datetime import datetime
+from typing import Dict, Optional
+
 from fastapi import WebSocket
 
 logger = logging.getLogger(__name__)

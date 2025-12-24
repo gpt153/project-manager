@@ -6,7 +6,6 @@ execute-github, validate) and manages the workflow automation.
 """
 
 import asyncio
-import subprocess
 from datetime import datetime
 from enum import Enum
 from typing import Optional
@@ -21,7 +20,6 @@ from src.database.models import (
     ExecutionStatus,
     Project,
     ScarCommandExecution,
-    WorkflowPhase,
 )
 
 

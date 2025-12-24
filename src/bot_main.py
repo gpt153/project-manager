@@ -4,7 +4,6 @@ Telegram Bot Entry Point.
 Run this script to start the Telegram bot.
 """
 
-import asyncio
 
 from src.config import settings
 from src.database.connection import async_session_maker

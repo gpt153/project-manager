@@ -137,11 +137,11 @@ except ImportError:
 
 # Web UI routers (from feature-webui)
 try:
-    from src.api.projects import router as projects_router
     from src.api.documents import router as documents_router
-    from src.api.websocket import router as websocket_router
-    from src.api.sse import router as sse_router
     from src.api.github_issues import router as github_issues_router
+    from src.api.projects import router as projects_router
+    from src.api.sse import router as sse_router
+    from src.api.websocket import router as websocket_router
 
     app.include_router(projects_router, prefix="/api", tags=["Projects"])
     app.include_router(documents_router, prefix="/api", tags=["Documents"])

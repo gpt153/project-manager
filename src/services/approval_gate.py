@@ -6,7 +6,6 @@ user approval is required before proceeding.
 """
 
 from datetime import datetime
-from enum import Enum
 from typing import Optional
 from uuid import UUID
 

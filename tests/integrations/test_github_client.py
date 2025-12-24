@@ -2,10 +2,10 @@
 Tests for GitHub API client.
 """
 
-import pytest
 from unittest.mock import AsyncMock, patch
 
 import httpx
+import pytest
 
 from src.integrations.github_client import GitHubClient, GitHubRepo
 

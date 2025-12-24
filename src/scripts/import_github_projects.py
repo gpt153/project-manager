@@ -12,12 +12,11 @@ Usage:
 import argparse
 import asyncio
 import logging
-from typing import List, Optional
+from typing import List
 
 import httpx
 from sqlalchemy import select
 
-from src.config import settings
 from src.database.connection import async_session_maker
 from src.database.models import Project, ProjectStatus
 from src.integrations.github_client import GitHubClient, GitHubRepo
@@ -77,9 +76,9 @@ async def import_repos_from_list(repo_urls: List[str]) -> int:
                         if response.status_code == 200:
                             repo_data = response.json()
                             description = repo_data.get("description", "")
-                            else:
-                                description = ""
-                                logger.warning(f"Could not fetch details for {repo.full_name}")
+                        else:
+                            description = ""
+                            logger.warning(f"Could not fetch details for {repo.full_name}")
                 except Exception as e:
                     logger.warning(f"Could not fetch details for {repo.full_name}: {e}")
                     description = ""

@@ -1,8 +1,9 @@
 """
 Tests for WebSocket manager.
 """
+from unittest.mock import AsyncMock
+
 import pytest
-from unittest.mock import AsyncMock, MagicMock
 
 from src.services.websocket_manager import WebSocketManager
 

@@ -1,16 +1,16 @@
 """
 Service to aggregate SCAR activity logs and format for streaming.
 """
-import logging
 import asyncio
-from typing import List, Dict, AsyncGenerator
-from uuid import UUID
+import logging
 from datetime import datetime
+from typing import AsyncGenerator, Dict, List
+from uuid import UUID
 
+from sqlalchemy import desc, select
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, desc
 
-from src.database.models import ScarCommandExecution, Project
+from src.database.models import ScarCommandExecution
 
 logger = logging.getLogger(__name__)
 

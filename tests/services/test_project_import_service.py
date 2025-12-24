@@ -3,17 +3,16 @@ Tests for the project import service.
 """
 
 import json
+
 import pytest
-from pathlib import Path
-from unittest.mock import AsyncMock, patch, MagicMock
 from sqlalchemy import select
 
 from src.database.models import Project
 from src.services.project_import_service import (
-    load_projects_config,
+    auto_import_projects,
     import_from_config,
     import_from_repos_list,
-    auto_import_projects,
+    load_projects_config,
 )
 
 

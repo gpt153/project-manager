@@ -2,8 +2,9 @@
 Tests for the orchestrator agent.
 """
 
-import pytest
 from unittest.mock import AsyncMock, MagicMock, patch
+
+import pytest
 
 from src.agent.orchestrator_agent import orchestrator_agent, run_orchestrator
 from src.agent.tools import AgentDependencies

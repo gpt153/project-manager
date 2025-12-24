@@ -1,0 +1,38 @@
+services:
+  telegram-bot:
+    build: .
+    container_name: claude-telegram-bot
+    restart: unless-stopped
+    environment:
+      # Claude Code CLI authentication (use ONE of these)
+      - CLAUDE_CODE_OAUTH_TOKEN=${CLAUDE_CODE_OAUTH_TOKEN:-}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-}
+
+      # GitHub CLI authentication
+      - GH_TOKEN=${GH_TOKEN}
+
+      # Telegram bot token (required)
+      - TELEGRAM_BOT_API_KEY=${TELEGRAM_BOT_API_KEY}
+
+      # Optional: Sentry monitoring
+      - SENTRY_DSN=${SENTRY_DSN:-}
+      - SENTRY_ENVIRONMENT=${SENTRY_ENVIRONMENT:-production}
+
+      # Optional: Working directory
+      - WORKING_DIRECTORY=${WORKING_DIRECTORY:-/workspace}
+
+    volumes:
+      # Persist session data
+      - ./telegram_sessions:/app/telegram_sessions
+
+      # Mount a workspace directory for Claude Code file operations
+      # This allows Claude to create/edit files that persist on your host machine
+      # Adjust the left side path to your actual workspace location
+      - ${WORKSPACE_PATH:-./workspace}:/workspace
+
+    # Uncomment to expose logs
+    # logging:
+    #   driver: "json-file"
+    #   options:
+    #     max-size: "10m"
+    #     max-file: "3"
