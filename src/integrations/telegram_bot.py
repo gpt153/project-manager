@@ -71,9 +71,7 @@ class OrchestratorTelegramBot:
         )
         self.application.add_handler(CallbackQueryHandler(self.handle_callback))
 
-    async def start_command(
-        self, update: Update, context: ContextTypes.DEFAULT_TYPE
-    ) -> None:
+    async def start_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         """
         Handle /start command - initiate new project.
 
@@ -108,9 +106,7 @@ class OrchestratorTelegramBot:
 
         await update.message.reply_text(welcome_message, parse_mode="Markdown")
 
-    async def help_command(
-        self, update: Update, context: ContextTypes.DEFAULT_TYPE
-    ) -> None:
+    async def help_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         """
         Handle /help command.
 
@@ -136,9 +132,7 @@ class OrchestratorTelegramBot:
 
         await update.message.reply_text(help_text, parse_mode="Markdown")
 
-    async def status_command(
-        self, update: Update, context: ContextTypes.DEFAULT_TYPE
-    ) -> None:
+    async def status_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         """
         Handle /status command - show current workflow status.
 
@@ -149,9 +143,7 @@ class OrchestratorTelegramBot:
         project_id_str = context.chat_data.get("project_id")
 
         if not project_id_str:
-            await update.message.reply_text(
-                "No active project. Use /start to begin a new project."
-            )
+            await update.message.reply_text("No active project. Use /start to begin a new project.")
             return
 
         project_id = UUID(project_id_str)
@@ -170,9 +162,7 @@ class OrchestratorTelegramBot:
 
             await update.message.reply_text(status_message, parse_mode="Markdown")
 
-    async def continue_command(
-        self, update: Update, context: ContextTypes.DEFAULT_TYPE
-    ) -> None:
+    async def continue_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         """
         Handle /continue command - advance workflow to next phase.
 
@@ -183,9 +173,7 @@ class OrchestratorTelegramBot:
         project_id_str = context.chat_data.get("project_id")
 
         if not project_id_str:
-            await update.message.reply_text(
-                "No active project. Use /start to begin a new project."
-            )
+            await update.message.reply_text("No active project. Use /start to begin a new project.")
             return
 
         project_id = UUID(project_id_str)
@@ -199,13 +187,9 @@ class OrchestratorTelegramBot:
                 # Check for pending approval gates
                 await self._check_and_send_approval_gates(update, project_id, session)
             else:
-                await update.message.reply_text(
-                    f"❌ Error: {message}", parse_mode="Markdown"
-                )
+                await update.message.reply_text(f"❌ Error: {message}", parse_mode="Markdown")
 
-    async def handle_message(
-        self, update: Update, context: ContextTypes.DEFAULT_TYPE
-    ) -> None:
+    async def handle_message(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         """
         Handle user messages - process through orchestrator agent.
 
@@ -217,9 +201,7 @@ class OrchestratorTelegramBot:
         project_id_str = context.chat_data.get("project_id")
 
         if not project_id_str:
-            await update.message.reply_text(
-                "Please start a new project with /start first."
-            )
+            await update.message.reply_text("Please start a new project with /start first.")
             return
 
         project_id = UUID(project_id_str)
@@ -244,9 +226,7 @@ class OrchestratorTelegramBot:
                         InlineKeyboardButton(
                             "✅ Generate Vision Doc", callback_data="generate_vision"
                         ),
-                        InlineKeyboardButton(
-                            "💬 Keep Brainstorming", callback_data="keep_talking"
-                        ),
+                        InlineKeyboardButton("💬 Keep Brainstorming", callback_data="keep_talking"),
                     ]
                 ]
                 reply_markup = InlineKeyboardMarkup(keyboard)
@@ -257,9 +237,7 @@ class OrchestratorTelegramBot:
                     reply_markup=reply_markup,
                 )
 
-    async def handle_callback(
-        self, update: Update, context: ContextTypes.DEFAULT_TYPE
-    ) -> None:
+    async def handle_callback(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         """
         Handle inline button callbacks.
 
@@ -285,9 +263,7 @@ class OrchestratorTelegramBot:
                 await self._generate_and_send_vision(query, project_id, session)
 
             elif callback_data == "keep_talking":
-                await query.edit_message_text(
-                    "Great! Keep telling me about your project. 💭"
-                )
+                await query.edit_message_text("Great! Keep telling me about your project. 💭")
 
             # Handle approval gates
             elif callback_data.startswith("approve:"):
@@ -298,9 +274,7 @@ class OrchestratorTelegramBot:
                 gate_id = UUID(callback_data.split(":")[1])
                 await self._handle_approval(query, gate_id, False, session)
 
-    async def _generate_and_send_vision(
-        self, query, project_id: UUID, session
-    ) -> None:
+    async def _generate_and_send_vision(self, query, project_id: UUID, session) -> None:
         """Generate vision document and send to user"""
         await query.edit_message_text("📝 Generating vision document...")
 
@@ -338,9 +312,7 @@ class OrchestratorTelegramBot:
         except ValueError as e:
             await query.edit_message_text(f"❌ Error: {str(e)}")
 
-    async def _handle_approval(
-        self, query, gate_id: UUID, approved: bool, session
-    ) -> None:
+    async def _handle_approval(self, query, gate_id: UUID, approved: bool, session) -> None:
         """Handle approval gate response"""
         success, message = await handle_approval_response(session, gate_id, approved)
 
@@ -358,12 +330,8 @@ class OrchestratorTelegramBot:
         for gate in pending_gates:
             keyboard = [
                 [
-                    InlineKeyboardButton(
-                        "✅ Approve", callback_data=f"approve:{gate.id}"
-                    ),
-                    InlineKeyboardButton(
-                        "❌ Reject", callback_data=f"reject:{gate.id}"
-                    ),
+                    InlineKeyboardButton("✅ Approve", callback_data=f"approve:{gate.id}"),
+                    InlineKeyboardButton("❌ Reject", callback_data=f"reject:{gate.id}"),
                 ]
             ]
             reply_markup = InlineKeyboardMarkup(keyboard)

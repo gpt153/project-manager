@@ -38,10 +38,10 @@ async def load_projects_config(config_path: str) -> Optional[Dict]:
         return None
 
     try:
-        with open(path, 'r') as f:
+        with open(path, "r") as f:
             config = json.load(f)
 
-        if not isinstance(config, dict) or 'projects' not in config:
+        if not isinstance(config, dict) or "projects" not in config:
             logger.warning(f"Invalid projects config format in {config_path}")
             return None
 
@@ -67,22 +67,22 @@ async def import_from_config(session: AsyncSession, config: Dict) -> int:
     Returns:
         Number of projects imported
     """
-    if not config or 'projects' not in config:
+    if not config or "projects" not in config:
         return 0
 
-    projects_list = config.get('projects', [])
+    projects_list = config.get("projects", [])
     imported_count = 0
 
     for project_config in projects_list:
         try:
             # Validate required fields
-            if 'github_repo' not in project_config:
+            if "github_repo" not in project_config:
                 logger.warning(f"Skipping project without github_repo: {project_config}")
                 continue
 
             # Construct GitHub URL
-            github_repo = project_config['github_repo']
-            if github_repo.startswith('http'):
+            github_repo = project_config["github_repo"]
+            if github_repo.startswith("http"):
                 repo_url = github_repo
             else:
                 repo_url = f"https://github.com/{github_repo}"
@@ -98,8 +98,8 @@ async def import_from_config(session: AsyncSession, config: Dict) -> int:
                 continue
 
             # Fetch repo details from GitHub if possible
-            description = project_config.get('description', '')
-            name = project_config.get('name', github_repo.split('/')[-1])
+            description = project_config.get("description", "")
+            name = project_config.get("name", github_repo.split("/")[-1])
 
             if not description and settings.github_access_token:
                 try:
@@ -112,9 +112,9 @@ async def import_from_config(session: AsyncSession, config: Dict) -> int:
                             headers={
                                 "Authorization": f"Bearer {settings.github_access_token}",
                                 "Accept": "application/vnd.github.v3+json",
-                                "User-Agent": "Project-Orchestrator"
+                                "User-Agent": "Project-Orchestrator",
                             },
-                            timeout=10.0
+                            timeout=10.0,
                         )
                         if response.status_code == 200:
                             repo_data = response.json()
@@ -123,7 +123,7 @@ async def import_from_config(session: AsyncSession, config: Dict) -> int:
                     logger.debug(f"Could not fetch GitHub details for {github_repo}: {e}")
 
             # Get telegram_chat_id if provided
-            telegram_chat_id = project_config.get('telegram_chat_id')
+            telegram_chat_id = project_config.get("telegram_chat_id")
 
             # Create project
             project = Project(
@@ -163,7 +163,7 @@ async def import_from_repos_list(session: AsyncSession, repos_str: str) -> int:
     if not repos_str or not repos_str.strip():
         return 0
 
-    repo_list = [r.strip() for r in repos_str.split(',') if r.strip()]
+    repo_list = [r.strip() for r in repos_str.split(",") if r.strip()]
 
     if not repo_list:
         return 0
@@ -172,10 +172,7 @@ async def import_from_repos_list(session: AsyncSession, repos_str: str) -> int:
 
     # Convert to config format and use import_from_config
     config = {
-        'projects': [
-            {'github_repo': repo, 'name': repo.split('/')[-1]}
-            for repo in repo_list
-        ]
+        "projects": [{"github_repo": repo, "name": repo.split("/")[-1]} for repo in repo_list]
     }
 
     return await import_from_config(session, config)
@@ -207,10 +204,10 @@ async def import_from_user(session: AsyncSession, username: str) -> int:
                 headers={
                     "Authorization": f"Bearer {settings.github_access_token}",
                     "Accept": "application/vnd.github.v3+json",
-                    "User-Agent": "Project-Orchestrator"
+                    "User-Agent": "Project-Orchestrator",
                 },
                 params=params,
-                timeout=30.0
+                timeout=30.0,
             )
             response.raise_for_status()
             repos = response.json()
@@ -219,11 +216,11 @@ async def import_from_user(session: AsyncSession, username: str) -> int:
 
         # Convert to config format
         config = {
-            'projects': [
+            "projects": [
                 {
-                    'github_repo': repo['full_name'],
-                    'name': repo['name'],
-                    'description': repo.get('description', '')
+                    "github_repo": repo["full_name"],
+                    "name": repo["name"],
+                    "description": repo.get("description", ""),
                 }
                 for repo in repos
             ]
@@ -262,10 +259,10 @@ async def import_from_org(session: AsyncSession, org_name: str) -> int:
                 headers={
                     "Authorization": f"Bearer {settings.github_access_token}",
                     "Accept": "application/vnd.github.v3+json",
-                    "User-Agent": "Project-Orchestrator"
+                    "User-Agent": "Project-Orchestrator",
                 },
                 params=params,
-                timeout=30.0
+                timeout=30.0,
             )
             response.raise_for_status()
             repos = response.json()
@@ -274,11 +271,11 @@ async def import_from_org(session: AsyncSession, org_name: str) -> int:
 
         # Convert to config format
         config = {
-            'projects': [
+            "projects": [
                 {
-                    'github_repo': repo['full_name'],
-                    'name': repo['name'],
-                    'description': repo.get('description', '')
+                    "github_repo": repo["full_name"],
+                    "name": repo["name"],
+                    "description": repo.get("description", ""),
                 }
                 for repo in repos
             ]
@@ -358,8 +355,4 @@ async def auto_import_projects(session: AsyncSession) -> Dict:
 
     source_summary = ", ".join(sources_used) if sources_used else "none"
 
-    return {
-        'source': source_summary,
-        'count': total_count,
-        'errors': errors
-    }
+    return {"source": source_summary, "count": total_count, "errors": errors}

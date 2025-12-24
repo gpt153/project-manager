@@ -1,6 +1,7 @@
 """
 REST API router for GitHub issues.
 """
+
 import logging
 from typing import List
 from uuid import UUID
@@ -23,7 +24,7 @@ async def get_project_issues(
     project_id: UUID,
     state: str = Query(default="all", regex="^(open|closed|all)$"),
     limit: int = Query(default=100, le=100),
-    session: AsyncSession = Depends(get_session)
+    session: AsyncSession = Depends(get_session),
 ):
     """
     Fetch GitHub issues for a project.
@@ -44,15 +45,12 @@ async def get_project_issues(
     """
     try:
         # Get project from database
-        result = await session.execute(
-            select(Project).where(Project.id == project_id)
-        )
+        result = await session.execute(select(Project).where(Project.id == project_id))
         project = result.scalar_one_or_none()
 
         if not project:
             raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail=f"Project {project_id} not found"
+                status_code=status.HTTP_404_NOT_FOUND, detail=f"Project {project_id} not found"
             )
 
         if not project.github_repo_url:
@@ -64,10 +62,12 @@ async def get_project_issues(
         try:
             repo = GitHubRepo.from_url(project.github_repo_url)
         except ValueError as e:
-            logger.warning(f"Invalid GitHub URL for project {project_id}: {project.github_repo_url}")
+            logger.warning(
+                f"Invalid GitHub URL for project {project_id}: {project.github_repo_url}"
+            )
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail=f"Invalid GitHub repository URL: {str(e)}"
+                detail=f"Invalid GitHub repository URL: {str(e)}",
             )
 
         # Fetch issues from GitHub API
@@ -91,7 +91,9 @@ async def get_project_issues(
             if "pull_request" not in issue
         ]
 
-        logger.info(f"Retrieved {len(formatted_issues)} issues for project {project_id} from GitHub")
+        logger.info(
+            f"Retrieved {len(formatted_issues)} issues for project {project_id} from GitHub"
+        )
         return formatted_issues
 
     except HTTPException:
@@ -101,15 +103,12 @@ async def get_project_issues(
         logger.error(f"Error fetching GitHub issues for project {project_id}: {e}", exc_info=True)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to fetch GitHub issues"
+            detail="Failed to fetch GitHub issues",
         )
 
 
 @router.get("/projects/{project_id}/issue-counts", response_model=dict)
-async def get_project_issue_counts(
-    project_id: UUID,
-    session: AsyncSession = Depends(get_session)
-):
+async def get_project_issue_counts(project_id: UUID, session: AsyncSession = Depends(get_session)):
     """
     Get issue counts (open/closed) for a project.
 
@@ -127,15 +126,12 @@ async def get_project_issue_counts(
     """
     try:
         # Get project
-        result = await session.execute(
-            select(Project).where(Project.id == project_id)
-        )
+        result = await session.execute(select(Project).where(Project.id == project_id))
         project = result.scalar_one_or_none()
 
         if not project:
             raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail=f"Project {project_id} not found"
+                status_code=status.HTTP_404_NOT_FOUND, detail=f"Project {project_id} not found"
             )
 
         if not project.github_repo_url:

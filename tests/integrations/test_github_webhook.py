@@ -184,9 +184,7 @@ class TestIssueCommentHandling:
             assert call_args[0][0] == project.id  # project_id
             assert "please help me with authentication" in call_args[0][1]  # user message
 
-    async def test_handle_issue_comment_no_mention(
-        self, db_session, sample_issue_comment_payload
-    ):
+    async def test_handle_issue_comment_no_mention(self, db_session, sample_issue_comment_payload):
         """Test ignoring comment without bot mention."""
         sample_issue_comment_payload["comment"]["body"] = "Just a regular comment"
 
@@ -239,9 +237,7 @@ class TestWebhookEndpoint:
         """Test rejecting request with invalid signature."""
         payload = {"test": "data"}
 
-        with patch(
-            "src.integrations.github_webhook.verify_github_signature", return_value=False
-        ):
+        with patch("src.integrations.github_webhook.verify_github_signature", return_value=False):
             response = test_client.post(
                 "/webhooks/github/",
                 json=payload,

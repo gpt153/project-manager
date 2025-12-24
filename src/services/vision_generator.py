@@ -47,9 +47,7 @@ class CompletenessCheck(BaseModel):
     """Result of conversation completeness check"""
 
     is_ready: bool = Field(..., description="Whether conversation has enough info")
-    next_question: Optional[str] = Field(
-        None, description="Next question to ask if not ready"
-    )
+    next_question: Optional[str] = Field(None, description="Next question to ask if not ready")
 
 
 # Agent instances - lazily initialized to avoid requiring API key at import time
@@ -137,9 +135,7 @@ async def check_conversation_completeness(
     conversation_text = _format_conversation_history(messages)
 
     # Create prompt with conversation
-    prompt = CONVERSATION_COMPLETENESS_CHECK_PROMPT.format(
-        conversation_history=conversation_text
-    )
+    prompt = CONVERSATION_COMPLETENESS_CHECK_PROMPT.format(conversation_history=conversation_text)
 
     # Run completeness check
     agent = _get_completeness_agent()
@@ -148,9 +144,7 @@ async def check_conversation_completeness(
     return result.data
 
 
-async def extract_features(
-    session: AsyncSession, project_id: UUID
-) -> list[Feature]:
+async def extract_features(session: AsyncSession, project_id: UUID) -> list[Feature]:
     """
     Extract features from conversation history.
 
@@ -180,9 +174,7 @@ async def extract_features(
     return result.data
 
 
-async def generate_vision_document(
-    session: AsyncSession, project_id: UUID
-) -> VisionDocument:
+async def generate_vision_document(session: AsyncSession, project_id: UUID) -> VisionDocument:
     """
     Generate a complete vision document from conversation.
 
@@ -210,9 +202,7 @@ async def generate_vision_document(
     conversation_text = _format_conversation_history(messages)
 
     # Create prompt with conversation
-    prompt = VISION_GENERATION_PROMPT_TEMPLATE.format(
-        conversation_history=conversation_text
-    )
+    prompt = VISION_GENERATION_PROMPT_TEMPLATE.format(conversation_history=conversation_text)
 
     # Generate vision document
     agent = _get_vision_generation_agent()

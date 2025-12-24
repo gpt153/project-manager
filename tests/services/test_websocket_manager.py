@@ -1,6 +1,7 @@
 """
 Tests for WebSocket manager.
 """
+
 from unittest.mock import AsyncMock
 
 import pytest

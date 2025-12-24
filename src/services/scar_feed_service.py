@@ -1,6 +1,7 @@
 """
 Service to aggregate SCAR activity logs and format for streaming.
 """
+
 import asyncio
 import logging
 from datetime import datetime
@@ -16,10 +17,7 @@ logger = logging.getLogger(__name__)
 
 
 async def get_recent_scar_activity(
-    session: AsyncSession,
-    project_id: UUID,
-    limit: int = 50,
-    verbosity_level: int = 2
+    session: AsyncSession, project_id: UUID, limit: int = 50, verbosity_level: int = 2
 ) -> List[Dict]:
     """
     Get recent SCAR activity for a project.
@@ -46,9 +44,21 @@ async def get_recent_scar_activity(
     activity_list = [
         {
             "id": str(activity.id),
-            "timestamp": activity.started_at.isoformat() if activity.started_at else activity.completed_at.isoformat() if activity.completed_at else datetime.utcnow().isoformat(),
+            "timestamp": (
+                activity.started_at.isoformat()
+                if activity.started_at
+                else (
+                    activity.completed_at.isoformat()
+                    if activity.completed_at
+                    else datetime.utcnow().isoformat()
+                )
+            ),
             "source": activity.source,  # Uses @property
-            "message": f"{activity.command_type.value}: {activity.status.value}" if activity.status else activity.command_type.value,
+            "message": (
+                f"{activity.command_type.value}: {activity.status.value}"
+                if activity.status
+                else activity.command_type.value
+            ),
             "phase": activity.phase.name if activity.phase else None,
         }
         for activity in reversed(activities)  # Reverse to get chronological order
@@ -59,9 +69,7 @@ async def get_recent_scar_activity(
 
 
 async def stream_scar_activity(
-    session: AsyncSession,
-    project_id: UUID,
-    verbosity_level: int = 2
+    session: AsyncSession, project_id: UUID, verbosity_level: int = 2
 ) -> AsyncGenerator[Dict, None]:
     """
     Stream SCAR activity updates in real-time.
@@ -84,7 +92,9 @@ async def stream_scar_activity(
     last_id = None
 
     # Get initial activities
-    activities = await get_recent_scar_activity(session, project_id, limit=10, verbosity_level=verbosity_level)
+    activities = await get_recent_scar_activity(
+        session, project_id, limit=10, verbosity_level=verbosity_level
+    )
     if activities:
         last_id = activities[-1]["id"]
         for activity in activities:
@@ -101,16 +111,14 @@ async def stream_scar_activity(
                 select(ScarCommandExecution)
                 .where(
                     ScarCommandExecution.project_id == project_id,
-                    ScarCommandExecution.id > UUID(last_id)
+                    ScarCommandExecution.id > UUID(last_id),
                 )
                 .order_by(ScarCommandExecution.started_at.asc())
             )
         else:
             query = (
                 select(ScarCommandExecution)
-                .where(
-                    ScarCommandExecution.project_id == project_id
-                )
+                .where(ScarCommandExecution.project_id == project_id)
                 .order_by(desc(ScarCommandExecution.started_at))
                 .limit(1)
             )
@@ -121,9 +129,17 @@ async def stream_scar_activity(
         for activity in new_activities:
             activity_dict = {
                 "id": str(activity.id),
-                "timestamp": activity.started_at.isoformat() if activity.started_at else datetime.utcnow().isoformat(),
+                "timestamp": (
+                    activity.started_at.isoformat()
+                    if activity.started_at
+                    else datetime.utcnow().isoformat()
+                ),
                 "source": activity.source,
-                "message": f"{activity.command_type.value}: {activity.status.value}" if activity.status else activity.command_type.value,
+                "message": (
+                    f"{activity.command_type.value}: {activity.status.value}"
+                    if activity.status
+                    else activity.command_type.value
+                ),
                 "phase": activity.phase.name if activity.phase else None,
             }
             last_id = activity_dict["id"]

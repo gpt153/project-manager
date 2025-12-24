@@ -27,9 +27,7 @@ async def test_execute_prime_command(db_session):
     await db_session.refresh(project)
 
     # Execute PRIME command
-    result = await execute_scar_command(
-        db_session, project.id, ScarCommand.PRIME
-    )
+    result = await execute_scar_command(db_session, project.id, ScarCommand.PRIME)
 
     assert result.success is True
     assert "Primed project context" in result.output
@@ -73,9 +71,7 @@ async def test_execute_without_repo_url(db_session):
     await db_session.refresh(project)
 
     # Execute command
-    result = await execute_scar_command(
-        db_session, project.id, ScarCommand.PRIME
-    )
+    result = await execute_scar_command(db_session, project.id, ScarCommand.PRIME)
 
     assert result.success is False
     assert result.error is not None
@@ -128,9 +124,7 @@ async def test_get_last_successful_command(db_session):
     # Get last successful PRIME
     from src.database.models import CommandType
 
-    last_prime = await get_last_successful_command(
-        db_session, project.id, CommandType.PRIME
-    )
+    last_prime = await get_last_successful_command(db_session, project.id, CommandType.PRIME)
 
     assert last_prime is not None
     assert last_prime.command_type == CommandType.PRIME

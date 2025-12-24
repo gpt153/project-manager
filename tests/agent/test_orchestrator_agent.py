@@ -120,17 +120,13 @@ async def test_run_orchestrator_saves_messages(db_session):
     await db_session.refresh(project)
 
     # Mock the agent run method to return a simple response
-    with patch.object(
-        orchestrator_agent, "run", new_callable=AsyncMock
-    ) as mock_run:
+    with patch.object(orchestrator_agent, "run", new_callable=AsyncMock) as mock_run:
         mock_result = MagicMock()
         mock_result.data = "Hello! I'd be happy to help you build your project."
         mock_run.return_value = mock_result
 
         # Run the orchestrator
-        response = await run_orchestrator(
-            project.id, "I want to build an app", db_session
-        )
+        response = await run_orchestrator(project.id, "I want to build an app", db_session)
 
         # Verify response
         assert response == "Hello! I'd be happy to help you build your project."

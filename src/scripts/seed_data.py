@@ -4,6 +4,7 @@ Seed database with example projects and data for WebUI demonstration.
 This script creates sample projects with conversations, vision documents,
 and workflow phases to populate the WebUI with demo content.
 """
+
 import asyncio
 import logging
 from datetime import datetime, timedelta
@@ -44,15 +45,15 @@ async def create_sample_projects(session: AsyncSession):
                 {
                     "name": "Task Creation",
                     "priority": "Critical",
-                    "description": "Quick task entry with rich text descriptions"
+                    "description": "Quick task entry with rich text descriptions",
                 },
                 {
                     "name": "Smart Reminders",
                     "priority": "High",
-                    "description": "Email and push notifications with customizable timing"
-                }
-            ]
-        }
+                    "description": "Email and push notifications with customizable timing",
+                },
+            ],
+        },
     )
     session.add(project1)
     await session.flush()
@@ -60,7 +61,10 @@ async def create_sample_projects(session: AsyncSession):
     # Add conversation history for project 1
     conversations1 = [
         ("user", "I want to build a meal planning app"),
-        ("assistant", "Great idea! Tell me more about who will use it and what problems it solves."),
+        (
+            "assistant",
+            "Great idea! Tell me more about who will use it and what problems it solves.",
+        ),
         ("user", "Busy parents who waste food and can't decide what to cook"),
         ("assistant", "Perfect! What are the key features you'd like to have?"),
         ("user", "Creating meal plans, shopping lists, and recipe suggestions"),
@@ -73,7 +77,7 @@ async def create_sample_projects(session: AsyncSession):
             project_id=project1.id,
             role=MessageRole(role),
             content=content,
-            timestamp=base_time + timedelta(minutes=i*5)
+            timestamp=base_time + timedelta(minutes=i * 5),
         )
         session.add(msg)
 
@@ -101,7 +105,7 @@ async def create_sample_projects(session: AsyncSession):
             project_id=project2.id,
             role=MessageRole(role),
             content=content,
-            timestamp=base_time2 + timedelta(minutes=i*10)
+            timestamp=base_time2 + timedelta(minutes=i * 10),
         )
         session.add(msg)
 
@@ -119,7 +123,11 @@ async def create_sample_projects(session: AsyncSession):
             name=name,
             description=desc,
             order=order,
-            status=PhaseStatus.COMPLETED if is_completed else (PhaseStatus.IN_PROGRESS if is_current else PhaseStatus.PENDING),
+            status=(
+                PhaseStatus.COMPLETED
+                if is_completed
+                else (PhaseStatus.IN_PROGRESS if is_current else PhaseStatus.PENDING)
+            ),
             is_completed=is_completed,
             is_current=is_current,
         )
@@ -150,7 +158,7 @@ async def create_sample_projects(session: AsyncSession):
             project_id=project3.id,
             role=MessageRole(role),
             content=content,
-            timestamp=base_time3 + timedelta(minutes=i*3)
+            timestamp=base_time3 + timedelta(minutes=i * 3),
         )
         session.add(msg)
 
@@ -158,10 +166,18 @@ async def create_sample_projects(session: AsyncSession):
     logger.info("Adding SCAR command history for project 2")
 
     scar_commands = [
-        (CommandType.PRIME, "Load project context", CommandStatus.COMPLETED,
-         "Successfully loaded project context. Repository structure analyzed."),
-        (CommandType.PLAN, "Create feature plan for user authentication", CommandStatus.COMPLETED,
-         "Implementation plan created with 5 phases covering authentication flow."),
+        (
+            CommandType.PRIME,
+            "Load project context",
+            CommandStatus.COMPLETED,
+            "Successfully loaded project context. Repository structure analyzed.",
+        ),
+        (
+            CommandType.PLAN,
+            "Create feature plan for user authentication",
+            CommandStatus.COMPLETED,
+            "Implementation plan created with 5 phases covering authentication flow.",
+        ),
     ]
 
     for cmd_type, cmd_args, status, output in scar_commands:
@@ -179,7 +195,9 @@ async def create_sample_projects(session: AsyncSession):
 
     await session.commit()
     logger.info("✅ Seed data created successfully!")
-    logger.info(f"Created {session.info.get('project_count', 3)} projects with conversations and workflow data")
+    logger.info(
+        f"Created {session.info.get('project_count', 3)} projects with conversations and workflow data"
+    )
 
 
 async def main():
@@ -190,13 +208,14 @@ async def main():
         try:
             # Check if data already exists
             from sqlalchemy import select
+
             result = await session.execute(select(Project))
             existing_projects = result.scalars().all()
 
             if existing_projects:
                 logger.warning(f"Database already has {len(existing_projects)} projects.")
                 response = input("Delete existing data and reseed? (yes/no): ")
-                if response.lower() != 'yes':
+                if response.lower() != "yes":
                     logger.info("Seeding cancelled.")
                     return
 

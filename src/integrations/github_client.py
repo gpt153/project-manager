@@ -237,10 +237,7 @@ class GitHubClient:
             return response.json()
 
     async def get_issues(
-        self,
-        repo: GitHubRepo,
-        state: str = "all",
-        limit: int = 100
+        self, repo: GitHubRepo, state: str = "all", limit: int = 100
     ) -> list[dict]:
         """
         Get issues for a repository.
@@ -264,14 +261,13 @@ class GitHubClient:
 
         async with httpx.AsyncClient() as client:
             response = await client.get(
-                url,
-                headers=self._get_headers(),
-                params=params,
-                timeout=10.0
+                url, headers=self._get_headers(), params=params, timeout=10.0
             )
             response.raise_for_status()
 
-            logger.info(f"Retrieved {len(response.json())} issues from {repo.full_name} (state={state})")
+            logger.info(
+                f"Retrieved {len(response.json())} issues from {repo.full_name} (state={state})"
+            )
             return response.json()
 
     async def create_pull_request(

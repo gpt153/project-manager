@@ -295,4 +295,6 @@ class ScarCommandExecution(Base):
         return self.started_at or datetime.utcnow()
 
     def __repr__(self) -> str:
-        return f"<ScarCommandExecution(id={self.id}, type={self.command_type}, status={self.status})>"
+        return (
+            f"<ScarCommandExecution(id={self.id}, type={self.command_type}, status={self.status})>"
+        )

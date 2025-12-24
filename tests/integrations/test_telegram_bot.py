@@ -37,10 +37,7 @@ def mock_context():
 async def test_start_command_creates_project(db_session, mock_telegram_update, mock_context):
     """Test that /start command creates a new project"""
     # Create bot
-    bot = OrchestratorTelegramBot(
-        token="test_token",
-        db_session_maker=lambda: db_session
-    )
+    bot = OrchestratorTelegramBot(token="test_token", db_session_maker=lambda: db_session)
 
     # Handle start command
     await bot.start_command(mock_telegram_update, mock_context)
@@ -53,6 +50,7 @@ async def test_start_command_creates_project(db_session, mock_telegram_update, m
 
     # Verify project was created in database
     from sqlalchemy import select
+
     result = await db_session.execute(select(Project))
     projects = list(result.scalars().all())
 
@@ -64,10 +62,7 @@ async def test_start_command_creates_project(db_session, mock_telegram_update, m
 @pytest.mark.asyncio
 async def test_help_command_sends_instructions(db_session, mock_telegram_update, mock_context):
     """Test that /help command sends help text"""
-    bot = OrchestratorTelegramBot(
-        token="test_token",
-        db_session_maker=lambda: db_session
-    )
+    bot = OrchestratorTelegramBot(token="test_token", db_session_maker=lambda: db_session)
 
     await bot.help_command(mock_telegram_update, mock_context)
 
@@ -86,9 +81,7 @@ async def test_status_command_shows_workflow_state(db_session, mock_telegram_upd
     """Test that /status command shows current workflow state"""
     # Create a project
     project = Project(
-        name="Test Project",
-        status=ProjectStatus.BRAINSTORMING,
-        telegram_chat_id="12345"
+        name="Test Project", status=ProjectStatus.BRAINSTORMING, telegram_chat_id="12345"
     )
     db_session.add(project)
     await db_session.commit()
@@ -97,10 +90,7 @@ async def test_status_command_shows_workflow_state(db_session, mock_telegram_upd
     # Set project ID in context
     mock_context.chat_data["project_id"] = str(project.id)
 
-    bot = OrchestratorTelegramBot(
-        token="test_token",
-        db_session_maker=lambda: db_session
-    )
+    bot = OrchestratorTelegramBot(token="test_token", db_session_maker=lambda: db_session)
 
     await bot.status_command(mock_telegram_update, mock_context)
 
@@ -116,10 +106,7 @@ async def test_status_command_shows_workflow_state(db_session, mock_telegram_upd
 @pytest.mark.asyncio
 async def test_handle_message_without_project(db_session, mock_telegram_update, mock_context):
     """Test handling message without active project"""
-    bot = OrchestratorTelegramBot(
-        token="test_token",
-        db_session_maker=lambda: db_session
-    )
+    bot = OrchestratorTelegramBot(token="test_token", db_session_maker=lambda: db_session)
 
     await bot.handle_message(mock_telegram_update, mock_context)
 
@@ -136,9 +123,7 @@ async def test_handle_message_with_project(db_session, mock_telegram_update, moc
     """Test handling message with active project"""
     # Create a project
     project = Project(
-        name="Test Project",
-        status=ProjectStatus.BRAINSTORMING,
-        telegram_chat_id="12345"
+        name="Test Project", status=ProjectStatus.BRAINSTORMING, telegram_chat_id="12345"
     )
     db_session.add(project)
     await db_session.commit()
@@ -147,17 +132,16 @@ async def test_handle_message_with_project(db_session, mock_telegram_update, moc
     # Set project ID in context
     mock_context.chat_data["project_id"] = str(project.id)
 
-    bot = OrchestratorTelegramBot(
-        token="test_token",
-        db_session_maker=lambda: db_session
-    )
+    bot = OrchestratorTelegramBot(token="test_token", db_session_maker=lambda: db_session)
 
     # Mock the orchestrator agent
     with patch("src.integrations.telegram_bot.run_orchestrator") as mock_orchestrator:
         mock_orchestrator.return_value = "Great idea! Tell me more about your task manager."
 
         # Mock completeness check
-        with patch("src.integrations.telegram_bot.check_conversation_completeness") as mock_completeness:
+        with patch(
+            "src.integrations.telegram_bot.check_conversation_completeness"
+        ) as mock_completeness:
             mock_completeness.return_value = AsyncMock(is_ready=False)
 
             await bot.handle_message(mock_telegram_update, mock_context)
@@ -188,9 +172,7 @@ async def test_callback_generate_vision(db_session, mock_context):
     await save_conversation_message(
         db_session, project.id, MessageRole.USER, "I want to build a task manager"
     )
-    await save_conversation_message(
-        db_session, project.id, MessageRole.ASSISTANT, "Tell me more"
-    )
+    await save_conversation_message(db_session, project.id, MessageRole.ASSISTANT, "Tell me more")
 
     # Set project ID in context
     mock_context.chat_data["project_id"] = str(project.id)
@@ -204,10 +186,7 @@ async def test_callback_generate_vision(db_session, mock_context):
     update = MagicMock()
     update.callback_query = query
 
-    bot = OrchestratorTelegramBot(
-        token="test_token",
-        db_session_maker=lambda: db_session
-    )
+    bot = OrchestratorTelegramBot(token="test_token", db_session_maker=lambda: db_session)
 
     # Mock vision generation (since it requires completeness)
     with patch("src.integrations.telegram_bot.generate_vision_document") as mock_gen:
@@ -233,10 +212,7 @@ async def test_callback_generate_vision(db_session, mock_context):
 
 def test_bot_initialization():
     """Test bot initialization"""
-    bot = OrchestratorTelegramBot(
-        token="test_token",
-        db_session_maker=MagicMock()
-    )
+    bot = OrchestratorTelegramBot(token="test_token", db_session_maker=MagicMock())
 
     assert bot.application is not None
     assert bot.db_session_maker is not None

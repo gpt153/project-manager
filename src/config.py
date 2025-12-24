@@ -20,7 +20,9 @@ class Settings(BaseSettings):
     debug: bool = False  # Legacy support for web UI
 
     # Database
-    database_url: str = "postgresql+asyncpg://orchestrator:dev_password@localhost:5432/project_orchestrator"
+    database_url: str = (
+        "postgresql+asyncpg://orchestrator:dev_password@localhost:5432/project_orchestrator"
+    )
     database_echo: bool = False
     database_pool_size: int = 10
     database_max_overflow: int = 20

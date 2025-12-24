@@ -1,6 +1,7 @@
 """
 Tests for project service layer.
 """
+
 import pytest
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -17,11 +18,7 @@ from src.services.project_service import (
 @pytest.mark.asyncio
 async def test_create_project(test_session: AsyncSession):
     """Test creating a new project."""
-    project = await create_project(
-        test_session,
-        name="Test Project",
-        description="A test project"
-    )
+    project = await create_project(test_session, name="Test Project", description="A test project")
 
     assert project.name == "Test Project"
     assert project.description == "A test project"
@@ -70,10 +67,7 @@ async def test_add_message(test_session: AsyncSession):
 
     # Add a message
     message = await add_message(
-        test_session,
-        project_id=project.id,
-        role="user",
-        content="Hello, world!"
+        test_session, project_id=project.id, role="user", content="Hello, world!"
     )
     await test_session.commit()
 

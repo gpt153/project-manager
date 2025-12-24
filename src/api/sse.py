@@ -1,6 +1,7 @@
 """
 Server-Sent Events endpoint for streaming SCAR activity feed.
 """
+
 import asyncio
 import json
 import logging
@@ -21,7 +22,9 @@ router = APIRouter()
 @router.get("/sse/scar/{project_id}")
 async def sse_scar_activity(
     project_id: UUID,
-    verbosity: int = Query(default=2, ge=1, le=3, description="Verbosity level: 1=low, 2=medium, 3=high")
+    verbosity: int = Query(
+        default=2, ge=1, le=3, description="Verbosity level: 1=low, 2=medium, 3=high"
+    ),
 ):
     """
     Server-Sent Events endpoint for streaming SCAR activity feed.
@@ -52,7 +55,9 @@ async def sse_scar_activity(
             # Create a new database session for this connection
             async with async_session_maker() as session:
                 # Get the activity stream
-                activity_stream = stream_scar_activity(session, project_id, verbosity_level=verbosity)
+                activity_stream = stream_scar_activity(
+                    session, project_id, verbosity_level=verbosity
+                )
 
                 # Track when we last sent a heartbeat
                 last_heartbeat = asyncio.get_event_loop().time()
@@ -61,20 +66,16 @@ async def sse_scar_activity(
                 try:
                     async for activity in activity_stream:
                         # Send activity event
-                        yield {
-                            "event": "activity",
-                            "data": json.dumps(activity)
-                        }
+                        yield {"event": "activity", "data": json.dumps(activity)}
 
                         # Send heartbeat if it's been a while
                         current_time = asyncio.get_event_loop().time()
                         if current_time - last_heartbeat >= heartbeat_interval:
                             yield {
                                 "event": "heartbeat",
-                                "data": json.dumps({
-                                    "status": "alive",
-                                    "timestamp": datetime.utcnow().isoformat()
-                                })
+                                "data": json.dumps(
+                                    {"status": "alive", "timestamp": datetime.utcnow().isoformat()}
+                                ),
                             }
                             last_heartbeat = current_time
 
@@ -86,20 +87,16 @@ async def sse_scar_activity(
                     # Send error event
                     yield {
                         "event": "error",
-                        "data": json.dumps({
-                            "code": "STREAM_ERROR",
-                            "message": str(e)
-                        })
+                        "data": json.dumps({"code": "STREAM_ERROR", "message": str(e)}),
                     }
 
         except Exception as e:
             logger.error(f"Fatal error in SSE event generator for project {project_id}: {e}")
             yield {
                 "event": "error",
-                "data": json.dumps({
-                    "code": "FATAL_ERROR",
-                    "message": "Stream terminated due to error"
-                })
+                "data": json.dumps(
+                    {"code": "FATAL_ERROR", "message": "Stream terminated due to error"}
+                ),
             }
         finally:
             logger.info(f"SSE connection closed for project {project_id}")

@@ -28,9 +28,9 @@ class TestLoadProjectsConfig:
                 {
                     "name": "Test Project",
                     "github_repo": "owner/repo",
-                    "description": "A test project"
+                    "description": "A test project",
                 }
-            ]
+            ],
         }
 
         config_file = tmp_path / "projects.json"
@@ -39,9 +39,9 @@ class TestLoadProjectsConfig:
         result = await load_projects_config(str(config_file))
 
         assert result is not None
-        assert result['version'] == "1.0"
-        assert len(result['projects']) == 1
-        assert result['projects'][0]['name'] == "Test Project"
+        assert result["version"] == "1.0"
+        assert len(result["projects"]) == 1
+        assert result["projects"][0]["name"] == "Test Project"
 
     @pytest.mark.asyncio
     async def test_load_config_file_not_found(self):
@@ -78,16 +78,12 @@ class TestImportFromConfig:
         """Test importing new projects from config"""
         config = {
             "projects": [
-                {
-                    "name": "Project 1",
-                    "github_repo": "owner/repo1",
-                    "description": "First project"
-                },
+                {"name": "Project 1", "github_repo": "owner/repo1", "description": "First project"},
                 {
                     "name": "Project 2",
                     "github_repo": "owner/repo2",
-                    "description": "Second project"
-                }
+                    "description": "Second project",
+                },
             ]
         }
 
@@ -110,7 +106,7 @@ class TestImportFromConfig:
         existing_project = Project(
             name="Existing Project",
             github_repo_url="https://github.com/owner/repo1",
-            description="Already exists"
+            description="Already exists",
         )
         async_session.add(existing_project)
         await async_session.commit()
@@ -120,13 +116,13 @@ class TestImportFromConfig:
                 {
                     "name": "Project 1",
                     "github_repo": "owner/repo1",
-                    "description": "Should be skipped"
+                    "description": "Should be skipped",
                 },
                 {
                     "name": "Project 2",
                     "github_repo": "owner/repo2",
-                    "description": "Should be imported"
-                }
+                    "description": "Should be imported",
+                },
             ]
         }
 
@@ -147,7 +143,7 @@ class TestImportFromConfig:
                 {
                     "name": "Full URL Project",
                     "github_repo": "https://github.com/owner/repo",
-                    "description": "Uses full URL"
+                    "description": "Uses full URL",
                 }
             ]
         }
@@ -169,7 +165,7 @@ class TestImportFromConfig:
                 {
                     "name": "Telegram Project",
                     "github_repo": "owner/repo",
-                    "telegram_chat_id": -1001234567890
+                    "telegram_chat_id": -1001234567890,
                 }
             ]
         }
@@ -197,14 +193,8 @@ class TestImportFromConfig:
         """Test that entries without github_repo are skipped"""
         config = {
             "projects": [
-                {
-                    "name": "Invalid Project",
-                    "description": "Missing github_repo"
-                },
-                {
-                    "name": "Valid Project",
-                    "github_repo": "owner/repo"
-                }
+                {"name": "Invalid Project", "description": "Missing github_repo"},
+                {"name": "Valid Project", "github_repo": "owner/repo"},
             ]
         }
 
@@ -260,77 +250,73 @@ class TestAutoImportProjects:
     @pytest.mark.asyncio
     async def test_auto_import_from_config_file(self, async_session, tmp_path, monkeypatch):
         """Test auto-import prioritizes config file"""
-        config_data = {
-            "projects": [
-                {"name": "Config Project", "github_repo": "owner/config-repo"}
-            ]
-        }
+        config_data = {"projects": [{"name": "Config Project", "github_repo": "owner/config-repo"}]}
 
         config_file = tmp_path / "projects.json"
         config_file.write_text(json.dumps(config_data))
 
         # Mock settings to use our test config file
         from src import config
-        monkeypatch.setattr(config.settings, 'scar_projects_config', str(config_file))
-        monkeypatch.setattr(config.settings, 'scar_import_repos', None)
-        monkeypatch.setattr(config.settings, 'scar_import_user', None)
-        monkeypatch.setattr(config.settings, 'scar_import_org', None)
+
+        monkeypatch.setattr(config.settings, "scar_projects_config", str(config_file))
+        monkeypatch.setattr(config.settings, "scar_import_repos", None)
+        monkeypatch.setattr(config.settings, "scar_import_user", None)
+        monkeypatch.setattr(config.settings, "scar_import_org", None)
 
         result = await auto_import_projects(async_session)
 
-        assert result['count'] == 1
-        assert 'config_file' in result['source']
-        assert len(result['errors']) == 0
+        assert result["count"] == 1
+        assert "config_file" in result["source"]
+        assert len(result["errors"]) == 0
 
     @pytest.mark.asyncio
     async def test_auto_import_from_env_repos(self, async_session, monkeypatch):
         """Test auto-import from SCAR_IMPORT_REPOS env var"""
         from src import config
-        monkeypatch.setattr(config.settings, 'scar_projects_config', "/nonexistent/config.json")
-        monkeypatch.setattr(config.settings, 'scar_import_repos', "owner/repo1,owner/repo2")
-        monkeypatch.setattr(config.settings, 'scar_import_user', None)
-        monkeypatch.setattr(config.settings, 'scar_import_org', None)
+
+        monkeypatch.setattr(config.settings, "scar_projects_config", "/nonexistent/config.json")
+        monkeypatch.setattr(config.settings, "scar_import_repos", "owner/repo1,owner/repo2")
+        monkeypatch.setattr(config.settings, "scar_import_user", None)
+        monkeypatch.setattr(config.settings, "scar_import_org", None)
 
         result = await auto_import_projects(async_session)
 
-        assert result['count'] == 2
-        assert 'env_repos' in result['source']
+        assert result["count"] == 2
+        assert "env_repos" in result["source"]
 
     @pytest.mark.asyncio
     async def test_auto_import_no_sources(self, async_session, monkeypatch):
         """Test auto-import with no sources configured"""
         from src import config
-        monkeypatch.setattr(config.settings, 'scar_projects_config', "/nonexistent/config.json")
-        monkeypatch.setattr(config.settings, 'scar_import_repos', None)
-        monkeypatch.setattr(config.settings, 'scar_import_user', None)
-        monkeypatch.setattr(config.settings, 'scar_import_org', None)
+
+        monkeypatch.setattr(config.settings, "scar_projects_config", "/nonexistent/config.json")
+        monkeypatch.setattr(config.settings, "scar_import_repos", None)
+        monkeypatch.setattr(config.settings, "scar_import_user", None)
+        monkeypatch.setattr(config.settings, "scar_import_org", None)
 
         result = await auto_import_projects(async_session)
 
-        assert result['count'] == 0
-        assert result['source'] == "none"
-        assert len(result['errors']) == 0
+        assert result["count"] == 0
+        assert result["source"] == "none"
+        assert len(result["errors"]) == 0
 
     @pytest.mark.asyncio
     async def test_auto_import_multiple_sources(self, async_session, tmp_path, monkeypatch):
         """Test auto-import from multiple sources"""
-        config_data = {
-            "projects": [
-                {"name": "Config Project", "github_repo": "owner/config-repo"}
-            ]
-        }
+        config_data = {"projects": [{"name": "Config Project", "github_repo": "owner/config-repo"}]}
 
         config_file = tmp_path / "projects.json"
         config_file.write_text(json.dumps(config_data))
 
         from src import config
-        monkeypatch.setattr(config.settings, 'scar_projects_config', str(config_file))
-        monkeypatch.setattr(config.settings, 'scar_import_repos', "owner/env-repo")
-        monkeypatch.setattr(config.settings, 'scar_import_user', None)
-        monkeypatch.setattr(config.settings, 'scar_import_org', None)
+
+        monkeypatch.setattr(config.settings, "scar_projects_config", str(config_file))
+        monkeypatch.setattr(config.settings, "scar_import_repos", "owner/env-repo")
+        monkeypatch.setattr(config.settings, "scar_import_user", None)
+        monkeypatch.setattr(config.settings, "scar_import_org", None)
 
         result = await auto_import_projects(async_session)
 
-        assert result['count'] == 2
-        assert 'config_file' in result['source']
-        assert 'env_repos' in result['source']
+        assert result["count"] == 2
+        assert "config_file" in result["source"]
+        assert "env_repos" in result["source"]

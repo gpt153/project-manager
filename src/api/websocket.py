@@ -1,6 +1,7 @@
 """
 WebSocket endpoint for bidirectional chat communication.
 """
+
 import json
 import logging
 from uuid import UUID, uuid4
@@ -18,10 +19,7 @@ router = APIRouter()
 
 
 @router.websocket("/ws/chat/{project_id}")
-async def websocket_chat_endpoint(
-    websocket: WebSocket,
-    project_id: UUID
-):
+async def websocket_chat_endpoint(websocket: WebSocket, project_id: UUID):
     """
     WebSocket endpoint for real-time chat communication.
 
@@ -45,7 +43,9 @@ async def websocket_chat_endpoint(
         await ws_manager.connect(connection_id, websocket)
 
         # Send connection confirmation
-        await ws_manager.send_status_update(connection_id, "connected", "Connected to Project Orchestrator")
+        await ws_manager.send_status_update(
+            connection_id, "connected", "Connected to Project Orchestrator"
+        )
 
         # Listen for messages
         while True:
@@ -58,7 +58,9 @@ async def websocket_chat_endpoint(
                 user_content = message_data.get("content", "").strip()
 
                 if not user_content:
-                    await ws_manager.send_error(connection_id, "EMPTY_MESSAGE", "Message content cannot be empty")
+                    await ws_manager.send_error(
+                        connection_id, "EMPTY_MESSAGE", "Message content cannot be empty"
+                    )
                     continue
 
                 # Process message with orchestrator agent
@@ -76,22 +78,25 @@ async def websocket_chat_endpoint(
 
                             # Run orchestrator (saves both user and assistant messages)
                             await run_orchestrator(
-                                project_id=project_id,
-                                user_message=user_content,
-                                session=session
+                                project_id=project_id, user_message=user_content, session=session
                             )
                             await session.commit()
 
                             # Get the last 2 messages (user + assistant) to send to client
-                            stmt = select(ConversationMessage).where(
-                                ConversationMessage.project_id == project_id
-                            ).order_by(desc(ConversationMessage.timestamp)).limit(2)
+                            stmt = (
+                                select(ConversationMessage)
+                                .where(ConversationMessage.project_id == project_id)
+                                .order_by(desc(ConversationMessage.timestamp))
+                                .limit(2)
+                            )
 
                             result = await session.execute(stmt)
                             recent_messages = result.scalars().all()
 
                             # Send both messages to client
-                            for msg in reversed(recent_messages):  # Reverse to get chronological order
+                            for msg in reversed(
+                                recent_messages
+                            ):  # Reverse to get chronological order
                                 await ws_manager.send_personal_message(
                                     {
                                         "type": "chat",
@@ -100,20 +105,22 @@ async def websocket_chat_endpoint(
                                             "role": msg.role.value,
                                             "content": msg.content,
                                             "timestamp": msg.timestamp.isoformat(),
-                                        }
+                                        },
                                     },
-                                    connection_id
+                                    connection_id,
                                 )
 
                         except Exception as agent_error:
                             logger.error(f"Orchestrator agent error: {agent_error}")
                             # Fallback to simple response on agent failure
-                            fallback_response = "I'm having trouble processing that right now. Please try again."
+                            fallback_response = (
+                                "I'm having trouble processing that right now. Please try again."
+                            )
                             agent_msg = await add_message(
                                 session,
                                 project_id=project_id,
                                 role=MessageRole.ASSISTANT,
-                                content=fallback_response
+                                content=fallback_response,
                             )
                             await session.commit()
 
@@ -125,23 +132,23 @@ async def websocket_chat_endpoint(
                                         "role": MessageRole.ASSISTANT.value,
                                         "content": fallback_response,
                                         "timestamp": agent_msg.created_at.isoformat(),
-                                    }
+                                    },
                                 },
-                                connection_id
+                                connection_id,
                             )
 
                     except Exception as db_error:
                         logger.error(f"Database error: {db_error}")
                         await session.rollback()
                         await ws_manager.send_error(
-                            connection_id,
-                            "DATABASE_ERROR",
-                            "Failed to process message"
+                            connection_id, "DATABASE_ERROR", "Failed to process message"
                         )
 
             except json.JSONDecodeError:
                 logger.warning(f"Invalid JSON received on connection {connection_id}")
-                await ws_manager.send_error(connection_id, "INVALID_JSON", "Message must be valid JSON")
+                await ws_manager.send_error(
+                    connection_id, "INVALID_JSON", "Message must be valid JSON"
+                )
             except Exception as e:
                 logger.error(f"Error processing message on connection {connection_id}: {e}")
                 await ws_manager.send_error(connection_id, "PROCESSING_ERROR", str(e))

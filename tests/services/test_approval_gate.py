@@ -38,9 +38,7 @@ async def test_create_approval_gate(db_session):
     )
 
     # Create gate
-    gate = await create_approval_gate(
-        db_session, project.id, GateType.VISION_DOC, request
-    )
+    gate = await create_approval_gate(db_session, project.id, GateType.VISION_DOC, request)
 
     assert gate.project_id == project.id
     assert gate.gate_type == "VISION_DOC"
@@ -64,9 +62,7 @@ async def test_approve_gate(db_session):
         summary="Please review",
     )
 
-    gate = await create_approval_gate(
-        db_session, project.id, GateType.VISION_DOC, request
-    )
+    gate = await create_approval_gate(db_session, project.id, GateType.VISION_DOC, request)
 
     # Approve the gate
     approved = await approve_gate(db_session, gate.id, "Looks good!")
@@ -91,9 +87,7 @@ async def test_reject_gate(db_session):
         summary="Please review",
     )
 
-    gate = await create_approval_gate(
-        db_session, project.id, GateType.VISION_DOC, request
-    )
+    gate = await create_approval_gate(db_session, project.id, GateType.VISION_DOC, request)
 
     # Reject the gate
     rejected = await reject_gate(db_session, gate.id, "Needs more detail")
@@ -118,9 +112,7 @@ async def test_approve_already_approved_gate(db_session):
         summary="Please review",
     )
 
-    gate = await create_approval_gate(
-        db_session, project.id, GateType.VISION_DOC, request
-    )
+    gate = await create_approval_gate(db_session, project.id, GateType.VISION_DOC, request)
 
     # Approve once
     await approve_gate(db_session, gate.id)
@@ -152,13 +144,9 @@ async def test_get_pending_gates(db_session):
         summary="Review plan",
     )
 
-    gate1 = await create_approval_gate(
-        db_session, project.id, GateType.VISION_DOC, request1
-    )
+    gate1 = await create_approval_gate(db_session, project.id, GateType.VISION_DOC, request1)
 
-    gate2 = await create_approval_gate(
-        db_session, project.id, GateType.PHASE_START, request2
-    )
+    gate2 = await create_approval_gate(db_session, project.id, GateType.PHASE_START, request2)
 
     # Approve one gate
     await approve_gate(db_session, gate1.id)
@@ -193,13 +181,9 @@ async def test_get_gate_history(db_session):
         summary="Review",
     )
 
-    gate1 = await create_approval_gate(
-        db_session, project.id, GateType.VISION_DOC, request1
-    )
+    gate1 = await create_approval_gate(db_session, project.id, GateType.VISION_DOC, request1)
 
-    gate2 = await create_approval_gate(
-        db_session, project.id, GateType.PHASE_START, request2
-    )
+    gate2 = await create_approval_gate(db_session, project.id, GateType.PHASE_START, request2)
 
     # Approve one, reject another
     await approve_gate(db_session, gate1.id)

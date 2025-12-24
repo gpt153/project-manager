@@ -1,6 +1,7 @@
 """
 REST API router for document retrieval (vision docs, plans).
 """
+
 import json
 import logging
 from typing import List
@@ -20,10 +21,7 @@ router = APIRouter()
 
 
 @router.get("/documents/vision/{project_id}", response_class=PlainTextResponse)
-async def get_vision_document(
-    project_id: UUID,
-    session: AsyncSession = Depends(get_session)
-):
+async def get_vision_document(project_id: UUID, session: AsyncSession = Depends(get_session)):
     """
     Get vision document as markdown.
 
@@ -43,14 +41,13 @@ async def get_vision_document(
 
         if not project:
             raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail=f"Project {project_id} not found"
+                status_code=status.HTTP_404_NOT_FOUND, detail=f"Project {project_id} not found"
             )
 
         if not project.vision_document:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail="Vision document not found for this project"
+                detail="Vision document not found for this project",
             )
 
         # Convert JSONB vision document to markdown
@@ -65,15 +62,12 @@ async def get_vision_document(
         logger.error(f"Error retrieving vision document for project {project_id}: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to retrieve vision document"
+            detail="Failed to retrieve vision document",
         )
 
 
 @router.get("/documents/plans/{project_id}", response_model=List[dict])
-async def get_implementation_plans(
-    project_id: UUID,
-    session: AsyncSession = Depends(get_session)
-):
+async def get_implementation_plans(project_id: UUID, session: AsyncSession = Depends(get_session)):
     """
     Get implementation plans for a project.
 
@@ -94,8 +88,7 @@ async def get_implementation_plans(
 
         if not project:
             raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail=f"Project {project_id} not found"
+                status_code=status.HTTP_404_NOT_FOUND, detail=f"Project {project_id} not found"
             )
 
         # For MVP, return empty list
@@ -107,16 +100,12 @@ async def get_implementation_plans(
     except Exception as e:
         logger.error(f"Error retrieving plans for project {project_id}: {e}")
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to retrieve plans"
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to retrieve plans"
         )
 
 
 @router.get("/documents/list/{project_id}", response_model=List[dict])
-async def list_documents(
-    project_id: UUID,
-    session: AsyncSession = Depends(get_session)
-):
+async def list_documents(project_id: UUID, session: AsyncSession = Depends(get_session)):
     """
     List all available documents for a project.
 
@@ -134,20 +123,21 @@ async def list_documents(
 
         if not project:
             raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail=f"Project {project_id} not found"
+                status_code=status.HTTP_404_NOT_FOUND, detail=f"Project {project_id} not found"
             )
 
         documents = []
 
         # Add vision document if it exists
         if project.vision_document:
-            documents.append({
-                "id": f"vision-{project_id}",
-                "name": "Vision Document",
-                "type": "vision",
-                "url": f"/api/documents/vision/{project_id}",
-            })
+            documents.append(
+                {
+                    "id": f"vision-{project_id}",
+                    "name": "Vision Document",
+                    "type": "vision",
+                    "url": f"/api/documents/vision/{project_id}",
+                }
+            )
 
         # TODO: Add plans when implemented
         # TODO: Add other document types
@@ -160,6 +150,5 @@ async def list_documents(
     except Exception as e:
         logger.error(f"Error listing documents for project {project_id}: {e}")
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to list documents"
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to list documents"
         )

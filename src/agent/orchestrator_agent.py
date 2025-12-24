@@ -33,9 +33,7 @@ orchestrator_agent = Agent(
 
 
 @orchestrator_agent.tool
-async def save_message(
-    ctx: RunContext[AgentDependencies], role: str, content: str
-) -> str:
+async def save_message(ctx: RunContext[AgentDependencies], role: str, content: str) -> str:
     """
     Save a conversation message to the database.
 
@@ -53,9 +51,7 @@ async def save_message(
     # Convert role string to enum
     role_enum = MessageRole[role.upper()]
 
-    await save_conversation_message(
-        ctx.deps.session, ctx.deps.project_id, role_enum, content
-    )
+    await save_conversation_message(ctx.deps.session, ctx.deps.project_id, role_enum, content)
 
     return f"Message saved as {role}"
 
@@ -143,9 +139,7 @@ async def update_status(ctx: RunContext[AgentDependencies], new_status: str) -> 
 
 
 @orchestrator_agent.tool
-async def save_vision_document(
-    ctx: RunContext[AgentDependencies], vision_doc: dict
-) -> str:
+async def save_vision_document(ctx: RunContext[AgentDependencies], vision_doc: dict) -> str:
     """
     Save vision document to project.
 
@@ -265,8 +259,6 @@ async def run_orchestrator(
     result = await orchestrator_agent.run(user_message, deps=deps)
 
     # Save assistant response
-    await save_conversation_message(
-        session, project_id, MessageRole.ASSISTANT, result.data
-    )
+    await save_conversation_message(session, project_id, MessageRole.ASSISTANT, result.data)
 
     return result.data

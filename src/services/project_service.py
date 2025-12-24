@@ -1,6 +1,7 @@
 """
 Service layer for project data aggregation and business logic.
 """
+
 import logging
 from typing import Dict, List, Optional
 from uuid import UUID
@@ -16,12 +17,14 @@ logger = logging.getLogger(__name__)
 
 class ProjectCreate(BaseModel):
     """Schema for creating a new project."""
+
     name: str
     description: Optional[str] = None
 
 
 class ProjectResponse(BaseModel):
     """Schema for project response."""
+
     id: str
     name: str
     description: Optional[str]
@@ -61,8 +64,7 @@ async def get_all_projects(session: AsyncSession) -> List[Dict]:
 
         # Count workflow phases
         phase_query = select(func.count(WorkflowPhase.id)).where(
-            WorkflowPhase.project_id == project.id,
-            WorkflowPhase.is_completed
+            WorkflowPhase.project_id == project.id, WorkflowPhase.is_completed
         )
         phase_result = await session.execute(phase_query)
         completed_phases = phase_result.scalar() or 0
@@ -115,9 +117,11 @@ async def get_project_with_stats(session: AsyncSession, project_id: UUID) -> Opt
     message_count = msg_result.scalar() or 0
 
     # Get phases
-    phase_query = select(WorkflowPhase).where(
-        WorkflowPhase.project_id == project.id
-    ).order_by(WorkflowPhase.order)
+    phase_query = (
+        select(WorkflowPhase)
+        .where(WorkflowPhase.project_id == project.id)
+        .order_by(WorkflowPhase.order)
+    )
     phase_result = await session.execute(phase_query)
     phases = phase_result.scalars().all()
 
@@ -150,9 +154,7 @@ async def get_project_with_stats(session: AsyncSession, project_id: UUID) -> Opt
 
 
 async def create_project(
-    session: AsyncSession,
-    name: str,
-    description: Optional[str] = None
+    session: AsyncSession, name: str, description: Optional[str] = None
 ) -> Project:
     """
     Create a new project.
@@ -180,9 +182,7 @@ async def create_project(
 
 
 async def get_conversation_history(
-    session: AsyncSession,
-    project_id: UUID,
-    limit: int = 100
+    session: AsyncSession, project_id: UUID, limit: int = 100
 ) -> List[Dict]:
     """
     Get conversation history for a project.
@@ -222,7 +222,7 @@ async def add_message(
     project_id: UUID,
     role: str,
     content: str,
-    metadata: Optional[Dict] = None
+    metadata: Optional[Dict] = None,
 ) -> ConversationMessage:
     """
     Add a message to the conversation history.

@@ -22,12 +22,8 @@ class ApprovalRequest(BaseModel):
     gate_type: GateType
     title: str = Field(..., description="Clear title for the approval")
     summary: str = Field(..., description="What will happen if approved")
-    details: dict = Field(
-        default_factory=dict, description="Additional context or data"
-    )
-    considerations: Optional[str] = Field(
-        None, description="Important considerations or warnings"
-    )
+    details: dict = Field(default_factory=dict, description="Additional context or data")
+    considerations: Optional[str] = Field(None, description="Important considerations or warnings")
 
 
 async def create_approval_gate(
@@ -83,9 +79,7 @@ async def approve_gate(
     Returns:
         ApprovalGate: Updated approval gate
     """
-    result = await session.execute(
-        select(ApprovalGate).where(ApprovalGate.id == gate_id)
-    )
+    result = await session.execute(select(ApprovalGate).where(ApprovalGate.id == gate_id))
     gate = result.scalar_one_or_none()
 
     if not gate:
@@ -105,9 +99,7 @@ async def approve_gate(
     return gate
 
 
-async def reject_gate(
-    session: AsyncSession, gate_id: UUID, reason: str
-) -> ApprovalGate:
+async def reject_gate(session: AsyncSession, gate_id: UUID, reason: str) -> ApprovalGate:
     """
     Reject an approval gate.
 
@@ -119,9 +111,7 @@ async def reject_gate(
     Returns:
         ApprovalGate: Updated approval gate
     """
-    result = await session.execute(
-        select(ApprovalGate).where(ApprovalGate.id == gate_id)
-    )
+    result = await session.execute(select(ApprovalGate).where(ApprovalGate.id == gate_id))
     gate = result.scalar_one_or_none()
 
     if not gate:
@@ -140,9 +130,7 @@ async def reject_gate(
     return gate
 
 
-async def get_pending_gates(
-    session: AsyncSession, project_id: UUID
-) -> list[ApprovalGate]:
+async def get_pending_gates(session: AsyncSession, project_id: UUID) -> list[ApprovalGate]:
     """
     Get all pending approval gates for a project.
 
@@ -163,9 +151,7 @@ async def get_pending_gates(
     return list(result.scalars().all())
 
 
-async def get_gate_history(
-    session: AsyncSession, project_id: UUID
-) -> list[ApprovalGate]:
+async def get_gate_history(session: AsyncSession, project_id: UUID) -> list[ApprovalGate]:
     """
     Get all approval gates for a project (including completed ones).
 

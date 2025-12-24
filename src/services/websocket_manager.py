@@ -1,6 +1,7 @@
 """
 WebSocket connection manager for tracking active sessions and broadcasting.
 """
+
 import json
 import logging
 from datetime import datetime
@@ -43,7 +44,9 @@ class WebSocketManager:
         """
         if connection_id in self.active_connections:
             del self.active_connections[connection_id]
-            logger.info(f"WebSocket disconnected: {connection_id} (total: {len(self.active_connections)})")
+            logger.info(
+                f"WebSocket disconnected: {connection_id} (total: {len(self.active_connections)})"
+            )
 
     async def send_personal_message(self, message: dict, connection_id: str) -> bool:
         """
@@ -117,7 +120,9 @@ class WebSocketManager:
         """Get the number of active connections."""
         return len(self.active_connections)
 
-    async def send_status_update(self, connection_id: str, status: str, message: Optional[str] = None) -> bool:
+    async def send_status_update(
+        self, connection_id: str, status: str, message: Optional[str] = None
+    ) -> bool:
         """
         Send a status update to a connection.
 
@@ -134,7 +139,7 @@ class WebSocketManager:
             "data": {
                 "status": status,
                 "message": message,
-            }
+            },
         }
         return await self.send_personal_message(status_message, connection_id)
 
@@ -155,7 +160,7 @@ class WebSocketManager:
             "data": {
                 "code": code,
                 "message": message,
-            }
+            },
         }
         return await self.send_personal_message(error_message, connection_id)
 
