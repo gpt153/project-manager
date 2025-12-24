@@ -12,15 +12,21 @@ from sqlalchemy.pool import NullPool
 from src.config import settings
 
 # Create async engine with connection pooling
-engine = create_async_engine(
-    settings.database_url,
-    echo=settings.database_echo,
-    pool_pre_ping=True,
-    pool_size=settings.database_pool_size,
-    max_overflow=settings.database_max_overflow,
-    # Use NullPool for testing environments
-    poolclass=NullPool if settings.app_env == "test" else None,
-)
+# NullPool doesn't accept pool_size/max_overflow, so only set them for non-test envs
+if settings.app_env == "test":
+    engine = create_async_engine(
+        settings.database_url,
+        echo=settings.database_echo,
+        poolclass=NullPool,
+    )
+else:
+    engine = create_async_engine(
+        settings.database_url,
+        echo=settings.database_echo,
+        pool_pre_ping=True,
+        pool_size=settings.database_pool_size,
+        max_overflow=settings.database_max_overflow,
+    )
 
 # Create async session maker
 async_session_maker = async_sessionmaker(

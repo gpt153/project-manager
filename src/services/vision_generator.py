@@ -92,6 +92,12 @@ def _get_vision_generation_agent() -> Agent:
     return _vision_generation_agent
 
 
+# Public aliases for testability (tests mock these)
+completeness_agent = _get_completeness_agent()
+feature_extraction_agent = _get_feature_extraction_agent()
+vision_generation_agent = _get_vision_generation_agent()
+
+
 def _format_conversation_history(messages: list[ConversationMessage]) -> str:
     """
     Format conversation messages into a readable string.

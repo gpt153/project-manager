@@ -62,14 +62,18 @@ class GitHubClient:
     GitHub operations like creating comments and managing pull requests.
     """
 
-    def __init__(self, access_token: Optional[str] = None):
+    def __init__(self, access_token: Optional[str] = ...):  # type: ignore
         """
         Initialize GitHub client.
 
         Args:
             access_token: GitHub personal access token (uses settings.github_access_token if not provided)
         """
-        self.access_token = access_token or settings.github_access_token
+        # Use ... (Ellipsis) as sentinel to distinguish "not provided" from explicit None
+        if access_token is ...:
+            self.access_token = settings.github_access_token
+        else:
+            self.access_token = access_token
         self.base_url = "https://api.github.com"
 
         if not self.access_token:

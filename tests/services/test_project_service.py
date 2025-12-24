@@ -67,12 +67,12 @@ async def test_add_message(test_session: AsyncSession):
 
     # Add a message
     message = await add_message(
-        test_session, project_id=project.id, role="user", content="Hello, world!"
+        test_session, project_id=project.id, role="USER", content="Hello, world!"
     )
     await test_session.commit()
 
     assert message.content == "Hello, world!"
-    assert message.role.value == "user"
+    assert message.role.value == "USER"
     assert message.project_id == project.id
 
 
@@ -84,8 +84,8 @@ async def test_get_conversation_history(test_session: AsyncSession):
     await test_session.commit()
 
     # Add messages
-    await add_message(test_session, project.id, "user", "Message 1")
-    await add_message(test_session, project.id, "assistant", "Message 2")
+    await add_message(test_session, project.id, "USER", "Message 1")
+    await add_message(test_session, project.id, "ASSISTANT", "Message 2")
     await test_session.commit()
 
     # Get conversation history

@@ -10,7 +10,13 @@ from pydantic import BaseModel
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.database.models import ConversationMessage, Project, ProjectStatus, WorkflowPhase
+from src.database.models import (
+    ConversationMessage,
+    PhaseStatus,
+    Project,
+    ProjectStatus,
+    WorkflowPhase,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -64,7 +70,8 @@ async def get_all_projects(session: AsyncSession) -> List[Dict]:
 
         # Count workflow phases
         phase_query = select(func.count(WorkflowPhase.id)).where(
-            WorkflowPhase.project_id == project.id, WorkflowPhase.is_completed
+            WorkflowPhase.project_id == project.id,
+            WorkflowPhase.status == PhaseStatus.COMPLETED,
         )
         phase_result = await session.execute(phase_query)
         completed_phases = phase_result.scalar() or 0
@@ -120,7 +127,7 @@ async def get_project_with_stats(session: AsyncSession, project_id: UUID) -> Opt
     phase_query = (
         select(WorkflowPhase)
         .where(WorkflowPhase.project_id == project.id)
-        .order_by(WorkflowPhase.order)
+        .order_by(WorkflowPhase.phase_number)
     )
     phase_result = await session.execute(phase_query)
     phases = phase_result.scalars().all()

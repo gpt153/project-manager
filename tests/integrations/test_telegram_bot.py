@@ -56,7 +56,7 @@ async def test_start_command_creates_project(db_session, mock_telegram_update, m
 
     assert len(projects) == 1
     assert projects[0].status == ProjectStatus.BRAINSTORMING
-    assert projects[0].telegram_chat_id == "12345"
+    assert projects[0].telegram_chat_id == 12345
 
 
 @pytest.mark.asyncio
@@ -81,7 +81,7 @@ async def test_status_command_shows_workflow_state(db_session, mock_telegram_upd
     """Test that /status command shows current workflow state"""
     # Create a project
     project = Project(
-        name="Test Project", status=ProjectStatus.BRAINSTORMING, telegram_chat_id="12345"
+        name="Test Project", status=ProjectStatus.BRAINSTORMING, telegram_chat_id=12345
     )
     db_session.add(project)
     await db_session.commit()
@@ -123,7 +123,7 @@ async def test_handle_message_with_project(db_session, mock_telegram_update, moc
     """Test handling message with active project"""
     # Create a project
     project = Project(
-        name="Test Project", status=ProjectStatus.BRAINSTORMING, telegram_chat_id="12345"
+        name="Test Project", status=ProjectStatus.BRAINSTORMING, telegram_chat_id=12345
     )
     db_session.add(project)
     await db_session.commit()
