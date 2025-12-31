@@ -10,12 +10,15 @@ jobs:
     name: Deploy to Production
     runs-on: self-hosted
 
+    env:
+      DEPLOY_DIR: /home/samuel/.archon/workspaces/project-orchestrator
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set deployment directory
-        run: echo "DEPLOY_DIR=/home/samuel/po" >> $GITHUB_ENV
+      - name: Create deployment directory
+        run: mkdir -p ${{ env.DEPLOY_DIR }}
 
       - name: Stop running containers
         working-directory: ${{ env.DEPLOY_DIR }}
