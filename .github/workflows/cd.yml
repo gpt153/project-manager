@@ -28,13 +28,10 @@ jobs:
       - name: Update deployment files
         run: |
           mkdir -p ${{ env.DEPLOY_DIR }}
-          # Use rsync for more robust copying (includes hidden files, handles conflicts)
-          rsync -av --delete \
-            --exclude='.git' \
-            --exclude='node_modules' \
-            --exclude='__pycache__' \
-            --exclude='*.pyc' \
-            ./ ${{ env.DEPLOY_DIR }}/
+          # Copy all files including hidden ones (like .scar/)
+          shopt -s dotglob
+          cp -r ./* ${{ env.DEPLOY_DIR }}/
+          shopt -u dotglob
 
       - name: Build Docker image locally
         working-directory: ${{ env.DEPLOY_DIR }}
