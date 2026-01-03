@@ -9,7 +9,7 @@ from datetime import datetime
 from typing import Optional
 from uuid import UUID
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -24,11 +24,10 @@ from src.database.models import (
 class AgentDependencies(BaseModel):
     """Dependencies injected into the agent for tool execution"""
 
+    model_config = ConfigDict(arbitrary_types_allowed=True)
+
     session: AsyncSession
     project_id: Optional[UUID] = None
-
-    class Config:
-        arbitrary_types_allowed = True
 
 
 async def save_conversation_message(

@@ -4,7 +4,7 @@ WebSocket connection manager for tracking active sessions and broadcasting.
 
 import json
 import logging
-from datetime import datetime
+from datetime import datetime, UTC
 from typing import Dict, Optional
 
 from fastapi import WebSocket
@@ -67,7 +67,7 @@ class WebSocketManager:
         try:
             # Add timestamp if not present
             if "timestamp" not in message:
-                message["timestamp"] = datetime.utcnow().isoformat()
+                message["timestamp"] = datetime.now(UTC).isoformat()
 
             await websocket.send_text(json.dumps(message))
             logger.debug(f"Sent message to {connection_id}: {message.get('type')}")
@@ -91,7 +91,7 @@ class WebSocketManager:
         """
         # Add timestamp if not present
         if "timestamp" not in message:
-            message["timestamp"] = datetime.utcnow().isoformat()
+            message["timestamp"] = datetime.now(UTC).isoformat()
 
         sent_count = 0
         dead_connections = []

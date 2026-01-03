@@ -22,7 +22,7 @@ router = APIRouter()
 @router.get("/projects/{project_id}/issues", response_model=List[dict])
 async def get_project_issues(
     project_id: UUID,
-    state: str = Query(default="all", regex="^(open|closed|all)$"),
+    state: str = Query(default="all", pattern="^(open|closed|all)$"),
     limit: int = Query(default=100, le=100),
     session: AsyncSession = Depends(get_session),
 ):
