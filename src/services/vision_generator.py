@@ -141,7 +141,7 @@ async def check_conversation_completeness(
     agent = _get_completeness_agent()
     result = await agent.run(prompt)
 
-    return result.data
+    return result.output
 
 
 async def extract_features(session: AsyncSession, project_id: UUID) -> list[Feature]:
@@ -171,7 +171,7 @@ async def extract_features(session: AsyncSession, project_id: UUID) -> list[Feat
     agent = _get_feature_extraction_agent()
     result = await agent.run(prompt)
 
-    return result.data
+    return result.output
 
 
 async def generate_vision_document(session: AsyncSession, project_id: UUID) -> VisionDocument:
@@ -208,7 +208,7 @@ async def generate_vision_document(session: AsyncSession, project_id: UUID) -> V
     agent = _get_vision_generation_agent()
     result = await agent.run(prompt)
 
-    return result.data
+    return result.output
 
 
 def vision_document_to_markdown(vision: VisionDocument) -> str:
