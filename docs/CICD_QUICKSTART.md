@@ -33,7 +33,7 @@ tar xzf actions-runner.tar.gz
 # Copy the token shown
 
 # Configure runner (replace YOUR_TOKEN)
-./config.sh --url https://github.com/gpt153/project-orchestrator --token YOUR_TOKEN
+./config.sh --url https://github.com/gpt153/project-manager --token YOUR_TOKEN
 
 # Install as service
 sudo ./svc.sh install
@@ -55,7 +55,7 @@ cd /home/samuel/po
 
 # Create .env file (IMPORTANT: Add your real credentials)
 cat > .env << 'EOF'
-APP_NAME=Project Orchestrator
+APP_NAME=Project Manager
 APP_ENV=production
 LOG_LEVEL=INFO
 SECRET_KEY=CHANGE_THIS_TO_RANDOM_32_CHAR_STRING
@@ -91,7 +91,7 @@ GitHub Container Registry (GHCR) is enabled by default. No action needed!
 
 The pipeline will push images to:
 ```
-ghcr.io/gpt153/project-orchestrator:latest
+ghcr.io/gpt153/project-manager:latest
 ```
 
 ✅ **Done!** Container registry is ready.

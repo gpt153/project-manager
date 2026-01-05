@@ -39,7 +39,7 @@ PR Created → CI Tests Run → Merge Approved
                                     ↓
                          Build Docker Image
                                     ↓
-                    Push to ghcr.io/gpt153/project-orchestrator
+                    Push to ghcr.io/gpt153/project-manager
                                     ↓
                          SSH to Production Server
                                     ↓
@@ -105,7 +105,7 @@ Add these in: Settings → Secrets and variables → Actions
 Your server needs:
 - Docker + Docker Compose installed
 - SSH access configured
-- Directory: `/opt/project-orchestrator`
+- Directory: `/opt/project-manager`
 - Your .env file with production credentials
 
 ## Security Features
@@ -133,7 +133,7 @@ If something goes wrong:
 # Automatic: Just revert the merge commit and re-run
 # Manual: SSH to server and:
 docker-compose down
-docker pull ghcr.io/gpt153/project-orchestrator:sha-<previous-commit>
+docker pull ghcr.io/gpt153/project-manager:sha-<previous-commit>
 docker-compose up -d
 ```
 

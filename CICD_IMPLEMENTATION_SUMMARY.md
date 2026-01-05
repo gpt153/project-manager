@@ -73,7 +73,7 @@ curl -o actions-runner.tar.gz -L https://github.com/actions/runner/releases/down
 tar xzf actions-runner.tar.gz
 
 # Get token from: GitHub → Settings → Actions → Runners → New self-hosted runner
-./config.sh --url https://github.com/gpt153/project-orchestrator --token YOUR_TOKEN
+./config.sh --url https://github.com/gpt153/project-manager --token YOUR_TOKEN
 
 # Install as service
 sudo ./svc.sh install
@@ -152,7 +152,7 @@ curl http://localhost:8000/health
 **What it does**:
 - Builds production Docker image
 - Tags with: `latest`, `sha-abc1234`, `v1.2.3`
-- Pushes to ghcr.io/gpt153/project-orchestrator
+- Pushes to ghcr.io/gpt153/project-manager
 
 **Why**: Creates deployable artifacts
 
@@ -235,7 +235,7 @@ docker-compose logs -f app
 ### Rollback
 ```bash
 # Find previous version
-docker images | grep project-orchestrator
+docker images | grep project-manager
 
 # Deploy it
 ./deploy.sh sha-previous-commit

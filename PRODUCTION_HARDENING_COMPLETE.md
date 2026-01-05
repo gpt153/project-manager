@@ -1,6 +1,6 @@
 # Production Hardening - Initial Implementation Complete
 
-**Issue**: #28 - https://github.com/gpt153/project-orchestrator/issues/28
+**Issue**: #28 - https://github.com/gpt153/project-manager/issues/28
 **Date**: January 2, 2026
 **Status**: Critical fixes implemented, remaining work documented
 
@@ -42,7 +42,7 @@
 ### 3. Created Comprehensive Documentation
 
 **✅ System Review Report**
-- **File**: `.agents/system-reviews/project-orchestrator-review.md`
+- **File**: `.agents/system-reviews/project-manager-review.md`
 - **Contents**: Full divergence analysis, recommendations, action items
 - **Size**: ~600 lines
 
@@ -111,7 +111,7 @@
 createdb -U postgres project_orchestrator_test
 
 # Run migrations
-cd /home/samuel/.archon/workspaces/project-orchestrator
+cd /home/samuel/.archon/workspaces/project-manager
 uv run alembic upgrade head
 
 # Verify tests
@@ -165,7 +165,7 @@ uv run pytest tests/ -v
 4. `tests/conftest.py` - Fixed database credentials
 
 ### Documentation Created (5 files)
-1. `.agents/system-reviews/project-orchestrator-review.md` - System review
+1. `.agents/system-reviews/project-manager-review.md` - System review
 2. `.agents/plans/production-hardening-issue-28.md` - Implementation plan
 3. `IMPLEMENTATION_SUMMARY_ISSUE_28.md` - Quick-start guide
 4. `.env.test` - Test environment configuration
@@ -243,7 +243,7 @@ uv run pytest tests/ -v
 
 ```bash
 # Navigate to project
-cd /home/samuel/.archon/workspaces/project-orchestrator
+cd /home/samuel/.archon/workspaces/project-manager
 
 # Create test database (if PostgreSQL is running)
 createdb -U postgres project_orchestrator_test || echo "May already exist"

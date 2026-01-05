@@ -109,7 +109,7 @@
 **PR #20**: "fix(webui): Fix critical WebUI issues #19"
 - Branch: issue-19 → master
 - Status: ✅ **Merged** (fast-forward)
-- URL: https://github.com/gpt153/project-orchestrator/pull/20
+- URL: https://github.com/gpt153/project-manager/pull/20
 - Merged commits include:
   - My fixes (1eb5952)
   - Additional commits from master (auto-import service, tests, documentation)
@@ -124,7 +124,7 @@
 - **Trigger**: Push to master (after PR #20 merged)
 - **Status**: ❌ **FAILED**
 - **Failed Step**: "Build Docker image locally"
-- **URL**: https://github.com/gpt153/project-orchestrator/actions/runs/20456973437
+- **URL**: https://github.com/gpt153/project-manager/actions/runs/20456973437
 
 ### Failure Analysis
 
@@ -161,9 +161,9 @@
 
 **Expected behavior after successful deployment**:
 - ✅ WebUI loads at https://po.153.se
-- ✅ All 4 projects visible in left panel (SCAR, PO, Health Agent, OpenHorizon)
+- ✅ All 4 projects visible in left panel (SCAR, PM, Health Agent, OpenHorizon)
 - ✅ Expanding project shows GitHub issues (open + closed counts)
-- ✅ Chat with PO agent works (send/receive messages)
+- ✅ Chat with PM agent works (send/receive messages)
 - ✅ Messages persist after page refresh
 - ✅ SCAR activity feed shows "● Live" status
 - ✅ No "disconnected" errors
@@ -193,7 +193,7 @@
 2. **Re-trigger deployment**:
    ```bash
    # Option A: Trigger via GitHub UI
-   # Go to: https://github.com/gpt153/project-orchestrator/actions/workflows/cd.yml
+   # Go to: https://github.com/gpt153/project-manager/actions/workflows/cd.yml
    # Click "Run workflow" → "Run workflow on master"
 
    # Option B: Trigger via CLI
@@ -235,7 +235,7 @@
 - [ ] Clicking issue opens GitHub in new tab
 
 ### Chat Interface
-- [ ] Can send message to PO agent
+- [ ] Can send message to PM agent
 - [ ] Receive response from agent
 - [ ] Messages persist after page refresh
 - [ ] No "disconnected" errors

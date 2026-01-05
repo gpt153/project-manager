@@ -29,7 +29,7 @@ async def sse_scar_activity(
     """
     Server-Sent Events endpoint for streaming SCAR activity feed.
 
-    This endpoint streams real-time updates of SCAR activity (Project Orchestrator → SCAR → Claude)
+    This endpoint streams real-time updates of SCAR activity (Project Manager → SCAR → Claude)
     for a specific project. The stream includes heartbeat pings every 30 seconds to keep the
     connection alive.
 
@@ -42,7 +42,7 @@ async def sse_scar_activity(
 
     Protocol:
         Event: activity
-        Data: {"id": "...", "timestamp": "...", "source": "po|scar|claude", "message": "...", ...}
+        Data: {"id": "...", "timestamp": "...", "source": "pm|scar|claude", "message": "...", ...}
 
         Event: heartbeat
         Data: {"status": "alive", "timestamp": "..."}

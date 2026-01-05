@@ -13,7 +13,7 @@ class Settings(BaseSettings):
     """Application settings loaded from environment variables"""
 
     # Application
-    app_name: str = "Project Orchestrator"
+    app_name: str = "Project Manager"
     app_env: str = "development"  # development, staging, production, test
     log_level: str = "INFO"
     secret_key: str = "change-me-in-production"
@@ -21,7 +21,7 @@ class Settings(BaseSettings):
 
     # Database
     database_url: str = (
-        "postgresql+asyncpg://orchestrator:dev_password@localhost:5432/project_orchestrator"
+        "postgresql+asyncpg://manager:dev_password@localhost:5432/project_manager"
     )
     database_echo: bool = False
     database_pool_size: int = 10

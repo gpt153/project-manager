@@ -2,8 +2,8 @@ version: '3.8'
 
 services:
   app:
-    image: ghcr.io/gpt153/project-orchestrator:latest
-    container_name: project-orchestrator-app
+    image: ghcr.io/gpt153/project-manager:latest
+    container_name: project-manager-app
     restart: always
     ports:
       - "8001:8000"
@@ -43,16 +43,16 @@ services:
 
   postgres:
     image: postgres:15
-    container_name: project-orchestrator-db
+    container_name: project-manager-db
     restart: always
     environment:
-      POSTGRES_USER: ${POSTGRES_USER:-orchestrator}
+      POSTGRES_USER: ${POSTGRES_USER:-manager}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB:-project_orchestrator}
+      POSTGRES_DB: ${POSTGRES_DB:-project_manager}
     volumes:
       - postgres-data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-orchestrator}"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-manager}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -66,7 +66,7 @@ services:
 
   redis:
     image: redis:7-alpine
-    container_name: project-orchestrator-redis
+    container_name: project-manager-redis
     restart: always
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
@@ -85,7 +85,7 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-    container_name: project-orchestrator-frontend
+    container_name: project-manager-frontend
     restart: always
     ports:
       - "3002:80"

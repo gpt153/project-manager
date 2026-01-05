@@ -10,7 +10,7 @@
 
 ## Summary
 
-Implemented a **complete, production-ready CI/CD pipeline** for Project Orchestrator that automatically:
+Implemented a **complete, production-ready CI/CD pipeline** for Project Manager that automatically:
 - Tests all code changes
 - Builds Docker images on main branch merge
 - Deploys to production VM with zero downtime
@@ -58,7 +58,7 @@ Implemented a **complete, production-ready CI/CD pipeline** for Project Orchestr
 - Manual trigger (workflow_dispatch)
 - Version tags (v*.*.*)
 
-**Output**: `ghcr.io/gpt153/project-orchestrator:latest`
+**Output**: `ghcr.io/gpt153/project-manager:latest`
 
 ### 3. Deploy Workflow (`.github/workflows/deploy.yml`)
 **Purpose**: Zero-downtime production deployment
@@ -219,7 +219,7 @@ Deploy Workflow (1-2 min)
 ### Container Registry
 
 **Registry**: GitHub Container Registry (ghcr.io)
-**Images**: `ghcr.io/gpt153/project-orchestrator`
+**Images**: `ghcr.io/gpt153/project-manager`
 
 **Tags**:
 - `latest` - Latest main branch build
@@ -268,7 +268,7 @@ Deploy Workflow (1-2 min)
 2. **Install Self-Hosted Runner** (10 min)
    ```bash
    cd ~/actions-runner
-   ./config.sh --url https://github.com/gpt153/project-orchestrator --token TOKEN
+   ./config.sh --url https://github.com/gpt153/project-manager --token TOKEN
    sudo ./svc.sh install
    sudo ./svc.sh start
    ```
@@ -392,7 +392,7 @@ Deploy Workflow (1-2 min)
 cd /home/samuel/po
 
 # Find previous image
-docker images | grep project-orchestrator
+docker images | grep project-manager
 
 # Deploy specific version
 ./deploy.sh sha-previous-commit

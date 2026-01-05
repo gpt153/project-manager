@@ -112,7 +112,7 @@ async def import_from_config(session: AsyncSession, config: Dict) -> int:
                             headers={
                                 "Authorization": f"Bearer {settings.github_access_token}",
                                 "Accept": "application/vnd.github.v3+json",
-                                "User-Agent": "Project-Orchestrator",
+                                "User-Agent": "Project-Manager",
                             },
                             timeout=10.0,
                         )

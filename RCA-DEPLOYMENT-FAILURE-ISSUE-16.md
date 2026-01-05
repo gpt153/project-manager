@@ -372,7 +372,7 @@ Once manual deployment is verified:
 
 - **Issue #16**: Fix WebUI Issues - Make it Fully Functional (MERGED)
 - **Issue #13**: WebUI not functional (CLOSED by #16)
-- **CD Workflow**: https://github.com/gpt153/project-orchestrator/actions/runs/20412460228
+- **CD Workflow**: https://github.com/gpt153/project-manager/actions/runs/20412460228
 
 ---
 

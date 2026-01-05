@@ -1,6 +1,6 @@
-# Deployment Guide: Project Orchestrator WebUI
+# Deployment Guide: Project Manager WebUI
 
-This guide explains how to deploy the Project Orchestrator WebUI to production (po.153.se).
+This guide explains how to deploy the Project Manager WebUI to production (po.153.se).
 
 ## Architecture Overview
 
@@ -20,8 +20,8 @@ The application consists of three main services:
 
 1. **Clone the repository**:
    ```bash
-   git clone https://github.com/gpt153/project-orchestrator.git
-   cd project-orchestrator
+   git clone https://github.com/gpt153/project-manager.git
+   cd project-manager
    ```
 
 2. **Set up environment**:
@@ -165,8 +165,8 @@ sudo certbot renew --dry-run
 2. **Clone repository** (or pull latest):
    ```bash
    cd /opt
-   sudo git clone https://github.com/gpt153/project-orchestrator.git
-   cd project-orchestrator
+   sudo git clone https://github.com/gpt153/project-manager.git
+   cd project-manager
    sudo git checkout master  # or specific release tag
    ```
 
@@ -265,7 +265,7 @@ curl https://po.153.se/health
 To deploy a new version:
 
 ```bash
-cd /opt/project-orchestrator
+cd /opt/project-manager
 sudo git pull origin master
 sudo docker-compose --env-file .env.production up -d --build
 ```
@@ -413,5 +413,5 @@ For high traffic:
 ## Support
 
 For issues or questions:
-- GitHub Issues: https://github.com/gpt153/project-orchestrator/issues
+- GitHub Issues: https://github.com/gpt153/project-manager/issues
 - Documentation: README.md

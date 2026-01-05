@@ -1,4 +1,4 @@
-# Project Orchestrator Agent - Complete Guide
+# Project Manager Agent - Complete Guide
 
 **Comprehensive documentation for mastering Remote Coding Agent workflows and commands**
 

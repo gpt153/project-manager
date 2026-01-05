@@ -8,7 +8,7 @@
 The WebUI is successfully deployed at po.153.se with a working 3-panel layout, but three critical issues prevent it from functioning as intended:
 
 1. **SCAR Activity Feed is broken** - Server error due to code bug
-2. **Chat with PO fails** - API error prevents loading conversation history
+2. **Chat with PM fails** - API error prevents loading conversation history
 3. **Missing GitHub Issues integration** - No issues displayed in project navigator
 4. **Missing Historical Data** - Only 1 demo project exists, no real project history
 

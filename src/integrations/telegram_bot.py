@@ -1,7 +1,7 @@
 """
 Telegram Bot Integration.
 
-This module implements the Telegram bot interface for the Project Orchestrator.
+This module implements the Telegram bot interface for the Project Manager.
 Users can interact with the orchestrator through natural language in Telegram.
 """
 
@@ -41,7 +41,7 @@ logger = logging.getLogger(__name__)
 
 class OrchestratorTelegramBot:
     """
-    Telegram bot for Project Orchestrator.
+    Telegram bot for Project Manager.
 
     Provides natural language interface for:
     - Brainstorming project ideas
@@ -96,7 +96,7 @@ class OrchestratorTelegramBot:
             context.chat_data["project_id"] = str(project.id)
 
         welcome_message = (
-            "👋 Welcome to the Project Orchestrator!\n\n"
+            "👋 Welcome to the Project Manager!\n\n"
             "I'm here to help you build your software project from idea to implementation.\n\n"
             "**Let's start brainstorming:**\n"
             "Tell me about your project idea. What do you want to build?\n\n"
@@ -115,7 +115,7 @@ class OrchestratorTelegramBot:
             context: Handler context
         """
         help_text = (
-            "**Project Orchestrator Help**\n\n"
+            "**Project Manager Help**\n\n"
             "**Commands:**\n"
             "/start - Start a new project\n"
             "/status - Check current project status\n"

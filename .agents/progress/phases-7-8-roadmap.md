@@ -1,4 +1,4 @@
-# Project Orchestrator - Phases 7-8 Roadmap
+# Project Manager - Phases 7-8 Roadmap
 
 **Date**: December 19, 2024
 **Current Status**: Phases 1-6 Complete (75%)
@@ -8,7 +8,7 @@
 
 ## Executive Summary
 
-Phases 1-6 have delivered a **production-ready** Project Orchestrator with all core functionality implemented:
+Phases 1-6 have delivered a **production-ready** Project Manager with all core functionality implemented:
 
 ✅ **Complete Features**:
 - Conversational AI agent (PydanticAI + Claude Sonnet 4)
@@ -362,7 +362,7 @@ All connections tested and working!
 - [ ] Operations runbook complete
 
 ### Final Product ✅
-- Fully autonomous AI project orchestrator
+- Fully autonomous AI project manager
 - Non-technical users can build software
 - Seamless Telegram → Vision → SCAR → GitHub flow
 - Production-grade reliability and security
@@ -406,7 +406,7 @@ All connections tested and working!
 
 **Current State**: ✅ **Production-Ready MVP**
 
-The Project Orchestrator has successfully delivered on its core promise. Phases 1-6 implemented:
+The Project Manager has successfully delivered on its core promise. Phases 1-6 implemented:
 - Complete conversational AI interface
 - Automated vision document generation
 - Full SCAR workflow orchestration
@@ -438,4 +438,4 @@ The hard work is done. The remaining phases are about refinement and confidence-
 **Next**: Deploy and iterate OR complete testing/polish
 
 **Generated**: December 19, 2024
-**Author**: Claude (Project Orchestrator)
+**Author**: Claude (Project Manager)

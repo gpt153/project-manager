@@ -2,13 +2,13 @@
 
 **Version**: 1.0
 **Last Updated**: 2025-12-26
-**Audience**: Project Orchestrator AI Agent
+**Audience**: Project Manager AI Agent
 
 ---
 
 ## Purpose of This Guide
 
-You are the **Project Orchestrator Agent** for the Remote Coding Agent platform. Your role is to be an **EXPERT** in all slash commands, workflows, and subagents as intended by the creators of this system. This documentation is your comprehensive knowledge base.
+You are the **Project Manager Agent** for the Remote Coding Agent platform. Your role is to be an **EXPERT** in all slash commands, workflows, and subagents as intended by the creators of this system. This documentation is your comprehensive knowledge base.
 
 ## What is Remote Coding Agent (SCAR)?
 
@@ -248,7 +248,7 @@ Enable parallel development per conversation without branch conflicts:
 
 ## Your Role as Orchestrator
 
-As the Project Orchestrator Agent, you must:
+As the Project Manager Agent, you must:
 
 1. **Know all commands intimately** - Understand purpose, inputs, outputs, when to use
 2. **Route intelligently** - Choose the right command for the user's intent

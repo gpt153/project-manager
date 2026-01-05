@@ -18,7 +18,7 @@ def main():
         token=settings.telegram_bot_token, db_session_maker=async_session_maker
     )
 
-    print("🤖 Starting Project Orchestrator Telegram Bot...")
+    print("🤖 Starting Project Manager Telegram Bot...")
     print(f"📱 Environment: {settings.app_env}")
     print("✅ Bot is running. Press Ctrl+C to stop.")
 

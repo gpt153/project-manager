@@ -10,7 +10,7 @@
 
 The CD (Continuous Deployment) pipeline was failing with the error:
 ```
-An error occurred trying to start process '/usr/bin/bash' with working directory '/home/samuel/.archon/workspaces/project-orchestrator'.
+An error occurred trying to start process '/usr/bin/bash' with working directory '/home/samuel/.archon/workspaces/project-manager'.
 No such file or directory
 ```
 
@@ -40,7 +40,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Set deployment directory
-        run: echo "DEPLOY_DIR=/home/samuel/.archon/workspaces/project-orchestrator" >> $GITHUB_ENV  # ❌ Set in step
+        run: echo "DEPLOY_DIR=/home/samuel/.archon/workspaces/project-manager" >> $GITHUB_ENV  # ❌ Set in step
 
       - name: Stop running containers
         working-directory: ${{ env.DEPLOY_DIR }}  # ❌ Used before available!
@@ -60,7 +60,7 @@ jobs:
    - Result: `working-directory: ` (empty string) → defaults to repo root or fails
 
 3. **Directory Doesn't Exist:**
-   - Even if the variable was available, `/home/samuel/.archon/workspaces/project-orchestrator` didn't exist
+   - Even if the variable was available, `/home/samuel/.archon/workspaces/project-manager` didn't exist
    - First use of `working-directory` would fail before `mkdir -p` in step 4
 
 ### Technical Details
@@ -89,7 +89,7 @@ jobs:
     runs-on: self-hosted
 
     env:
-      DEPLOY_DIR: /home/samuel/.archon/workspaces/project-orchestrator  # ✅ Set at job level
+      DEPLOY_DIR: /home/samuel/.archon/workspaces/project-manager  # ✅ Set at job level
 
     steps:
       - name: Checkout code
@@ -111,7 +111,7 @@ jobs:
    - Accessible in `working-directory` directives
 
 2. **Added Explicit Directory Creation** (Line 20-21)
-   - Ensures `/home/samuel/.archon/workspaces/project-orchestrator` exists before first use
+   - Ensures `/home/samuel/.archon/workspaces/project-manager` exists before first use
    - Uses `mkdir -p` (no error if already exists)
    - Runs BEFORE any step tries to `cd` into it
 
@@ -140,10 +140,10 @@ To test locally (if you have self-hosted runner access):
 
 ```bash
 # 1. Simulate the workflow
-mkdir -p /home/samuel/.archon/workspaces/project-orchestrator
+mkdir -p /home/samuel/.archon/workspaces/project-manager
 
 # 2. Test docker compose commands
-cd /home/samuel/.archon/workspaces/project-orchestrator
+cd /home/samuel/.archon/workspaces/project-manager
 docker compose down || true
 
 # 3. Verify .env file creation works

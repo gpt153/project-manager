@@ -24,7 +24,7 @@ async def websocket_chat_endpoint(websocket: WebSocket, project_id: UUID):
     WebSocket endpoint for real-time chat communication.
 
     This endpoint handles bidirectional communication between the user and
-    the Project Orchestrator agent.
+    the Project Manager agent.
 
     Args:
         websocket: WebSocket connection
@@ -44,7 +44,7 @@ async def websocket_chat_endpoint(websocket: WebSocket, project_id: UUID):
 
         # Send connection confirmation
         await ws_manager.send_status_update(
-            connection_id, "connected", "Connected to Project Orchestrator"
+            connection_id, "connected", "Connected to Project Manager"
         )
 
         # Listen for messages

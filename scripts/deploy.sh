@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-# Project Orchestrator - Production Deployment Script
+# Project Manager - Production Deployment Script
 # This script handles local deployment on the production VM
 
 # Colors for output
@@ -12,12 +12,12 @@ BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 # Configuration
-REPO="ghcr.io/gpt153/project-orchestrator"
+REPO="ghcr.io/gpt153/project-manager"
 TAG="${1:-latest}"
 COMPOSE_FILE="docker-compose.yml"
 DEPLOY_DIR="/home/samuel/po"
 
-echo -e "${BLUE}🚀 Project Orchestrator Deployment${NC}"
+echo -e "${BLUE}🚀 Project Manager Deployment${NC}"
 echo -e "${BLUE}====================================${NC}"
 echo ""
 

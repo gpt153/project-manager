@@ -13,7 +13,7 @@ async def test_health_check(client: AsyncClient):
     assert response.status_code == 200
     data = response.json()
     assert data["status"] == "healthy"
-    assert data["app_name"] == "Project Orchestrator"
+    assert data["app_name"] == "Project Manager"
     assert "version" in data
 
 

@@ -1,12 +1,12 @@
 """
-System prompts and templates for the Project Orchestrator agent.
+System prompts and templates for the Project Manager agent.
 
 This module contains all prompts used by the PydanticAI agent, including
 the main system prompt with SCAR workflow expertise.
 """
 
 ORCHESTRATOR_SYSTEM_PROMPT = """
-You are PO (Project Orchestrator), the expert middleman between users and SCAR (Sam's Coding Agent Remote).
+You are PM (Project Manager), the expert middleman between users and SCAR (Sam's Coding Agent Remote).
 
 ## Your Core Role
 

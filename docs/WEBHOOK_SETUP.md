@@ -1,10 +1,10 @@
 # GitHub Webhook Setup Guide
 
-This guide explains how to configure GitHub webhooks to enable the Project Orchestrator to respond to @mentions in issues and pull requests.
+This guide explains how to configure GitHub webhooks to enable the Project Manager to respond to @mentions in issues and pull requests.
 
 ## Overview
 
-GitHub webhooks allow the Project Orchestrator to:
+GitHub webhooks allow the Project Manager to:
 - Receive notifications when someone mentions the bot in an issue
 - Respond to pull request events
 - Automatically trigger workflow actions based on GitHub activity
@@ -13,7 +13,7 @@ GitHub webhooks allow the Project Orchestrator to:
 
 Before setting up webhooks, ensure:
 
-- ✅ Project Orchestrator is deployed and accessible via public URL
+- ✅ Project Manager is deployed and accessible via public URL
 - ✅ API server is running on port 8000
 - ✅ You have admin access to the GitHub repository
 - ✅ `GITHUB_WEBHOOK_SECRET` is configured in your `.env` file
@@ -145,7 +145,7 @@ Create a test by:
 docker-compose logs -f app | grep github
 
 # For systemd
-sudo journalctl -u project-orchestrator-api -f | grep github
+sudo journalctl -u project-manager-api -f | grep github
 ```
 
 You should see logs indicating:
@@ -157,13 +157,13 @@ INFO: Routing to orchestrator agent...
 
 ## Bot Mention Name
 
-The bot responds to mentions using `@po` (short for "Project Orchestrator").
+The bot responds to mentions using `@po` (short for "Project Manager").
 
 To change the mention name:
 
 1. Edit `src/integrations/github_webhook.py`
 2. Find the line: `BOT_MENTION = "@po"`
-3. Change to your preferred name (e.g., `@project-orchestrator`)
+3. Change to your preferred name (e.g., `@project-manager`)
 4. Restart the application
 
 ## Webhook Events Explained
@@ -219,7 +219,7 @@ Triggered when a PR is opened, merged, closed, etc.
 
 ### Webhook Signature Verification
 
-The Project Orchestrator verifies webhook authenticity using HMAC-SHA256:
+The Project Manager verifies webhook authenticity using HMAC-SHA256:
 
 1. GitHub signs each webhook with your secret
 2. Our app receives the webhook and the signature (in `X-Hub-Signature-256` header)
@@ -416,7 +416,7 @@ docker-compose logs app | grep "Received GitHub webhook" | grep "$(date +%Y-%m-%
 
 ## Multiple Repositories
 
-To use the Project Orchestrator with multiple repositories:
+To use the Project Manager with multiple repositories:
 
 1. **Set up webhook in each repository** (repeat Steps 1-4 for each repo)
 2. **Use the same webhook secret** for all repositories
@@ -503,4 +503,4 @@ If you encounter issues:
 2. Review application logs for errors
 3. Verify webhook secret matches
 4. Test webhook endpoint manually with curl
-5. Create an issue in the Project Orchestrator repository
+5. Create an issue in the Project Manager repository

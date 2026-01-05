@@ -1,6 +1,6 @@
-# Project Orchestrator - Quick Start Guide
+# Project Manager - Quick Start Guide
 
-Get the Project Orchestrator up and running in 15 minutes.
+Get the Project Manager up and running in 15 minutes.
 
 ## What You'll Accomplish
 
@@ -72,8 +72,8 @@ openssl rand -hex 32
 
 ```bash
 # Clone repository
-git clone https://github.com/gpt153/project-orchestrator.git
-cd project-orchestrator
+git clone https://github.com/gpt153/project-manager.git
+cd project-manager
 
 # Create .env file
 cp .env.example .env
@@ -181,7 +181,7 @@ psql -U orchestrator -d project_orchestrator -c "SELECT COUNT(*) FROM projects;"
 
 **Expected Response**:
 ```
-👋 Welcome to Project Orchestrator!
+👋 Welcome to Project Manager!
 
 I help non-technical people build software projects through conversation.
 
@@ -312,7 +312,7 @@ EOF
 
 ## What's Next?
 
-Now that your Project Orchestrator is running:
+Now that your Project Manager is running:
 
 ### Immediate Actions
 
@@ -472,7 +472,7 @@ If you're stuck:
 
 ## Success! 🎉
 
-You now have a fully functional Project Orchestrator!
+You now have a fully functional Project Manager!
 
 ### What You Can Do Now
 

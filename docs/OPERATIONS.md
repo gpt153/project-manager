@@ -1,4 +1,4 @@
-# Project Orchestrator - Operations Runbook
+# Project Manager - Operations Runbook
 
 ## Health Monitoring
 
@@ -7,7 +7,7 @@
 **Basic Health**:
 ```bash
 curl http://localhost:8000/health
-# Expected: {"status": "healthy", "service": "project-orchestrator"}
+# Expected: {"status": "healthy", "service": "project-manager"}
 ```
 
 **Database Health**:

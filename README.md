@@ -1,8 +1,8 @@
-# Project Orchestrator
+# Project Manager
 
-[![CI Pipeline](https://github.com/gpt153/project-orchestrator/actions/workflows/ci.yml/badge.svg)](https://github.com/gpt153/project-orchestrator/actions/workflows/ci.yml)
-[![Build and Push](https://github.com/gpt153/project-orchestrator/actions/workflows/build-and-push.yml/badge.svg)](https://github.com/gpt153/project-orchestrator/actions/workflows/build-and-push.yml)
-[![Deploy](https://github.com/gpt153/project-orchestrator/actions/workflows/deploy.yml/badge.svg)](https://github.com/gpt153/project-orchestrator/actions/workflows/deploy.yml)
+[![CI Pipeline](https://github.com/gpt153/project-manager/actions/workflows/ci.yml/badge.svg)](https://github.com/gpt153/project-manager/actions/workflows/ci.yml)
+[![Build and Push](https://github.com/gpt153/project-manager/actions/workflows/build-and-push.yml/badge.svg)](https://github.com/gpt153/project-manager/actions/workflows/build-and-push.yml)
+[![Deploy](https://github.com/gpt153/project-manager/actions/workflows/deploy.yml/badge.svg)](https://github.com/gpt153/project-manager/actions/workflows/deploy.yml)
 
 > AI agent that helps non-coders build software projects by managing workflow between users and SCAR
 
@@ -12,7 +12,7 @@ An AI-powered project management agent that translates natural language conversa
 
 ## Vision
 
-See the complete vision document: [`.agents/visions/project-orchestrator.md`](.agents/visions/project-orchestrator.md)
+See the complete vision document: [`.agents/visions/project-manager.md`](.agents/visions/project-manager.md)
 
 ## Status
 
@@ -50,8 +50,8 @@ See the complete vision document: [`.agents/visions/project-orchestrator.md`](.a
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/project-orchestrator.git
-cd project-orchestrator
+git clone https://github.com/yourusername/project-manager.git
+cd project-manager
 ```
 
 2. Create a virtual environment:
@@ -166,7 +166,7 @@ Automatic deployment on main branch merge:
 5. 🏥 **Verify** - Health checks ensure successful deployment
 6. ♻️ **Rollback** - Automatic rollback on failure
 
-**Image Registry**: `ghcr.io/gpt153/project-orchestrator`
+**Image Registry**: `ghcr.io/gpt153/project-manager`
 
 **Documentation**:
 - [CI/CD Setup Guide](docs/CICD_SETUP.md) - Complete pipeline configuration
@@ -269,7 +269,7 @@ Working Code + Tests + Documentation
 ## Repository Structure
 
 ```
-project-orchestrator/
+project-manager/
 ├── .agents/
 │   ├── visions/           # Non-technical vision documents
 │   ├── plans/             # Technical implementation plans
@@ -410,8 +410,8 @@ Create `.scar/projects.json` with your projects:
   "version": "1.0",
   "projects": [
     {
-      "name": "Project Orchestrator",
-      "github_repo": "gpt153/project-orchestrator",
+      "name": "Project Manager",
+      "github_repo": "gpt153/project-manager",
       "description": "AI agent for project management",
       "telegram_chat_id": null
     },
@@ -515,8 +515,8 @@ This is a learning project built using AI-assisted development. Watch the Issues
 
 ## Resources
 
-- [Implementation Plan](.agents/plans/project-orchestrator-plan.md)
-- [Vision Document](.agents/visions/project-orchestrator.md)
+- [Implementation Plan](.agents/plans/project-manager-plan.md)
+- [Vision Document](.agents/visions/project-manager.md)
 - [SCAR Documentation](https://github.com/anthropics/scar)
 
 ## License

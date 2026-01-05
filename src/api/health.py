@@ -20,7 +20,7 @@ async def basic_health():
     Returns:
         dict: Basic health status
     """
-    return {"status": "healthy", "service": "project-orchestrator"}
+    return {"status": "healthy", "service": "project-manager"}
 
 
 @router.get("/db")

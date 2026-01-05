@@ -1,15 +1,15 @@
 #!/bin/bash
-# Production Setup Guide for Project Orchestrator
+# Production Setup Guide for Project Manager
 # Deployment to /home/samuel/po on VM
 
-This guide walks you through setting up the Project Orchestrator in production on your VM.
+This guide walks you through setting up the Project Manager in production on your VM.
 
 ## Quick Start (TL;DR)
 
 ```bash
 # 1. Clone and run deployment script
 cd /home/samuel
-git clone https://github.com/gpt153/project-orchestrator.git po
+git clone https://github.com/gpt153/project-manager.git po
 cd po
 chmod +x deploy.sh
 ./deploy.sh
@@ -90,7 +90,7 @@ psql -U orchestrator -h localhost -d project_orchestrator -c "SELECT version();"
 cd /home/samuel
 
 # Clone repository
-git clone https://github.com/gpt153/project-orchestrator.git po
+git clone https://github.com/gpt153/project-manager.git po
 
 # Enter directory
 cd po
@@ -170,22 +170,22 @@ GITHUB_WEBHOOK_SECRET=<random string>
 
 ```bash
 # Copy service files
-sudo cp /tmp/project-orchestrator-*.service /etc/systemd/system/
+sudo cp /tmp/project-manager-*.service /etc/systemd/system/
 
 # Reload systemd
 sudo systemctl daemon-reload
 
 # Enable services (start on boot)
-sudo systemctl enable project-orchestrator-api
-sudo systemctl enable project-orchestrator-bot
+sudo systemctl enable project-manager-api
+sudo systemctl enable project-manager-bot
 
 # Start services
-sudo systemctl start project-orchestrator-api
-sudo systemctl start project-orchestrator-bot
+sudo systemctl start project-manager-api
+sudo systemctl start project-manager-bot
 
 # Check status
-sudo systemctl status project-orchestrator-api
-sudo systemctl status project-orchestrator-bot
+sudo systemctl status project-manager-api
+sudo systemctl status project-manager-bot
 ```
 
 #### 7. Verify Deployment
@@ -215,7 +215,7 @@ The test script checks:
 curl http://localhost:8000/health
 
 # Expected response:
-# {"status":"healthy","app_name":"Project Orchestrator","environment":"production"}
+# {"status":"healthy","app_name":"Project Manager","environment":"production"}
 
 # View API documentation
 curl http://localhost:8000/docs  # Swagger UI
@@ -247,10 +247,10 @@ npm run build
 
 ```bash
 # API logs
-sudo journalctl -u project-orchestrator-api -f
+sudo journalctl -u project-manager-api -f
 
 # Bot logs
-sudo journalctl -u project-orchestrator-bot -f
+sudo journalctl -u project-manager-bot -f
 
 # Or if running manually:
 tail -f /home/samuel/po/api.log
@@ -267,10 +267,10 @@ Already covered in step 6 above. Services auto-start on reboot.
 
 **Manage services**:
 ```bash
-sudo systemctl start project-orchestrator-api
-sudo systemctl stop project-orchestrator-api
-sudo systemctl restart project-orchestrator-api
-sudo systemctl status project-orchestrator-api
+sudo systemctl start project-manager-api
+sudo systemctl stop project-manager-api
+sudo systemctl restart project-manager-api
+sudo systemctl status project-manager-api
 ```
 
 #### Option 2: Docker Compose
@@ -346,7 +346,7 @@ open http://localhost:8000/docs
 1. Create a test issue in your GitHub repo
 2. Comment with `@po hello`
 3. Expected: Bot responds to the mention
-4. Check webhook logs: `sudo journalctl -u project-orchestrator-api | grep github`
+4. Check webhook logs: `sudo journalctl -u project-manager-api | grep github`
 
 ### 5. Test WebUI
 
@@ -365,7 +365,7 @@ open http://localhost:8000/docs
 
 ```bash
 # Check logs
-sudo journalctl -u project-orchestrator-api -n 50
+sudo journalctl -u project-manager-api -n 50
 
 # Common issues:
 # 1. Port 8000 already in use
@@ -407,10 +407,10 @@ BOT_TOKEN=$(grep TELEGRAM_BOT_TOKEN .env | cut -d'=' -f2)
 curl "https://api.telegram.org/bot$BOT_TOKEN/getMe"
 
 # Check logs
-sudo journalctl -u project-orchestrator-bot -f
+sudo journalctl -u project-manager-bot -f
 
 # Restart bot
-sudo systemctl restart project-orchestrator-bot
+sudo systemctl restart project-manager-bot
 ```
 
 ### WebUI Issues
@@ -442,7 +442,7 @@ sudo kill -9 <PID>
 
 # Or change port in .env
 echo "API_PORT=8080" >> .env
-sudo systemctl restart project-orchestrator-api
+sudo systemctl restart project-manager-api
 ```
 
 ## Updating the Application
@@ -453,7 +453,7 @@ sudo systemctl restart project-orchestrator-api
 cd /home/samuel/po
 
 # Stop services
-sudo systemctl stop project-orchestrator-api project-orchestrator-bot
+sudo systemctl stop project-manager-api project-manager-bot
 
 # Pull updates
 git pull origin main
@@ -474,7 +474,7 @@ npm run build
 cd ..
 
 # Restart services
-sudo systemctl start project-orchestrator-api project-orchestrator-bot
+sudo systemctl start project-manager-api project-manager-bot
 ```
 
 ### Using Automated Deployment Script
@@ -519,7 +519,7 @@ curl -o actions-runner-linux-x64-2.311.0.tar.gz -L https://github.com/actions/ru
 tar xzf ./actions-runner-linux-x64-2.311.0.tar.gz
 
 # Configure (get token from GitHub Settings → Actions → Runners)
-./config.sh --url https://github.com/gpt153/project-orchestrator --token YOUR_TOKEN
+./config.sh --url https://github.com/gpt153/project-manager --token YOUR_TOKEN
 
 # Install as service
 sudo ./svc.sh install
@@ -565,8 +565,8 @@ GitHub Actions will:
 curl http://localhost:8000/health
 
 # Check logs for errors
-sudo journalctl -u project-orchestrator-api --since today | grep -i error
-sudo journalctl -u project-orchestrator-bot --since today | grep -i error
+sudo journalctl -u project-manager-api --since today | grep -i error
+sudo journalctl -u project-manager-bot --since today | grep -i error
 ```
 
 ### Weekly Tasks
@@ -602,22 +602,22 @@ sudo journalctl --vacuum-time=30d
 ## Support and Resources
 
 - **Documentation**: `/home/samuel/po/docs/`
-- **GitHub Issues**: https://github.com/gpt153/project-orchestrator/issues
+- **GitHub Issues**: https://github.com/gpt153/project-manager/issues
 - **Test Suite**: `pytest tests/ -v`
 - **Health Check**: `curl http://localhost:8000/health`
-- **Logs**: `sudo journalctl -u project-orchestrator-api -f`
+- **Logs**: `sudo journalctl -u project-manager-api -f`
 
 ## Quick Reference Commands
 
 ```bash
 # Check status
-sudo systemctl status project-orchestrator-api project-orchestrator-bot
+sudo systemctl status project-manager-api project-manager-bot
 
 # Restart services
-sudo systemctl restart project-orchestrator-api project-orchestrator-bot
+sudo systemctl restart project-manager-api project-manager-bot
 
 # View logs
-sudo journalctl -u project-orchestrator-api -f
+sudo journalctl -u project-manager-api -f
 
 # Run tests
 cd /home/samuel/po && source venv/bin/activate && pytest tests/ -v
@@ -639,7 +639,7 @@ pg_dump -U orchestrator project_orchestrator > backup.sql
 
 **Deployment Complete!** 🎉
 
-Your Project Orchestrator is now running at:
+Your Project Manager is now running at:
 - API: http://localhost:8000
 - API Docs: http://localhost:8000/docs
 - WebUI: http://localhost:5173 (if dev server running)

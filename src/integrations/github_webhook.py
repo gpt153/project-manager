@@ -105,7 +105,7 @@ async def handle_issue_comment(payload: dict, session: AsyncSession) -> dict:
     repo_url = repository.get("html_url", "")
 
     # Check if bot is mentioned (customize bot name as needed)
-    bot_mention = "@po"
+    bot_mention = "@pm"
     if bot_mention not in comment_body.lower():
         return {"status": "ignored", "reason": "Bot not mentioned"}
 

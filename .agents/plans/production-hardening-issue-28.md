@@ -1,6 +1,6 @@
 # Production Hardening Plan - Issue #28
 
-**Issue**: https://github.com/gpt153/project-orchestrator/issues/28
+**Issue**: https://github.com/gpt153/project-manager/issues/28
 **Goal**: Fix all production readiness gaps from system review
 **Effort**: 17 hours estimated
 **Success**: 100% test pass rate + security baseline + operational readiness
@@ -145,7 +145,7 @@ pytest tests/ -v
 
 **Install dependency**:
 ```bash
-cd /home/samuel/.archon/workspaces/project-orchestrator
+cd /home/samuel/.archon/workspaces/project-manager
 pip install slowapi
 # Add to pyproject.toml dependencies
 ```
@@ -524,7 +524,7 @@ router = APIRouter(prefix="/health", tags=["health"])
 @router.get("/")
 async def basic_health():
     """Basic health check"""
-    return {"status": "healthy", "service": "project-orchestrator"}
+    return {"status": "healthy", "service": "project-manager"}
 
 @router.get("/db")
 async def database_health():
@@ -647,7 +647,7 @@ workflow_logger = StructuredLogger("workflow")
 
 **Find all occurrences**:
 ```bash
-cd /home/samuel/.archon/workspaces/project-orchestrator
+cd /home/samuel/.archon/workspaces/project-manager
 grep -r "datetime.utcnow()" src/ --include="*.py"
 ```
 
@@ -722,7 +722,7 @@ dependencies = [
 
 ### 6.1 Update CLAUDE.md (1 hour)
 
-**File**: `/home/samuel/.archon/workspaces/project-orchestrator/CLAUDE.md`
+**File**: `/home/samuel/.archon/workspaces/project-manager/CLAUDE.md`
 
 **Add sections** (from system review recommendations):
 
@@ -767,13 +767,13 @@ Every production deployment MUST have:
 
 ### 6.2 Create Production Checklist Command (30 min)
 
-**File**: `/home/samuel/.archon/workspaces/project-orchestrator/.agents/commands/production-checklist.md`
+**File**: `/home/samuel/.archon/workspaces/project-manager/.agents/commands/production-checklist.md`
 
 **Create**: (Full checklist from system review)
 
 ### 6.3 Create Operations Runbook (30 min)
 
-**File**: `/home/samuel/.archon/workspaces/project-orchestrator/docs/OPERATIONS.md`
+**File**: `/home/samuel/.archon/workspaces/project-manager/docs/OPERATIONS.md`
 
 **Create**:
 ```markdown

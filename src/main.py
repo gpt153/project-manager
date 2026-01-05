@@ -1,5 +1,5 @@
 """
-Main FastAPI application for the Project Orchestrator.
+Main FastAPI application for the Project Manager.
 
 This module initializes the FastAPI app, configures middleware, and sets up routes.
 """

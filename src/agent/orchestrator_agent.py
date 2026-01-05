@@ -1,5 +1,5 @@
 """
-Project Orchestrator PydanticAI Agent.
+Project Manager PydanticAI Agent.
 
 This module implements the conversational AI agent that orchestrates
 software development workflows for non-technical users.
@@ -28,7 +28,7 @@ async def build_system_prompt(ctx: RunContext[AgentDependencies]) -> str:
     """
     Build system prompt with current project context injected.
 
-    This allows PO to be context-aware of the current project.
+    This allows PM to be context-aware of the current project.
     """
     # Get project context
     project = None
@@ -267,7 +267,7 @@ async def run_orchestrator(
     """
     Run the orchestrator agent with a user message.
 
-    Now includes conversation history for context continuity, making PO
+    Now includes conversation history for context continuity, making PM
     remember previous discussion across messages.
 
     Args:
@@ -320,7 +320,7 @@ async def run_orchestrator(
         if len(history_messages) > 1:  # More than just the current message
             history_context = "\n\n## Recent Conversation History:\n\n"
             for msg in history_messages[:-1][-10:]:  # Last 10 messages before current
-                role_name = "User" if msg.role == MessageRole.USER else "You (PO)"
+                role_name = "User" if msg.role == MessageRole.USER else "You (PM)"
                 history_context += f"**{role_name}**: {msg.content}\n\n"
             history_context += f"\n---\n\n**Current User Message**: {user_message}\n\n"
             history_context += "Please respond considering the full conversation context above."

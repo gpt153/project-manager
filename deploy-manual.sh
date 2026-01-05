@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-echo "🚀 Manual Deployment Script for project-orchestrator"
+echo "🚀 Manual Deployment Script for project-manager"
 echo "=================================================="
 echo ""
 

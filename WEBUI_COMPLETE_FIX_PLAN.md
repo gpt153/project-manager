@@ -53,7 +53,7 @@ After reviewing:
 - Database enum mismatch for message roles (already fixed in code based on WEBUI_FIX_PLAN.md)
 - Backend containers not running
 
-### 4. **No Contact with PO** ❌
+### 4. **No Contact with PM** ❌
 **What user sees:**
 - Have to refresh page to see previous messages
 - Messages not persisting
@@ -67,7 +67,7 @@ After reviewing:
 
 ## Analysis: Vision vs. Current State
 
-### Original Vision Requirements (from `.agents/visions/project-orchestrator.md`)
+### Original Vision Requirements (from `.agents/visions/project-manager.md`)
 
 | Feature | Vision | Current Status | Gap |
 |---------|--------|----------------|-----|
@@ -111,7 +111,7 @@ The code is mostly there, but it's **never been properly deployed, tested, and d
    ```
 
 2. **Required for basic functionality:**
-   - `ANTHROPIC_API_KEY` - For PO agent chat
+   - `ANTHROPIC_API_KEY` - For PM agent chat
    - `GITHUB_ACCESS_TOKEN` - For fetching issues/repos
    - `SECRET_KEY` - For session management
    - `DATABASE_URL` - Auto-configured in docker-compose
@@ -455,7 +455,7 @@ The code is mostly there, but it's **never been properly deployed, tested, and d
 
 3. **Verify message flow:**
    - User message sent → Backend receives
-   - Backend processes with PO agent
+   - Backend processes with PM agent
    - Agent response sent back
    - Message appears in chat UI
 
@@ -479,7 +479,7 @@ The code is mostly there, but it's **never been properly deployed, tested, and d
 **Success Criteria:**
 - ✅ WebSocket connects successfully
 - ✅ Can send messages
-- ✅ Receive responses from PO agent
+- ✅ Receive responses from PM agent
 - ✅ Messages persist in database
 - ✅ Messages visible after refresh
 
@@ -530,7 +530,7 @@ The code is mostly there, but it's **never been properly deployed, tested, and d
 
 2. **Or trigger real SCAR command:**
    - Send chat message: "Prime this project"
-   - PO agent should execute SCAR prime command
+   - PM agent should execute SCAR prime command
    - Activity should appear in feed
 
 3. **Verify in database:**
@@ -663,7 +663,7 @@ The code is mostly there, but it's **never been properly deployed, tested, and d
    - After execute → Agent suggests validation
 
 4. **Integration points:**
-   - Chat message → PO agent decides action
+   - Chat message → PM agent decides action
    - Agent uses SCAR executor to run commands
    - SCAR executor emits activity to feed
    - Agent responds with results in chat
@@ -717,7 +717,7 @@ The code is mostly there, but it's **never been properly deployed, tested, and d
 5. See documents (if any) ✓
 6. SCAR feed shows "● Live" ✓
 
-**Scenario 2: Chat with PO Agent**
+**Scenario 2: Chat with PM Agent**
 1. Select project
 2. Send message: "Hello, what can you help me with?"
 3. Receive response ✓
@@ -887,7 +887,7 @@ The code is mostly there, but it's **never been properly deployed, tested, and d
 2. **Verify production environment variables:**
    ```bash
    # On production server
-   cd /opt/project-orchestrator
+   cd /opt/project-manager
    cat .env | grep -v "^#" | grep -v "^$"
    ```
 
@@ -912,7 +912,7 @@ The code is mostly there, but it's **never been properly deployed, tested, and d
 
 1. **Pull latest code:**
    ```bash
-   cd /opt/project-orchestrator
+   cd /opt/project-manager
    git pull origin main
    ```
 
@@ -1019,7 +1019,7 @@ The code is mostly there, but it's **never been properly deployed, tested, and d
 ### Immediate Success (After Phases 0-4, 6, 7)
 - ✅ All projects load in WebUI (4+ projects visible)
 - ✅ All issues (open & closed) display for each project
-- ✅ Chat works: send message → get PO agent response → persists after refresh
+- ✅ Chat works: send message → get PM agent response → persists after refresh
 - ✅ SCAR feed shows "● Live" status
 - ✅ Can expand projects to see issues
 - ✅ No console errors in browser
@@ -1069,7 +1069,7 @@ The code is mostly there, but it's **never been properly deployed, tested, and d
 - ✅ Telegram Bot API
 
 ### Documentation References
-- Original Vision: `.agents/visions/project-orchestrator.md`
+- Original Vision: `.agents/visions/project-manager.md`
 - Previous Fix Plan: `WEBUI_FIX_PLAN.md`
 - Implementation Plan: `IMPLEMENTATION-PLAN-FIX-WEBUI.md`
 - Deployment Guide: `DEPLOYMENT.md`

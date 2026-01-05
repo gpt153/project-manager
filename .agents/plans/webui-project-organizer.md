@@ -6,9 +6,9 @@ Pay special attention to naming of existing utils types and models. Import from 
 
 ## Feature Description
 
-Build a comprehensive web-based user interface for the Project Orchestrator system that provides a unified workspace with three resizable panels:
+Build a comprehensive web-based user interface for the Project Manager system that provides a unified workspace with three resizable panels:
 - **Left Panel (20%)**: Project navigator with tree structure showing all projects, issues (open/closed), and discoverable documents
-- **Middle Panel (40%)**: Chat interface for conversing with @po (Project Orchestrator) without explicit @mentions
+- **Middle Panel (40%)**: Chat interface for conversing with @po (Project Manager) without explicit @mentions
 - **Right Panel (40%)**: Real-time SCAR activity feed displaying @po → SCAR → Claude communications with configurable verbosity
 
 This interface serves as the primary visual workspace for users to manage projects, interact with the AI assistant, and monitor development workflows in real-time.
@@ -16,12 +16,12 @@ This interface serves as the primary visual workspace for users to manage projec
 ## User Story
 
 As a **non-technical user managing software projects**
-I want to **interact with Project Orchestrator through a visual web interface with dedicated panels for navigation, chat, and monitoring**
+I want to **interact with Project Manager through a visual web interface with dedicated panels for navigation, chat, and monitoring**
 So that **I can efficiently manage multiple projects, communicate with the AI assistant, and observe real-time development activity without juggling multiple tools**
 
 ## Problem Statement
 
-The current Project Orchestrator relies on Telegram for chat and GitHub for project management, creating a fragmented experience. Users need to:
+The current Project Manager relies on Telegram for chat and GitHub for project management, creating a fragmented experience. Users need to:
 - Switch between Telegram and GitHub to manage projects
 - Lack visibility into SCAR agent activities in real-time
 - Cannot easily browse project documents or navigate issue hierarchies
@@ -513,7 +513,7 @@ IMPORTANT: Execute every task in order, top to bottom. Each task is atomic and i
 - **CONTENT**:
   ```json
   {
-    "name": "project-orchestrator-frontend",
+    "name": "project-manager-frontend",
     "version": "0.1.0",
     "type": "module",
     "scripts": {
@@ -1166,7 +1166,7 @@ IMPORTANT: Execute every task in order, top to bottom. Each task is atomic and i
     <head>
       <meta charset="UTF-8" />
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      <title>Project Orchestrator</title>
+      <title>Project Manager</title>
     </head>
     <body>
       <div id="root"></div>

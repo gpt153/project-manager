@@ -1,17 +1,17 @@
-# Rename PO to PM Throughout Project
+# Rename PM to PM Throughout Project
 
 ## Overview
 
-This plan systematically renames the project from "Project Orchestrator" (PO) to "Project Manager" (PM) throughout the entire codebase, documentation, and deployment configuration.
+This plan systematically renames the project from "Project Manager" (PM) to "Project Manager" (PM) throughout the entire codebase, documentation, and deployment configuration.
 
 ## Renaming Rules
 
 ### What to Change
 
-1. **Project Orchestrator** → **Project Manager**
+1. **Project Manager** → **Project Manager**
 2. **@po** → **@pm** (bot mentions)
 3. **po.153.se** → **pm.153.se** (domain - if applicable)
-4. **project-orchestrator** → **project-manager** (repository name, already done)
+4. **project-manager** → **project-manager** (repository name, already done)
 5. **/home/samuel/po** → **/home/samuel/pm** (deployment directory)
 6. **'po'** (as source identifier in code) → **'pm'**
 
@@ -31,7 +31,7 @@ Low risk, high impact files that define the project identity.
 **File:** `src/config.py`
 ```python
 # CHANGE:
-app_name: str = "Project Orchestrator"
+app_name: str = "Project Manager"
 # TO:
 app_name: str = "Project Manager"
 ```
@@ -40,7 +40,7 @@ app_name: str = "Project Manager"
 **File:** `.env.example`
 ```bash
 # CHANGE:
-APP_NAME="Project Orchestrator"
+APP_NAME="Project Manager"
 # TO:
 APP_NAME="Project Manager"
 ```
@@ -49,7 +49,7 @@ APP_NAME="Project Manager"
 **File:** `frontend/package.json`
 ```json
 // CHANGE:
-"name": "project-orchestrator-frontend"
+"name": "project-manager-frontend"
 // TO:
 "name": "project-manager-frontend"
 ```
@@ -57,7 +57,7 @@ APP_NAME="Project Manager"
 **File:** `frontend/index.html`
 ```html
 <!-- CHANGE: -->
-<title>Project Orchestrator</title>
+<title>Project Manager</title>
 <!-- TO: -->
 <title>Project Manager</title>
 ```
@@ -67,27 +67,27 @@ User-facing strings in the application.
 
 #### 2.1 Bot Welcome Messages
 **File:** `src/integrations/telegram_bot.py`
-- Line 99: "Welcome to the Project Orchestrator!" → "Welcome to the Project Manager!"
-- Line 118: "**Project Orchestrator Help**" → "**Project Manager Help**"
+- Line 99: "Welcome to the Project Manager!" → "Welcome to the Project Manager!"
+- Line 118: "**Project Manager Help**" → "**Project Manager Help**"
 - Bot description field (if present)
 
 #### 2.2 Main Application
 **File:** `src/main.py`
 ```python
 # CHANGE docstring:
-"""Main FastAPI application for the Project Orchestrator."""
+"""Main FastAPI application for the Project Manager."""
 # TO:
 """Main FastAPI application for the Project Manager."""
 ```
 
 **File:** `src/bot_main.py`
-- Line 21: "Starting Project Orchestrator Telegram Bot..." → "Starting Project Manager Telegram Bot..."
+- Line 21: "Starting Project Manager Telegram Bot..." → "Starting Project Manager Telegram Bot..."
 
 #### 2.3 Database Models
 **File:** `src/database/models.py`
 ```python
 # CHANGE docstring:
-"""Database models for the Project Orchestrator."""
+"""Database models for the Project Manager."""
 # TO:
 """Database models for the Project Manager."""
 ```
@@ -96,7 +96,7 @@ User-facing strings in the application.
 **File:** `src/agent/orchestrator_agent.py`
 ```python
 # CHANGE docstring:
-"""Project Orchestrator PydanticAI Agent."""
+"""Project Manager PydanticAI Agent."""
 # TO:
 ```"""Project Manager PydanticAI Agent."""
 ```
@@ -104,18 +104,18 @@ User-facing strings in the application.
 **File:** `src/agent/prompts.py`
 ```python
 # CHANGE docstring:
-"""System prompts and templates for the Project Orchestrator agent."""
+"""System prompts and templates for the Project Manager agent."""
 # TO:
 """System prompts and templates for the Project Manager agent."""
 ```
 
 #### 2.5 API Endpoints
 **File:** `src/api/websocket.py`
-- Line 27: "the Project Orchestrator agent." → "the Project Manager agent."
-- Line 47: "Connected to Project Orchestrator" → "Connected to Project Manager"
+- Line 27: "the Project Manager agent." → "the Project Manager agent."
+- Line 47: "Connected to Project Manager" → "Connected to Project Manager"
 
 **File:** `src/api/sse.py`
-- Line 32: "Project Orchestrator → SCAR → Claude" → "Project Manager → SCAR → Claude"
+- Line 32: "Project Manager → SCAR → Claude" → "Project Manager → SCAR → Claude"
 - Line 45: `source: "po|scar|claude"` → `source: "pm|scar|claude"`
 
 #### 2.6 GitHub Webhook Handler
@@ -131,7 +131,7 @@ bot_mention = "@pm"
 **File:** `tests/test_main.py`
 ```python
 # CHANGE line 16:
-assert data["app_name"] == "Project Orchestrator"
+assert data["app_name"] == "Project Manager"
 # TO:
 assert data["app_name"] == "Project Manager"
 ```
@@ -158,16 +158,16 @@ Update all markdown documentation.
 
 #### 3.1 Primary Documentation
 - `README.md`: Multiple occurrences
-  - Title: "# Project Orchestrator" → "# Project Manager"
+  - Title: "# Project Manager" → "# Project Manager"
   - Deployment references: "po.153.se" → "pm.153.se" (or keep if domain doesn't change)
   - Chat references: "@po" → "@pm"
 
 - `CLAUDE.md`:
-  - Title and intro: "Project Orchestrator" → "Project Manager"
+  - Title and intro: "Project Manager" → "Project Manager"
   - Description text updates
 
 - `DEPLOYMENT.md`:
-  - Title: "Deployment Guide: Project Orchestrator WebUI" → "Deployment Guide: Project Manager WebUI"
+  - Title: "Deployment Guide: Project Manager WebUI" → "Deployment Guide: Project Manager WebUI"
   - References to "@po" → "@pm"
   - **Domain references**: KEEP "po.153.se" unless domain is changing
 
@@ -178,8 +178,8 @@ Update all markdown documentation.
 
 #### 3.2 Agent Guide Documentation
 **Directory:** `docs/orchestrator-agent-guide/`
-- `README.md`: "Project Orchestrator Agent" → "Project Manager Agent"
-- `00-overview.md`: Update "Project Orchestrator Agent" references
+- `README.md`: "Project Manager Agent" → "Project Manager Agent"
+- `00-overview.md`: Update "Project Manager Agent" references
 - `05-advanced-techniques.md`: Update references
 - `DOCUMENTATION_COMPLETE.md`: Update throughout
 
@@ -187,17 +187,17 @@ Update all markdown documentation.
 
 #### 3.3 Plans & Visions
 **Directory:** `.agents/plans/`
-- `project-orchestrator-plan.md` → Consider renaming file to `project-manager-plan.md`
+- `project-manager-plan.md` → Consider renaming file to `project-manager-plan.md`
   - Update all internal references
 
 **Directory:** `.agents/visions/`
-- `project-orchestrator.md` → Consider renaming to `project-manager.md`
+- `project-manager.md` → Consider renaming to `project-manager.md`
   - Update all content references
 
 **Directory:** `.agents/plans/`
 - `webui-project-organizer.md` & `.plan.md`:
   - Update "@po" references to "@pm"
-  - Update "Project Orchestrator" to "Project Manager"
+  - Update "Project Manager" to "Project Manager"
 
 #### 3.4 Deployment & Status Documentation
 - `DEPLOYMENT_STATUS.md`: Update references, keep domain as-is if not changing
@@ -207,7 +207,7 @@ Update all markdown documentation.
 - `CICD_IMPLEMENTATION_SUMMARY.md`: Update path references `/home/samuel/po` → `/home/samuel/pm`
 
 #### 3.5 RCA & Implementation Documents
-- `RCA-*.md` files: Update "Project Orchestrator" → "Project Manager", "@po" → "@pm"
+- `RCA-*.md` files: Update "Project Manager" → "Project Manager", "@po" → "@pm"
 - `IMPLEMENTATION_*.md` files: Same updates
 - `VALIDATION_REPORT.md`: Update throughout
 
@@ -215,7 +215,7 @@ Update all markdown documentation.
 **File:** `.agents/commands/production-checklist.md`
 ```markdown
 # CHANGE:
-**Project**: Project Orchestrator
+**Project**: Project Manager
 # TO:
 **Project**: Project Manager
 ```
@@ -224,7 +224,7 @@ Update all markdown documentation.
 
 #### 4.1 Deployment Scripts
 **File:** `scripts/deploy.sh`
-- Line 4: Comment "Project Orchestrator - Production Deployment Script" → "Project Manager..."
+- Line 4: Comment "Project Manager - Production Deployment Script" → "Project Manager..."
 - Line 18: `DEPLOY_DIR="/home/samuel/po"` → `DEPLOY_DIR="/home/samuel/pm"`
 - Line 20: Echo message update
 
@@ -243,14 +243,14 @@ Update all markdown documentation.
 
 #### 4.2 Systemd Service Files
 **File:** `deploy.sh` (embedded service definitions)
-- Line 233: `Description=Project Orchestrator FastAPI Application` → `Description=Project Manager FastAPI Application`
-- Line 253: `Description=Project Orchestrator Telegram Bot` → `Description=Project Manager Telegram Bot`
+- Line 233: `Description=Project Manager FastAPI Application` → `Description=Project Manager FastAPI Application`
+- Line 253: `Description=Project Manager Telegram Bot` → `Description=Project Manager Telegram Bot`
 
 #### 4.3 Example Configuration
 **File:** `.scar/projects.json.example`
 ```json
 // CHANGE:
-"name": "Project Orchestrator",
+"name": "Project Manager",
 // TO:
 "name": "Project Manager",
 ```
@@ -259,26 +259,26 @@ Update all markdown documentation.
 
 #### 5.1 GitHub Actions
 **Directory:** `.github/workflows/`
-- Check workflow files for "Project Orchestrator" references
+- Check workflow files for "Project Manager" references
 - Update job names, descriptions
 
 #### 5.2 Self-Hosted Runner
 - Runner path updates if needed
-- Update runner labels if they include "po" or "project-orchestrator"
+- Update runner labels if they include "po" or "project-manager"
 
 ### Phase 6: Docker Configuration
 
 #### 6.1 Docker Compose
 **File:** `docker-compose.yml`
 - Service names: Consider if you want to rename services
-- Environment variables: Check for hardcoded "Project Orchestrator" strings
+- Environment variables: Check for hardcoded "Project Manager" strings
 - Container names: Update if they include "po"
 
 **File:** `docker-compose.prod.yml.backup`
 - Similar updates if this file is still in use
 
 #### 6.2 Dockerfiles
-- Check for any labels, env vars, or comments mentioning "Project Orchestrator"
+- Check for any labels, env vars, or comments mentioning "Project Manager"
 
 ## Domain & Deployment Path Decisions
 
@@ -362,7 +362,7 @@ After making changes:
 
 Some files have complex references that may need case-by-case decisions:
 
-- Long markdown documents with extensive "PO" references
+- Long markdown documents with extensive "PM" references
 - Historical RCA documents (may want to keep as-is for accuracy)
 - Commit messages in git history (don't change)
 - Any external documentation or wikis
@@ -373,7 +373,7 @@ Some files have complex references that may need case-by-case decisions:
 2. **Update repository topics/tags**
 3. **Announce name change** to users (if any)
 4. **Update any external links** pointing to documentation
-5. **Search for lingering references**: `git grep -i "project orchestrator"`, `git grep "@po"`
+5. **Search for lingering references**: `git grep -i "project manager"`, `git grep "@po"`
 
 ## Summary of Changes
 
@@ -386,7 +386,7 @@ Some files have complex references that may need case-by-case decisions:
 ## Sources
 
 This plan was created by analyzing:
-- Grep results for "PO", "Project Orchestrator", "@po"
+- Grep results for "PM", "Project Manager", "@po"
 - Current codebase structure
 - Deployment configuration
 - Documentation hierarchy

@@ -1,4 +1,4 @@
-# 🚀 Quick Deployment Guide for Project Orchestrator
+# 🚀 Quick Deployment Guide for Project Manager
 
 **Deploy to `/home/samuel/po` in 5 minutes!**
 
@@ -20,7 +20,7 @@ sudo apt install -y python3.11 python3.11-venv postgresql nodejs npm git
 
 # 2. Clone to deployment directory
 cd /home/samuel
-git clone https://github.com/gpt153/project-orchestrator.git po
+git clone https://github.com/gpt153/project-manager.git po
 cd po
 
 # 3. Run automated deployment
@@ -40,7 +40,7 @@ chmod +x test_deployment.sh
 ./test_deployment.sh
 
 # 6. Start services
-sudo systemctl start project-orchestrator-api project-orchestrator-bot
+sudo systemctl start project-manager-api project-manager-bot
 
 # 7. Verify
 curl http://localhost:8000/health
@@ -174,7 +174,7 @@ docker-compose exec app alembic upgrade head
 ### API Health Check
 ```bash
 curl http://localhost:8000/health
-# Expected: {"status":"healthy","app_name":"Project Orchestrator",...}
+# Expected: {"status":"healthy","app_name":"Project Manager",...}
 ```
 
 ### View API Docs
@@ -213,7 +213,7 @@ psql -U orchestrator -h localhost -d project_orchestrator
 ### API Won't Start
 ```bash
 # Check logs
-sudo journalctl -u project-orchestrator-api -n 50
+sudo journalctl -u project-manager-api -n 50
 
 # Or if running manually
 tail -f /home/samuel/po/api.log
@@ -247,19 +247,19 @@ pytest tests/ -v --tb=short
 ### Using systemd (recommended)
 ```bash
 # Start
-sudo systemctl start project-orchestrator-api project-orchestrator-bot
+sudo systemctl start project-manager-api project-manager-bot
 
 # Stop
-sudo systemctl stop project-orchestrator-api project-orchestrator-bot
+sudo systemctl stop project-manager-api project-manager-bot
 
 # Restart
-sudo systemctl restart project-orchestrator-api project-orchestrator-bot
+sudo systemctl restart project-manager-api project-manager-bot
 
 # Status
-sudo systemctl status project-orchestrator-api
+sudo systemctl status project-manager-api
 
 # Logs
-sudo journalctl -u project-orchestrator-api -f
+sudo journalctl -u project-manager-api -f
 ```
 
 ### Using Docker Compose
@@ -340,7 +340,7 @@ After deployment:
 - **Full Documentation**: `docs/DEPLOYMENT.md`
 - **Production Setup**: `PRODUCTION_SETUP.md`
 - **Testing Guide**: `docs/TESTING_GUIDE.md`
-- **GitHub Issues**: https://github.com/gpt153/project-orchestrator/issues
+- **GitHub Issues**: https://github.com/gpt153/project-manager/issues
 
 ## Quick Reference
 
@@ -352,13 +352,13 @@ curl http://localhost:8000/health
 ./test_deployment.sh
 
 # View API logs
-sudo journalctl -u project-orchestrator-api -f
+sudo journalctl -u project-manager-api -f
 
 # View Bot logs
-sudo journalctl -u project-orchestrator-bot -f
+sudo journalctl -u project-manager-bot -f
 
 # Restart services
-sudo systemctl restart project-orchestrator-api project-orchestrator-bot
+sudo systemctl restart project-manager-api project-manager-bot
 
 # Update deployment
 git pull && ./deploy.sh
@@ -372,6 +372,6 @@ pytest tests/ -v
 
 ---
 
-**That's it!** Your Project Orchestrator should now be running at `/home/samuel/po` 🎉
+**That's it!** Your Project Manager should now be running at `/home/samuel/po` 🎉
 
 Questions? Check the full documentation or open an issue on GitHub.

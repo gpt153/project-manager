@@ -38,7 +38,7 @@ The WebUI has been successfully enhanced from "three empty windows" to a fully f
 First, populate the database with sample projects:
 
 ```bash
-cd /worktrees/project-orchestrator/issue-13
+cd /worktrees/project-manager/issue-13
 uv run python -m src.scripts.seed_data
 ```
 
@@ -61,7 +61,7 @@ This creates optimized production files in `frontend/dist/`.
 ### 3. Start the Backend
 
 ```bash
-cd /worktrees/project-orchestrator/issue-13
+cd /worktrees/project-manager/issue-13
 uv run python -m src.main
 ```
 
@@ -158,7 +158,7 @@ The frontend automatically detects the environment:
 ## 📁 Project Structure
 
 ```
-/worktrees/project-orchestrator/issue-13/
+/worktrees/project-manager/issue-13/
 ├── frontend/
 │   ├── src/
 │   │   ├── components/
@@ -274,7 +274,7 @@ npm run build
 2. **Restart backend**:
 ```bash
 # However your deployment is set up
-systemctl restart project-orchestrator
+systemctl restart project-manager
 # or
 docker-compose restart
 ```

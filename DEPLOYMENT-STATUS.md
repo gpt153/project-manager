@@ -1,11 +1,11 @@
-# Project Orchestrator - Deployment Status
+# Project Manager - Deployment Status
 
 **Date**: December 22, 2025
 **Status**: ✅ DEPLOYED AND OPERATIONAL
 
 ## Summary
 
-The Project Orchestrator WebUI is now successfully deployed and running with all core functionality operational.
+The Project Manager WebUI is now successfully deployed and running with all core functionality operational.
 
 ## Services Running
 
@@ -19,7 +19,7 @@ The Project Orchestrator WebUI is now successfully deployed and running with all
 ## Version Information
 
 - **Git Commit**: `906597d` (latest)
-- **Backend**: Project Orchestrator v0.1.0
+- **Backend**: Project Manager v0.1.0
 - **Environment**: Production
 - **Database**: PostgreSQL 15
 - **Node**: 20-alpine
@@ -103,7 +103,7 @@ All API endpoints are operational:
 
 - **Old PRD**: Moved to `.agents/PRD-ARCHIVED-remote-agent-platform.md`
   - This was a design document for a different system (generic command-based remote coding platform)
-  - Current implementation is the Project Orchestrator (conversational workflow agent)
+  - Current implementation is the Project Manager (conversational workflow agent)
 
 ## Maintenance Commands
 

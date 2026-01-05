@@ -2,7 +2,7 @@
 
 ## Project Context
 
-**Repository**: `gpt153/project-orchestrator`
+**Repository**: `gpt153/project-manager`
 **Current State**: Production-ready orchestrator (75% complete) with Docker support
 **Goal**: Complete CI/CD pipeline for automatic deployment when main branch is updated/merged
 
@@ -54,9 +54,9 @@
 │  │ 2. Login to GitHub Container Registry (ghcr.io)         │  │
 │  │ 3. Extract metadata (tags, labels)                      │  │
 │  │ 4. Build and push Docker image                          │  │
-│  │    - Tag: ghcr.io/gpt153/project-orchestrator:latest    │  │
-│  │    - Tag: ghcr.io/gpt153/project-orchestrator:SHA       │  │
-│  │    - Tag: ghcr.io/gpt153/project-orchestrator:vX.Y.Z    │  │
+│  │    - Tag: ghcr.io/gpt153/project-manager:latest    │  │
+│  │    - Tag: ghcr.io/gpt153/project-manager:SHA       │  │
+│  │    - Tag: ghcr.io/gpt153/project-manager:vX.Y.Z    │  │
 │  │ 5. Cache Docker layers for faster builds                │  │
 │  └────────────────────────────────────────────────────────┘  │
 └──────────────────────────────────────────────────────────────┘
@@ -156,9 +156,9 @@
 
 **Image naming**:
 ```
-ghcr.io/gpt153/project-orchestrator:latest
-ghcr.io/gpt153/project-orchestrator:sha-abc1234
-ghcr.io/gpt153/project-orchestrator:v0.1.0
+ghcr.io/gpt153/project-manager:latest
+ghcr.io/gpt153/project-manager:sha-abc1234
+ghcr.io/gpt153/project-manager:v0.1.0
 ```
 
 ### Step 4: Production Deployment Workflow (deploy.yml)
@@ -192,11 +192,11 @@ ghcr.io/gpt153/project-orchestrator:v0.1.0
 **Deployment Strategy** (Zero-downtime):
 ```bash
 # Pull new image
-docker pull ghcr.io/gpt153/project-orchestrator:latest
+docker pull ghcr.io/gpt153/project-manager:latest
 
 # Run migrations (in separate container)
 docker run --rm --env-file .env \
-  ghcr.io/gpt153/project-orchestrator:latest \
+  ghcr.io/gpt153/project-manager:latest \
   alembic upgrade head
 
 # Update and restart (docker-compose handles gracefully)
@@ -217,7 +217,7 @@ version: '3.8'
 
 services:
   app:
-    image: ghcr.io/gpt153/project-orchestrator:latest
+    image: ghcr.io/gpt153/project-manager:latest
     restart: always
     environment:
       - APP_ENV=production
@@ -243,7 +243,7 @@ services:
   postgres:
     restart: always
     volumes:
-      - /var/lib/project-orchestrator/postgres:/var/lib/postgresql/data
+      - /var/lib/project-manager/postgres:/var/lib/postgresql/data
     logging:
       driver: "json-file"
       options:
@@ -289,10 +289,10 @@ set -e
 echo "🚀 Starting deployment..."
 
 # Configuration
-REPO="ghcr.io/gpt153/project-orchestrator"
+REPO="ghcr.io/gpt153/project-manager"
 TAG="${1:-latest}"
 COMPOSE_FILE="docker-compose.prod.yml"
-APP_DIR="/opt/project-orchestrator"
+APP_DIR="/opt/project-manager"
 
 cd "$APP_DIR"
 
@@ -303,7 +303,7 @@ docker pull "$REPO:$TAG"
 # Run migrations
 echo "🗄️  Running database migrations..."
 docker run --rm \
-  --network project-orchestrator_default \
+  --network project-manager_default \
   --env-file .env \
   "$REPO:$TAG" \
   alembic upgrade head
@@ -418,8 +418,8 @@ jobs:
    ```bash
    # Revert to previous image
    docker-compose -f docker-compose.prod.yml down
-   docker tag ghcr.io/gpt153/project-orchestrator:sha-<previous> \
-              ghcr.io/gpt153/project-orchestrator:latest
+   docker tag ghcr.io/gpt153/project-manager:sha-<previous> \
+              ghcr.io/gpt153/project-manager:latest
    docker-compose -f docker-compose.prod.yml up -d
    ```
 

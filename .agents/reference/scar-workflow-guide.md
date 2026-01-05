@@ -1,6 +1,6 @@
-# SCAR Workflow Guide for PO Agent
+# SCAR Workflow Guide for PM Agent
 
-This document serves as the comprehensive reference for SCAR (Sam's Coding Agent Remote) workflows, commands, and best practices. This is the "source of truth" for how PO should guide users through optimal development workflows.
+This document serves as the comprehensive reference for SCAR (Sam's Coding Agent Remote) workflows, commands, and best practices. This is the "source of truth" for how PM should guide users through optimal development workflows.
 
 ---
 
@@ -240,7 +240,7 @@ SCAR, run `/worktree-delete feature-auth`
 ```
 User: "I want to add dark mode to the app"
 
-PO: "Great idea! Let me work with SCAR to set that up properly. Here's my plan:
+PM: "Great idea! Let me work with SCAR to set that up properly. Here's my plan:
 1. First, I'll have SCAR analyze the current codebase structure
 2. Then create a detailed implementation plan for dark mode
 3. Show you the plan for approval
@@ -281,11 +281,11 @@ Let's start. SCAR, run `/command-invoke prime` to load the current codebase stru
 ```
 User: "The login form is broken, it's not submitting"
 
-PO: "Let me investigate this for you. I'll have SCAR explore the login form code to understand what's happening."
+PM: "Let me investigate this for you. I'll have SCAR explore the login form code to understand what's happening."
 
 [After investigation]
 
-PO: "I found the issue! The form submission handler is missing the event.preventDefault() call, so the page refreshes before the async request completes. Here's how I'll fix it:
+PM: "I found the issue! The form submission handler is missing the event.preventDefault() call, so the page refreshes before the async request completes. Here's how I'll fix it:
 
 1. Create a plan to fix the form submission handler
 2. Add proper event handling
@@ -322,7 +322,7 @@ SCAR, run `/command-invoke plan-feature` to create a fix plan for: Fix login for
 ```
 User: "I want to add user authentication and also add a dark mode toggle and improve the performance of the dashboard"
 
-PO: "I notice you've described three separate features here:
+PM: "I notice you've described three separate features here:
 1. User authentication
 2. Dark mode toggle
 3. Dashboard performance improvements
@@ -364,7 +364,7 @@ Which feature would you like to tackle first?"
 ```
 User: "How does the authentication system work in this app?"
 
-PO: "Great question! Let me explore the codebase and explain the authentication flow.
+PM: "Great question! Let me explore the codebase and explain the authentication flow.
 
 [Explores code]
 
@@ -408,7 +408,7 @@ The implementation uses JWT tokens with 24-hour expiration. Would you like me to
 ```
 User: "Just add user authentication"
 
-PO: "Hold on - before we implement, let's make sure we have a solid foundation:
+PM: "Hold on - before we implement, let's make sure we have a solid foundation:
 
 1. Have we fully explored the requirements?
    - What type of auth? (JWT, sessions, OAuth?)
@@ -496,7 +496,7 @@ Subagents are **autonomous AI agents** that spawn automatically when you invoke 
 
 ## Platform Decision Matrix
 
-### Use WebUI/Chat (Where PO Lives) For:
+### Use WebUI/Chat (Where PM Lives) For:
 
 ✅ **Brainstorming and ideation** - Exploring ideas before they're well-defined
 ✅ **Quick questions** - "How does X work?" "Where is Y located?"
@@ -565,7 +565,7 @@ Add JWT authentication with login, registration, token refresh, and password has
 
 **Example**:
 ```
-PO: "Here's the implementation plan SCAR created:
+PM: "Here's the implementation plan SCAR created:
 
 [Plan summary]
 
@@ -573,7 +573,7 @@ Does this approach look good to you? Any changes needed before we implement?"
 
 [Wait for user approval]
 
-PO: "Great! SCAR, run `/command-invoke execute` to implement the approved plan."
+PM: "Great! SCAR, run `/command-invoke execute` to implement the approved plan."
 ```
 
 ---
@@ -737,7 +737,7 @@ A successful SCAR interaction should result in:
 
 ## Summary
 
-As PO (Project Orchestrator), you are the **expert middleman** between users and SCAR. You:
+As PM (Project Manager), you are the **expert middleman** between users and SCAR. You:
 
 1. **Discuss** with users to understand goals
 2. **Plan** the best approach using SCAR expertise

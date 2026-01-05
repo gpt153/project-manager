@@ -1,6 +1,6 @@
 # CI/CD Pipeline Setup Guide
 
-This document explains how to set up and use the complete CI/CD pipeline for Project Orchestrator.
+This document explains how to set up and use the complete CI/CD pipeline for Project Manager.
 
 ## Overview
 
@@ -96,7 +96,7 @@ tar xzf ./actions-runner-linux-x64-2.311.0.tar.gz
 # Copy the registration token
 
 # Configure runner
-./config.sh --url https://github.com/gpt153/project-orchestrator --token YOUR_TOKEN_HERE
+./config.sh --url https://github.com/gpt153/project-manager --token YOUR_TOKEN_HERE
 
 # Install as service (runs on boot)
 sudo ./svc.sh install
@@ -127,7 +127,7 @@ cd /home/samuel/po
 # Create .env file with production credentials
 cat > /home/samuel/po/.env << 'EOF'
 # Application
-APP_NAME=Project Orchestrator
+APP_NAME=Project Manager
 APP_ENV=production
 LOG_LEVEL=INFO
 SECRET_KEY=your-super-secret-production-key-here
@@ -181,7 +181,7 @@ docker-compose up -d
 docker run --rm \
   --network host \
   --env-file .env \
-  ghcr.io/gpt153/project-orchestrator:latest \
+  ghcr.io/gpt153/project-manager:latest \
   alembic upgrade head
 ```
 
@@ -211,7 +211,7 @@ git push origin test-ci-pipeline
 # Watch "Build and Push Docker Image" workflow
 
 # Verify image was pushed
-docker pull ghcr.io/gpt153/project-orchestrator:latest
+docker pull ghcr.io/gpt153/project-manager:latest
 ```
 
 #### Test Deployment
@@ -273,7 +273,7 @@ curl http://localhost:8000/health
    - `sha-abc1234` - specific commit identifier
    - `v1.2.3` - semantic version (if tagged)
 5. Build multi-platform image (linux/amd64)
-6. Push to ghcr.io/gpt153/project-orchestrator
+6. Push to ghcr.io/gpt153/project-manager
 7. Use layer caching for fast builds
 
 **Outputs:**
@@ -329,12 +329,12 @@ cd /home/samuel/po
 
 ```bash
 # Find previous image
-docker images | grep project-orchestrator
+docker images | grep project-manager
 
 # Deploy specific version
 cd /home/samuel/po
 docker-compose down
-docker pull ghcr.io/gpt153/project-orchestrator:sha-previous
+docker pull ghcr.io/gpt153/project-manager:sha-previous
 sed -i 's|:latest|:sha-previous|' docker-compose.yml
 docker-compose up -d
 ```
@@ -360,7 +360,7 @@ cd /home/samuel/po
 docker run --rm \
   --network host \
   --env-file .env \
-  ghcr.io/gpt153/project-orchestrator:latest \
+  ghcr.io/gpt153/project-manager:latest \
   alembic upgrade head
 ```
 
@@ -434,7 +434,7 @@ cd /home/samuel/po
 docker-compose logs app
 
 # Check specific container
-docker logs project-orchestrator-app
+docker logs project-manager-app
 
 # Check health endpoint manually
 curl -v http://localhost:8000/health

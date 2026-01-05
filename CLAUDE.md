@@ -1,8 +1,8 @@
-# Project Orchestrator - AI Development Guidelines
+# Project Manager - AI Development Guidelines
 
 ## Overview
 
-**Project Orchestrator** is an AI-powered project management agent that helps non-technical users build software through natural language conversation, automated vision generation, and SCAR workflow automation.
+**Project Manager** is an AI-powered project management agent that helps non-technical users build software through natural language conversation, automated vision generation, and SCAR workflow automation.
 
 **Tech Stack**: PydanticAI + FastAPI + PostgreSQL + Telegram + GitHub
 
@@ -347,7 +347,7 @@ curl http://localhost:8000/health/ready  # Full readiness
 
 ## References
 
-- **System Review**: `.agents/system-reviews/project-orchestrator-review.md`
+- **System Review**: `.agents/system-reviews/project-manager-review.md`
 - **Operations Runbook**: `docs/OPERATIONS.md`
 - **Production Checklist**: `.agents/commands/production-checklist.md`
 - **Implementation Plans**: `.agents/plans/`

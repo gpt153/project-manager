@@ -1,9 +1,9 @@
 # Production Hardening Implementation Summary - Issue #28
 
 **Date**: January 2, 2026
-**Issue**: https://github.com/gpt153/project-orchestrator/issues/28
+**Issue**: https://github.com/gpt153/project-manager/issues/28
 **Plan**: `.agents/plans/production-hardening-issue-28.md`
-**System Review**: `.agents/system-reviews/project-orchestrator-review.md`
+**System Review**: `.agents/system-reviews/project-manager-review.md`
 
 ---
 
@@ -187,7 +187,7 @@ createdb -U postgres project_orchestrator_test
 # Edit tests/conftest.py line 28
 
 # 3. Run migrations on test database
-cd /home/samuel/.archon/workspaces/project-orchestrator
+cd /home/samuel/.archon/workspaces/project-manager
 uv run alembic upgrade head
 
 # 4. Run tests
@@ -322,7 +322,7 @@ After implementation, verify:
 
 ```bash
 # Navigate to project
-cd /home/samuel/.archon/workspaces/project-orchestrator
+cd /home/samuel/.archon/workspaces/project-manager
 
 # Create test database
 createdb -U postgres project_orchestrator_test || echo "DB might exist"

@@ -1,6 +1,6 @@
-# Project Orchestrator - Deployment Guide
+# Project Manager - Deployment Guide
 
-Complete guide for deploying the Project Orchestrator in production or staging environments.
+Complete guide for deploying the Project Manager in production or staging environments.
 
 ## Prerequisites
 
@@ -26,7 +26,7 @@ Edit the `.env` file with your actual values:
 
 ```bash
 # Application Configuration
-APP_NAME="Project Orchestrator"
+APP_NAME="Project Manager"
 APP_ENV=production  # Change to 'production' for prod
 LOG_LEVEL=INFO
 SECRET_KEY=your-super-secret-key-change-me  # Generate with: openssl rand -hex 32
@@ -85,7 +85,7 @@ continue - Advance to next workflow phase
 #### GitHub Personal Access Token
 1. Go to GitHub Settings > Developer settings > Personal access tokens > Tokens (classic)
 2. Click "Generate new token (classic)"
-3. Give it a descriptive name: "Project Orchestrator Bot"
+3. Give it a descriptive name: "Project Manager Bot"
 4. Select scopes:
    - `repo` (all sub-scopes)
    - `admin:repo_hook` (for webhook management)
@@ -232,21 +232,21 @@ For production Linux servers, use systemd to manage services.
 
 #### Step 1: Create systemd Service Files
 
-Create `/etc/systemd/system/project-orchestrator-api.service`:
+Create `/etc/systemd/system/project-manager-api.service`:
 
 ```ini
 [Unit]
-Description=Project Orchestrator FastAPI Application
+Description=Project Manager FastAPI Application
 After=network.target postgresql.service
 
 [Service]
 Type=simple
 User=www-data
 Group=www-data
-WorkingDirectory=/opt/project-orchestrator
-Environment="PATH=/opt/project-orchestrator/venv/bin"
-EnvironmentFile=/opt/project-orchestrator/.env
-ExecStart=/opt/project-orchestrator/venv/bin/uvicorn src.main:app --host 0.0.0.0 --port 8000 --workers 4
+WorkingDirectory=/opt/project-manager
+Environment="PATH=/opt/project-manager/venv/bin"
+EnvironmentFile=/opt/project-manager/.env
+ExecStart=/opt/project-manager/venv/bin/uvicorn src.main:app --host 0.0.0.0 --port 8000 --workers 4
 Restart=always
 RestartSec=10
 
@@ -254,21 +254,21 @@ RestartSec=10
 WantedBy=multi-user.target
 ```
 
-Create `/etc/systemd/system/project-orchestrator-bot.service`:
+Create `/etc/systemd/system/project-manager-bot.service`:
 
 ```ini
 [Unit]
-Description=Project Orchestrator Telegram Bot
-After=network.target project-orchestrator-api.service
+Description=Project Manager Telegram Bot
+After=network.target project-manager-api.service
 
 [Service]
 Type=simple
 User=www-data
 Group=www-data
-WorkingDirectory=/opt/project-orchestrator
-Environment="PATH=/opt/project-orchestrator/venv/bin"
-EnvironmentFile=/opt/project-orchestrator/.env
-ExecStart=/opt/project-orchestrator/venv/bin/python -m src.bot_main
+WorkingDirectory=/opt/project-manager
+Environment="PATH=/opt/project-manager/venv/bin"
+EnvironmentFile=/opt/project-manager/.env
+ExecStart=/opt/project-manager/venv/bin/python -m src.bot_main
 Restart=always
 RestartSec=10
 
@@ -283,20 +283,20 @@ WantedBy=multi-user.target
 sudo systemctl daemon-reload
 
 # Enable services to start on boot
-sudo systemctl enable project-orchestrator-api
-sudo systemctl enable project-orchestrator-bot
+sudo systemctl enable project-manager-api
+sudo systemctl enable project-manager-bot
 
 # Start services
-sudo systemctl start project-orchestrator-api
-sudo systemctl start project-orchestrator-bot
+sudo systemctl start project-manager-api
+sudo systemctl start project-manager-bot
 
 # Check status
-sudo systemctl status project-orchestrator-api
-sudo systemctl status project-orchestrator-bot
+sudo systemctl status project-manager-api
+sudo systemctl status project-manager-bot
 
 # View logs
-sudo journalctl -u project-orchestrator-api -f
-sudo journalctl -u project-orchestrator-bot -f
+sudo journalctl -u project-manager-api -f
+sudo journalctl -u project-manager-bot -f
 ```
 
 ## Database Setup
@@ -351,7 +351,7 @@ python scripts/init_db.py
 For production, use Nginx as a reverse proxy:
 
 ```nginx
-# /etc/nginx/sites-available/project-orchestrator
+# /etc/nginx/sites-available/project-manager
 server {
     listen 80;
     server_name your-domain.com;
@@ -396,7 +396,7 @@ server {
 Enable the site:
 
 ```bash
-sudo ln -s /etc/nginx/sites-available/project-orchestrator /etc/nginx/sites-enabled/
+sudo ln -s /etc/nginx/sites-available/project-manager /etc/nginx/sites-enabled/
 sudo nginx -t
 sudo systemctl reload nginx
 ```
@@ -424,11 +424,11 @@ sudo ufw enable
 
 ### 4. Database Backups
 
-Create a backup script `/opt/project-orchestrator/scripts/backup_db.sh`:
+Create a backup script `/opt/project-manager/scripts/backup_db.sh`:
 
 ```bash
 #!/bin/bash
-BACKUP_DIR="/opt/project-orchestrator/backups"
+BACKUP_DIR="/opt/project-manager/backups"
 DATE=$(date +%Y%m%d_%H%M%S)
 BACKUP_FILE="$BACKUP_DIR/db_backup_$DATE.sql"
 
@@ -447,17 +447,17 @@ Add to crontab:
 
 ```bash
 # Run daily at 2 AM
-0 2 * * * /opt/project-orchestrator/scripts/backup_db.sh
+0 2 * * * /opt/project-manager/scripts/backup_db.sh
 ```
 
 ### 5. Monitoring and Logging
 
 #### Set Up Log Rotation
 
-Create `/etc/logrotate.d/project-orchestrator`:
+Create `/etc/logrotate.d/project-manager`:
 
 ```
-/var/log/project-orchestrator/*.log {
+/var/log/project-manager/*.log {
     daily
     rotate 14
     compress
@@ -474,7 +474,7 @@ Use a service like UptimeRobot or create a cron job:
 
 ```bash
 # Check health every 5 minutes
-*/5 * * * * curl -f http://localhost:8000/health || echo "Health check failed" | mail -s "Project Orchestrator Down" admin@example.com
+*/5 * * * * curl -f http://localhost:8000/health || echo "Health check failed" | mail -s "Project Manager Down" admin@example.com
 ```
 
 ## Troubleshooting
@@ -484,7 +484,7 @@ Use a service like UptimeRobot or create a cron job:
 ```bash
 # Check logs
 docker-compose logs app  # For Docker
-sudo journalctl -u project-orchestrator-api -n 50  # For systemd
+sudo journalctl -u project-manager-api -n 50  # For systemd
 
 # Common issues:
 # 1. Database connection failed
@@ -572,8 +572,8 @@ pip install -e .
 alembic upgrade head
 
 # Restart services
-sudo systemctl restart project-orchestrator-api
-sudo systemctl restart project-orchestrator-bot
+sudo systemctl restart project-manager-api
+sudo systemctl restart project-manager-bot
 ```
 
 ## Security Best Practices
@@ -601,6 +601,6 @@ After deployment is complete:
 ## Support
 
 For issues or questions:
-- Check the [GitHub Issues](https://github.com/gpt153/project-orchestrator/issues)
+- Check the [GitHub Issues](https://github.com/gpt153/project-manager/issues)
 - Review logs for error messages
 - Consult the [README.md](../README.md) for general info

@@ -1,10 +1,10 @@
 # Database Setup and Management Guide
 
-Complete guide for setting up, initializing, and managing the Project Orchestrator database.
+Complete guide for setting up, initializing, and managing the Project Manager database.
 
 ## Overview
 
-The Project Orchestrator uses PostgreSQL with async SQLAlchemy for data persistence:
+The Project Manager uses PostgreSQL with async SQLAlchemy for data persistence:
 
 - **Database**: PostgreSQL 14+
 - **ORM**: SQLAlchemy 2.0+ (async)

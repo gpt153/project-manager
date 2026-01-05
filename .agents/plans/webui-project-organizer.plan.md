@@ -8,7 +8,7 @@ Build a web-based user interface for the Project Organizer with a 3-panel layout
 
 The Project Organizer currently has no web interface, forcing users to rely entirely on Telegram or GitHub issues for interaction. This WebUI will provide a unified dashboard where users can:
 1. **Visualize project structure** - See all projects, issues (open/closed), and documentation in one place
-2. **Chat directly with PO** - Conversational interface without needing to @mention
+2. **Chat directly with PM** - Conversational interface without needing to @mention
 3. **Monitor SCAR activity** - Real-time visibility into the AI agent's work
 4. **Access from anywhere** - Web-based interface accessible from any device, potentially replacing Telegram integration
 
@@ -25,7 +25,7 @@ This addresses the limitation of fragmented workflows and provides a centralized
 
 **Usage Pattern:**
 - Morning: Check project status from phone while commuting
-- Afternoon: Chat with PO from desktop browser to refine features
+- Afternoon: Chat with PM from desktop browser to refine features
 - Evening: Review SCAR feed to understand what was built
 - Weekend: Browse markdown docs to understand technical decisions
 
@@ -73,10 +73,10 @@ User workflow is fragmented across multiple platforms:
 │ Project Organizer - po.153.se                          [user] [settings] │
 ├────────────┬─────────────────────────────┬──────────────────────────────┤
 │            │                             │                              │
-│ PROJECTS   │   CHAT WITH @PO             │   SCAR FEED (Live)           │
+│ PROJECTS   │   CHAT WITH @PM             │   SCAR FEED (Live)           │
 │ (20%)      │   (40%)                     │   (40%)                      │
 │            │                             │                              │
-│ ├─📂 meal- │  You: I want to add a dark  │  [11:23:45] PO → SCAR       │
+│ ├─📂 meal- │  You: I want to add a dark  │  [11:23:45] PM → SCAR       │
 │ │  planner │      mode feature           │  Plan: Dark mode toggle     │
 │ │  ├─ #1   │                             │                              │
 │ │  │  ❓ open│  @po: Great idea! Let me   │  [11:23:47] SCAR → Claude   │
@@ -229,7 +229,7 @@ Interactions:
 
 ## Patterns to Mirror
 
-Since this is a new codebase (no existing project-orchestrator source code yet), we'll mirror patterns from:
+Since this is a new codebase (no existing project-manager source code yet), we'll mirror patterns from:
 1. **Telegram bot example** (`.agents/examples/codex-telegram-bot/`) - TypeScript, modular structure
 2. **PRD architecture** (`.agents/PRD.md`) - Database schema, platform patterns
 3. **Next.js best practices** (external research)
@@ -1291,7 +1291,7 @@ export async function GET(request: NextRequest) {
 
 ### Task 10: SCAR Feed Component with Server-Sent Events (Right Panel)
 
-**Why**: Real-time visibility into SCAR activity (what PO sends to SCAR, SCAR's responses).
+**Why**: Real-time visibility into SCAR activity (what PM sends to SCAR, SCAR's responses).
 
 **Mirror**: SSE pattern from research, EventSource API
 
@@ -1350,7 +1350,7 @@ export default function ScarFeed() {
 
   const getEventLabel = (type: ScarEvent['type']) => {
     switch (type) {
-      case 'po_to_scar': return 'PO → SCAR';
+      case 'po_to_scar': return 'PM → SCAR';
       case 'scar_to_claude': return 'SCAR → Claude';
       case 'claude_output': return 'Claude Output';
     }

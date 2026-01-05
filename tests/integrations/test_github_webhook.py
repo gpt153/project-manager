@@ -44,7 +44,7 @@ def sample_issue_comment_payload():
         },
         "comment": {
             "id": 1234567890,
-            "body": "@po please help me with authentication",
+            "body": "@pm please help me with authentication",
             "user": {"login": "testuser"},
             "html_url": "https://github.com/owner/repo/issues/42#issuecomment-1234567890",
         },

@@ -1,13 +1,13 @@
-# Project Orchestrator Agent Documentation - COMPLETE ✅
+# Project Manager Agent Documentation - COMPLETE ✅
 
 **Created**: 2025-12-26
-**Location**: `/home/samuel/.archon/workspaces/project-orchestrator/docs/orchestrator-agent-guide/`
+**Location**: `/home/samuel/.archon/workspaces/project-manager/docs/orchestrator-agent-guide/`
 
 ---
 
 ## 📦 What Was Created
 
-I have created **comprehensive expert-level documentation** for the Project Orchestrator Agent. This agent is designed to be an EXPERT in all slash commands, subagents, and workflows for the Remote Coding Agent (SCAR) platform.
+I have created **comprehensive expert-level documentation** for the Project Manager Agent. This agent is designed to be an EXPERT in all slash commands, subagents, and workflows for the Remote Coding Agent (SCAR) platform.
 
 ### Documentation Files (7 total)
 
@@ -144,7 +144,7 @@ Structured progression:
 
 ## 🚀 How to Use This Documentation
 
-### For the Project Orchestrator Agent
+### For the Project Manager Agent
 
 This documentation should be your **comprehensive knowledge base**. You are now equipped to:
 
@@ -168,7 +168,7 @@ This documentation can be used:
 
 ## 📚 What the Agent Should Know
 
-After reading this documentation, the Project Orchestrator Agent should be able to:
+After reading this documentation, the Project Manager Agent should be able to:
 
 ### Commands & Usage
 ✅ Explain what every command does
@@ -287,7 +287,7 @@ As documented in this guide, the creators of SCAR intended:
 
 ## 🎯 Mission Accomplished
 
-The Project Orchestrator Agent now has **complete expert-level documentation** covering:
+The Project Manager Agent now has **complete expert-level documentation** covering:
 
 1. ✅ **All slash commands** - 30+ commands with full documentation
 2. ✅ **All subagents** - Explore, Plan, general-purpose with usage patterns
@@ -304,7 +304,7 @@ The Project Orchestrator Agent now has **complete expert-level documentation** c
 ---
 
 **Documentation Location**:
-`/home/samuel/.archon/workspaces/project-orchestrator/docs/orchestrator-agent-guide/`
+`/home/samuel/.archon/workspaces/project-manager/docs/orchestrator-agent-guide/`
 
 **Total Size**: ~100 KB of comprehensive markdown documentation
 

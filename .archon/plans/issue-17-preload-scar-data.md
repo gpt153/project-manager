@@ -55,8 +55,8 @@ Create a configuration file that specifies which projects to pre-load:
 {
   "projects": [
     {
-      "name": "Project Orchestrator",
-      "github_repo": "gpt153/project-orchestrator",
+      "name": "Project Manager",
+      "github_repo": "gpt153/project-manager",
       "description": "AI agent for non-technical project management",
       "telegram_chat_id": null
     },
@@ -73,7 +73,7 @@ Create a configuration file that specifies which projects to pre-load:
 Alternatively, support environment variable for dynamic import:
 
 ```env
-SCAR_IMPORT_REPOS="gpt153/project-orchestrator,gpt153/scar-webui"
+SCAR_IMPORT_REPOS="gpt153/project-manager,gpt153/scar-webui"
 SCAR_IMPORT_USER="gpt153"
 SCAR_IMPORT_ORG=""
 ```

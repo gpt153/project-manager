@@ -1,6 +1,6 @@
 #!/bin/bash
-# Project Orchestrator - Production Deployment Script
-# This script deploys the Project Orchestrator to /home/samuel/po
+# Project Manager - Production Deployment Script
+# This script deploys the Project Manager to /home/samuel/po
 
 set -e  # Exit on error
 
@@ -12,12 +12,12 @@ NC='\033[0m' # No Color
 
 # Configuration
 DEPLOY_DIR="/home/samuel/po"
-REPO_URL="https://github.com/gpt153/project-orchestrator.git"
+REPO_URL="https://github.com/gpt153/project-manager.git"
 PYTHON_VERSION="3.11"
 NODE_VERSION="20"
 
 echo -e "${GREEN}========================================${NC}"
-echo -e "${GREEN}Project Orchestrator Deployment Script${NC}"
+echo -e "${GREEN}Project Manager Deployment Script${NC}"
 echo -e "${GREEN}========================================${NC}"
 echo ""
 
@@ -179,16 +179,16 @@ if systemctl is-active --quiet postgresql; then
     print_status "PostgreSQL is running"
 
     # Ask user if they want to create database
-    read -p "Create database 'project_orchestrator'? (y/n) " -n 1 -r
+    read -p "Create database 'project_manager'? (y/n) " -n 1 -r
     echo
     if [[ $REPLY =~ ^[Yy]$ ]]; then
         read -p "Enter PostgreSQL admin password: " -s PG_PASS
         echo
 
         # Create database user and database
-        sudo -u postgres psql -c "CREATE USER orchestrator WITH PASSWORD 'dev_password';" 2>/dev/null || print_warning "User already exists"
-        sudo -u postgres psql -c "CREATE DATABASE project_orchestrator OWNER orchestrator;" 2>/dev/null || print_warning "Database already exists"
-        sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE project_orchestrator TO orchestrator;" 2>/dev/null
+        sudo -u postgres psql -c "CREATE USER manager WITH PASSWORD 'dev_password';" 2>/dev/null || print_warning "User already exists"
+        sudo -u postgres psql -c "CREATE DATABASE project_manager OWNER manager;" 2>/dev/null || print_warning "Database already exists"
+        sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE project_manager TO manager;" 2>/dev/null
 
         print_status "Database created"
     fi
@@ -228,9 +228,9 @@ echo ""
 # Step 8: Create systemd service files
 echo "Step 8: Creating systemd services..."
 
-cat > /tmp/project-orchestrator-api.service << EOF
+cat > /tmp/project-manager-api.service << EOF
 [Unit]
-Description=Project Orchestrator FastAPI Application
+Description=Project Manager FastAPI Application
 After=network.target postgresql.service
 
 [Service]
@@ -248,10 +248,10 @@ RestartSec=10
 WantedBy=multi-user.target
 EOF
 
-cat > /tmp/project-orchestrator-bot.service << EOF
+cat > /tmp/project-manager-bot.service << EOF
 [Unit]
-Description=Project Orchestrator Telegram Bot
-After=network.target project-orchestrator-api.service
+Description=Project Manager Telegram Bot
+After=network.target project-manager-api.service
 
 [Service]
 Type=simple
@@ -270,10 +270,10 @@ EOF
 
 print_status "Systemd service files created in /tmp"
 print_warning "To install systemd services, run as root:"
-echo "  sudo cp /tmp/project-orchestrator-*.service /etc/systemd/system/"
+echo "  sudo cp /tmp/project-manager-*.service /etc/systemd/system/"
 echo "  sudo systemctl daemon-reload"
-echo "  sudo systemctl enable project-orchestrator-api project-orchestrator-bot"
-echo "  sudo systemctl start project-orchestrator-api project-orchestrator-bot"
+echo "  sudo systemctl enable project-manager-api project-manager-bot"
+echo "  sudo systemctl start project-manager-api project-manager-bot"
 echo ""
 
 # Step 9: Summary
@@ -287,15 +287,15 @@ echo "Next steps:"
 echo "1. Edit .env file with your API keys: nano $DEPLOY_DIR/.env"
 echo "2. Install systemd services (see commands above)"
 echo "3. Start the services:"
-echo "   sudo systemctl start project-orchestrator-api"
-echo "   sudo systemctl start project-orchestrator-bot"
+echo "   sudo systemctl start project-manager-api"
+echo "   sudo systemctl start project-manager-bot"
 echo "4. Check service status:"
-echo "   sudo systemctl status project-orchestrator-api"
-echo "   sudo systemctl status project-orchestrator-bot"
+echo "   sudo systemctl status project-manager-api"
+echo "   sudo systemctl status project-manager-bot"
 echo "5. Test the API:"
 echo "   curl http://localhost:8000/health"
 echo "6. View logs:"
-echo "   sudo journalctl -u project-orchestrator-api -f"
+echo "   sudo journalctl -u project-manager-api -f"
 echo ""
 echo "Documentation:"
 echo "- Deployment guide: $DEPLOY_DIR/docs/DEPLOYMENT.md"

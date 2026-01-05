@@ -1,6 +1,6 @@
-# Testing Guide for Project Orchestrator
+# Testing Guide for Project Manager
 
-Complete guide for testing all components of the Project Orchestrator after deployment.
+Complete guide for testing all components of the Project Manager after deployment.
 
 ## Overview
 
@@ -137,7 +137,7 @@ DELETE FROM projects WHERE name = 'Test Project';
 
 **Expected Response**:
 ```
-👋 Welcome to Project Orchestrator!
+👋 Welcome to Project Manager!
 
 I help non-technical people build software projects through conversation.
 
@@ -300,7 +300,7 @@ docker-compose ps | grep app
 # 2. Check bot logs
 docker-compose logs -f app | grep telegram
 # Or:
-sudo journalctl -u project-orchestrator-bot -f
+sudo journalctl -u project-manager-bot -f
 
 # 3. Verify bot token
 curl "https://api.telegram.org/bot<YOUR_TOKEN>/getMe"

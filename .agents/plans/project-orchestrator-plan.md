@@ -1,13 +1,13 @@
-# Project Orchestrator - AI Workflow Manager
+# Project Manager - AI Workflow Manager
 ## Comprehensive Implementation Plan
 
-Based on my analysis of the vision document, SCAR workflow commands, and the current repository structure, here is a detailed, actionable implementation plan for building the Project Orchestrator agent.
+Based on my analysis of the vision document, SCAR workflow commands, and the current repository structure, here is a detailed, actionable implementation plan for building the Project Manager agent.
 
 ---
 
 ## Executive Summary
 
-The Project Orchestrator is an AI-powered project management agent that bridges the gap between non-technical users and the SCAR (Sam's Coding Agent Remote) development system. It will translate natural language conversations into structured development workflows, manage approval gates, generate vision documents, and orchestrate the complete software development lifecycle.
+The Project Manager is an AI-powered project management agent that bridges the gap between non-technical users and the SCAR (Sam's Coding Agent Remote) development system. It will translate natural language conversations into structured development workflows, manage approval gates, generate vision documents, and orchestrate the complete software development lifecycle.
 
 **Core Architecture**: PydanticAI-based conversational agent with PostgreSQL state management, integrated with Telegram for user interaction and GitHub for workflow execution.
 
@@ -31,7 +31,7 @@ The Project Orchestrator is an AI-powered project management agent that bridges 
             │                              │
             ▼                              ▼
 ┌─────────────────────────────────────────────────────────────┐
-│              Project Orchestrator Agent Core                │
+│              Project Manager Agent Core                │
 │  ┌────────────────────────────────────────────────────┐    │
 │  │         PydanticAI Conversational Agent             │    │
 │  │  - Brainstorming & Requirements Gathering          │    │
@@ -527,7 +527,7 @@ Continue workflow...
 #### Flow 2: @Mention in GitHub Issue
 
 ```
-User creates GitHub issue and @mentions project-orchestrator
+User creates GitHub issue and @mentions project-manager
   ↓
 GitHub webhook fires
   ↓
@@ -1012,7 +1012,7 @@ class OrchestratorBot:
     async def start(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         """Handle /start command"""
         await update.message.reply_text(
-            "👋 Hi! I'm your Project Orchestrator.\n\n"
+            "👋 Hi! I'm your Project Manager.\n\n"
             "I help you build software projects without knowing how to code.\n\n"
             "Just tell me about your idea, and I'll guide you through the process!\n\n"
             "What would you like to build?"
@@ -1748,12 +1748,12 @@ class MultiProjectManager:
 ### 5.1 New Project Structure
 
 ```
-project-orchestrator/
+project-manager/
 ├── .agents/
 │   ├── visions/
-│   │   └── project-orchestrator.md (existing)
+│   │   └── project-manager.md (existing)
 │   ├── plans/
-│   │   └── project-orchestrator-plan.md (this document)
+│   │   └── project-manager-plan.md (this document)
 │   └── commands/ (existing)
 ├── src/
 │   ├── __init__.py
@@ -1837,7 +1837,7 @@ project-orchestrator/
 
 ```toml
 [project]
-name = "project-orchestrator"
+name = "project-manager"
 version = "0.1.0"
 description = "AI agent that helps non-coders build software projects"
 requires-python = ">=3.11"
@@ -2456,7 +2456,7 @@ Ready for review!"
 
 ## Critical Files for Implementation
 
-Based on this comprehensive plan, here are the 5 most critical files for implementing the Project Orchestrator:
+Based on this comprehensive plan, here are the 5 most critical files for implementing the Project Manager:
 
 1. **src/agent/orchestrator_agent.py** - Core PydanticAI agent setup with system prompt, tools, and conversation management. This is the brain of the orchestrator and determines all intelligent behavior.
 

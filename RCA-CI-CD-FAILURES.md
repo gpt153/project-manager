@@ -9,7 +9,7 @@
 
 ## Executive Summary
 
-The CI/CD pipeline for the project-orchestrator repository has been experiencing **100% failure rate** since deployment. Analysis of the most recent run (20459637900) reveals **two distinct root causes**:
+The CI/CD pipeline for the project-manager repository has been experiencing **100% failure rate** since deployment. Analysis of the most recent run (20459637900) reveals **two distinct root causes**:
 
 1. **Database Authentication Failure** - Tests cannot connect to PostgreSQL
 2. **Code Quality Issues** - Linting failures blocking CI

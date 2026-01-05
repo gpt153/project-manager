@@ -104,7 +104,7 @@ The repository has multiple active branches with complex history:
 #### Unpushed Commits (6)
 
 ```bash
-e4f5d96 fix: Update workflow paths and references from project-orchestrator to project-manager
+e4f5d96 fix: Update workflow paths and references from project-manager to project-manager
 8cd3478 fix: Add missing slowapi dependency to resolve backend startup failure
 fe20dda feat: Complete production hardening implementation (Issue #28)
 495fcaa fix: Production hardening - Fix deprecations and test config (Issue #28)

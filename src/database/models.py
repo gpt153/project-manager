@@ -1,5 +1,5 @@
 """
-Database models for the Project Orchestrator.
+Database models for the Project Manager.
 
 This module defines all SQLAlchemy models for tracking projects, conversations,
 workflow phases, approval gates, and SCAR command executions.

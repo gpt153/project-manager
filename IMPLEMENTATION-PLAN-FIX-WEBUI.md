@@ -380,7 +380,7 @@ if __name__ == "__main__":
 
 **Run**:
 ```bash
-cd /worktrees/project-orchestrator/issue-13
+cd /worktrees/project-manager/issue-13
 python -m src.scripts.import_github_projects
 ```
 

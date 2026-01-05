@@ -702,4 +702,4 @@ Mastering Remote Coding Agent requires:
 
 **End of Orchestrator Agent Guide**
 
-You are now equipped to be an expert Project Orchestrator for Remote Coding Agent. Use these docs as your comprehensive reference. Guide users proactively, choose workflows wisely, and orchestrate development with confidence.
+You are now equipped to be an expert Project Manager for Remote Coding Agent. Use these docs as your comprehensive reference. Guide users proactively, choose workflows wisely, and orchestrate development with confidence.
