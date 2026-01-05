@@ -25,21 +25,28 @@ jobs:
         run: |
           docker compose down || true
 
-      - name: Update deployment files
-        run: |
-          mkdir -p ${{ env.DEPLOY_DIR }}
-          # Copy all files including hidden ones (like .scar/) but exclude .git
-          shopt -s dotglob
-          for item in *; do
-            if [ "$item" != ".git" ]; then
-              cp -r "$item" ${{ env.DEPLOY_DIR }}/
-            fi
-          done
-          shopt -u dotglob
-
-      - name: Build Docker image locally
+      - name: Update code in deployment directory
         working-directory: ${{ env.DEPLOY_DIR }}
         run: |
+          # Ensure deployment directory is a git repo
+          if [ ! -d .git ]; then
+            echo "Initializing git repository in deployment directory..."
+            git clone https://github.com/gpt153/project-manager.git .
+          fi
+
+          # Fetch latest changes and reset to match
+          echo "Fetching latest changes from remote..."
+          git fetch --all
+
+          echo "Resetting to match origin/${{ github.ref_name }}..."
+          git reset --hard origin/${{ github.ref_name }}
+
+          echo "✅ Deployment directory synced to commit: $(git rev-parse --short HEAD)"
+
+      - name: Build and restart containers
+        working-directory: ${{ env.DEPLOY_DIR }}
+        run: |
+          # Build Docker image
           docker compose build --no-cache
 
       - name: Start services with new image
