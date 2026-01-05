@@ -3,6 +3,7 @@ Rate limiting middleware using slowapi.
 
 Protects API endpoints from abuse and DoS attacks.
 """
+
 import os
 
 from fastapi import Request, Response

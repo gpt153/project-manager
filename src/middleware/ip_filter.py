@@ -3,6 +3,7 @@ IP filtering middleware for webhook security.
 
 Validates that webhook requests come from authorized sources.
 """
+
 import os
 from ipaddress import AddressValueError, ip_address, ip_network
 from typing import List

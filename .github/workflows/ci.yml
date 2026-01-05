@@ -82,6 +82,7 @@ jobs:
 
       - name: Run tests with coverage
         env:
+          TEST_DATABASE_URL: postgresql+asyncpg://orchestrator:test_password@localhost:5432/project_orchestrator_test
           DATABASE_URL: postgresql+asyncpg://orchestrator:test_password@localhost:5432/project_orchestrator_test
           REDIS_URL: redis://localhost:6379/0
           ANTHROPIC_API_KEY: sk-ant-test-key-for-ci
