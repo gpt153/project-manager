@@ -11,7 +11,7 @@ jobs:
     runs-on: self-hosted
 
     env:
-      DEPLOY_DIR: /home/samuel/.archon/workspaces/project-orchestrator
+      DEPLOY_DIR: /home/samuel/.archon/workspaces/project-manager
 
     steps:
       - name: Checkout code

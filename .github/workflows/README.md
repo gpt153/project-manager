@@ -1,6 +1,6 @@
 # GitHub Actions Workflows
 
-This directory contains CI/CD workflows for the Project Orchestrator.
+This directory contains CI/CD workflows for the Project Manager.
 
 ## Available Workflows
 
@@ -41,7 +41,7 @@ This directory contains CI/CD workflows for the Project Orchestrator.
   - `main-<sha>` for commits
   - `v1.0.0` for version tags
 
-**Image location:** `ghcr.io/gpt153/project-orchestrator`
+**Image location:** `ghcr.io/gpt153/project-manager`
 
 **No secrets required** (uses `GITHUB_TOKEN` automatically)
 
@@ -75,7 +75,7 @@ This directory contains CI/CD workflows for the Project Orchestrator.
 
 ### Navigate to Secrets
 
-1. Go to: https://github.com/gpt153/project-orchestrator/settings/secrets/actions
+1. Go to: https://github.com/gpt153/project-manager/settings/secrets/actions
 2. Click "New repository secret"
 
 ### Add Each Secret
@@ -110,7 +110,7 @@ curl -o actions-runner-linux-x64-2.311.0.tar.gz -L \
 tar xzf ./actions-runner-linux-x64-2.311.0.tar.gz
 
 # Configure the runner
-./config.sh --url https://github.com/gpt153/project-orchestrator --token YOUR_RUNNER_TOKEN
+./config.sh --url https://github.com/gpt153/project-manager --token YOUR_RUNNER_TOKEN
 
 # Install as a service
 sudo ./svc.sh install
@@ -120,13 +120,13 @@ sudo ./svc.sh start
 ```
 
 **Get your runner token:**
-1. Go to: https://github.com/gpt153/project-orchestrator/settings/actions/runners/new
+1. Go to: https://github.com/gpt153/project-manager/settings/actions/runners/new
 2. Copy the token shown
 3. Use it in the config.sh command above
 
 ### Verify Runner
 
-1. Go to: https://github.com/gpt153/project-orchestrator/settings/actions/runners
+1. Go to: https://github.com/gpt153/project-manager/settings/actions/runners
 2. You should see your runner listed as "Idle"
 
 ## Workflow Status Badges
@@ -134,9 +134,9 @@ sudo ./svc.sh start
 Add these to your README.md:
 
 ```markdown
-![CI Status](https://github.com/gpt153/project-orchestrator/workflows/CI%20-%20Test%20Suite/badge.svg)
-![Docker Build](https://github.com/gpt153/project-orchestrator/workflows/Docker%20Build%20and%20Push/badge.svg)
-![CD Status](https://github.com/gpt153/project-orchestrator/workflows/CD%20-%20Deploy%20to%20Production/badge.svg)
+![CI Status](https://github.com/gpt153/project-manager/workflows/CI%20-%20Test%20Suite/badge.svg)
+![Docker Build](https://github.com/gpt153/project-manager/workflows/Docker%20Build%20and%20Push/badge.svg)
+![CD Status](https://github.com/gpt153/project-manager/workflows/CD%20-%20Deploy%20to%20Production/badge.svg)
 ```
 
 ## Typical Workflow
@@ -169,7 +169,7 @@ Add these to your README.md:
 
 You can manually trigger deployment:
 
-1. Go to: https://github.com/gpt153/project-orchestrator/actions/workflows/cd.yml
+1. Go to: https://github.com/gpt153/project-manager/actions/workflows/cd.yml
 2. Click "Run workflow"
 3. Select branch (usually `main`)
 4. Click "Run workflow"
@@ -178,7 +178,7 @@ You can manually trigger deployment:
 
 ### View Workflow Runs
 
-1. Go to: https://github.com/gpt153/project-orchestrator/actions
+1. Go to: https://github.com/gpt153/project-manager/actions
 2. Click on the workflow run
 3. Click on the failed job
 4. Expand the failed step to see logs
@@ -234,7 +234,7 @@ If you want to disable a workflow temporarily:
 3. Commit and push
 
 Or disable via GitHub UI:
-1. Go to: https://github.com/gpt153/project-orchestrator/actions
+1. Go to: https://github.com/gpt153/project-manager/actions
 2. Click on the workflow
 3. Click "..." → "Disable workflow"
 

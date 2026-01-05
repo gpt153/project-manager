@@ -122,7 +122,7 @@ jobs:
           echo "⚠️  Deployment failed, rolling back..."
 
           # Get previous image
-          PREVIOUS_IMAGE=$(docker images --format "{{.Repository}}:{{.Tag}}" | grep "project-orchestrator" | sed -n '2p')
+          PREVIOUS_IMAGE=$(docker images --format "{{.Repository}}:{{.Tag}}" | grep "project-manager" | sed -n '2p')
 
           if [ -n "$PREVIOUS_IMAGE" ]; then
             echo "Rolling back to: $PREVIOUS_IMAGE"
