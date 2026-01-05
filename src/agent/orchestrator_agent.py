@@ -290,24 +290,30 @@ async def run_orchestrator(
     # Build conversation context from history
     # We'll try using PydanticAI's message_history parameter, with a fallback
     # to embedding history in the user message if that doesn't work
-    try:
-        # Try using PydanticAI's message_history parameter (if supported)
-        from pydantic_ai.messages import ModelRequest, ModelResponse
+    # Disabled message_history feature due to PydanticAI compatibility issues
+    # Using fallback method that embeds history in the user message instead
+    if False:  # Temporarily disabled
+        try:
+            # Try using PydanticAI's message_history parameter (if supported)
+            from pydantic_ai.messages import ModelRequest, ModelResponse
 
-        message_history = []
-        for msg in history_messages[:-1]:  # Exclude the user message we just added
-            if msg.role == MessageRole.USER:
-                message_history.append(ModelRequest(parts=[msg.content]))
-            elif msg.role == MessageRole.ASSISTANT:
-                message_history.append(ModelResponse(parts=[msg.content]))
+            message_history = []
+            for msg in history_messages[:-1]:  # Exclude the user message we just added
+                if msg.role == MessageRole.USER:
+                    message_history.append(ModelRequest(parts=[msg.content]))
+                elif msg.role == MessageRole.ASSISTANT:
+                    message_history.append(ModelResponse(parts=[msg.content]))
 
-        # Run agent with conversation history
-        result = await orchestrator_agent.run(
-            user_message,
-            message_history=message_history,
-            deps=deps
-        )
-    except TypeError:
+            # Run agent with conversation history
+            result = await orchestrator_agent.run(
+                user_message,
+                message_history=message_history,
+                deps=deps
+            )
+        except TypeError:
+            pass
+
+    if True:  # Use fallback method
         # Fallback: If message_history parameter doesn't exist, embed history in message
         # This ensures conversation context even if PydanticAI API differs
         history_context = ""
