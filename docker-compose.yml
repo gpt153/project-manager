@@ -4,15 +4,15 @@ services:
   postgres:
     image: postgres:15
     environment:
-      POSTGRES_USER: orchestrator
+      POSTGRES_USER: manager
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-dev_password}
-      POSTGRES_DB: project_orchestrator
+      POSTGRES_DB: project_manager
     ports:
-      - "5435:5432"
+      - "5437:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U orchestrator"]
+      test: ["CMD-SHELL", "pg_isready -U manager"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -20,7 +20,7 @@ services:
   redis:
     image: redis:7-alpine
     ports:
-      - "6379:6379"
+      - "6380:6379"
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 10s
@@ -33,8 +33,9 @@ services:
     ports:
       - "8001:8000"
     environment:
-      - DATABASE_URL=${DATABASE_URL:-postgresql+asyncpg://orchestrator:${POSTGRES_PASSWORD:-dev_password}@postgres:5432/project_orchestrator}
+      - DATABASE_URL=${DATABASE_URL:-postgresql+asyncpg://manager:${POSTGRES_PASSWORD:-dev_password}@postgres:5432/project_manager}
       - REDIS_URL=redis://redis:6379/0
+      - FRONTEND_URL=${FRONTEND_URL:-http://localhost:3002}
       - APP_ENV=${APP_ENV:-development}
       - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
       - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
@@ -52,6 +53,7 @@ services:
         condition: service_healthy
     volumes:
       - ./src:/app/src
+      - ./.agents:/app/.agents
     command: python -m src.main
 
   frontend:

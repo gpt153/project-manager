@@ -52,7 +52,7 @@ async def build_system_prompt(ctx: RunContext[AgentDependencies]) -> str:
 orchestrator_agent = Agent(
     model="anthropic:claude-sonnet-4-20250514",
     deps_type=AgentDependencies,
-    system_prompt=build_system_prompt,  # Now a function instead of string
+    system_prompt=ORCHESTRATOR_SYSTEM_PROMPT,  # Will format dynamically in run_orchestrator
     retries=2,
 )
 
