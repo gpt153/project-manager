@@ -4,9 +4,10 @@ IP filtering middleware for webhook security.
 Validates that webhook requests come from authorized sources.
 """
 import os
-from ipaddress import ip_address, ip_network, AddressValueError
+from ipaddress import AddressValueError, ip_address, ip_network
 from typing import List
-from fastapi import Request, HTTPException
+
+from fastapi import HTTPException, Request
 
 
 # GitHub webhook IP ranges (official GitHub IPs)

@@ -1,7 +1,17 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+}
+
+html, body {
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  -webkit-tap-highlight-color: transparent;
 }
 
 body {
@@ -20,4 +30,17 @@ code {
 #root {
   width: 100vw;
   height: 100vh;
+}
+
+/* Mobile-first CSS custom properties */
+:root {
+  --mobile-padding: 1rem;
+  --mobile-font-base: 16px;
+  --mobile-touch-target: 44px;
+}
+
+/* Ensure touch targets are at least 44x44px */
+button, a, .clickable {
+  min-height: 44px;
+  min-width: 44px;
 }

@@ -1,3 +1,10 @@
+export interface ProjectColor {
+  primary: string;
+  light: string;
+  veryLight: string;
+  text: string;
+}
+
 export interface Project {
   id: string;
   name: string;
@@ -9,6 +16,7 @@ export interface Project {
   updated_at: string;
   open_issues_count?: number;
   closed_issues_count?: number;
+  color?: ProjectColor; // Generated client-side
 }
 
 export enum ProjectStatus {

@@ -3,12 +3,16 @@ import ReactMarkdown from 'react-markdown';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { useWebSocket } from '@/hooks/useWebSocket';
+import { getMessageDisplayName } from '@/utils/messageUtils';
+import { ProjectColor } from '@/types/project';
 
 interface ChatInterfaceProps {
   projectId: string;
+  projectName: string;
+  theme?: ProjectColor;
 }
 
-export const ChatInterface: React.FC<ChatInterfaceProps> = ({ projectId }) => {
+export const ChatInterface: React.FC<ChatInterfaceProps> = ({ projectId, projectName, theme }) => {
   const { messages, isConnected, sendMessage, isLoadingHistory, isTyping } = useWebSocket(projectId);
   const [input, setInput] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -32,9 +36,12 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ projectId }) => {
   };
 
   return (
-    <div className="chat-interface">
+    <div
+      className="chat-interface"
+      style={{ backgroundColor: theme?.veryLight || '#ffffff' }}
+    >
       <div className="chat-header">
-        <h2>Chat with @po</h2>
+        <h2>Chat with {projectName}</h2>
         <span className={`status ${isConnected ? 'connected' : 'disconnected'}`}>
           {isConnected ? '● Connected' : '○ Disconnected'}
         </span>
@@ -49,7 +56,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ projectId }) => {
             {messages.map((msg) => (
               <div key={msg.id} className={`message ${msg.role}`}>
                 <div className="message-header">
-                  <span className="role">{msg.role === 'user' ? 'You' : 'Assistant'}</span>
+                  <span className="role">{getMessageDisplayName(msg)}</span>
                   <span className="timestamp">{new Date(msg.timestamp).toLocaleTimeString()}</span>
                 </div>
                 <div className="content">
@@ -82,7 +89,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ projectId }) => {
             {isTyping && (
               <div className="message assistant typing">
                 <div className="message-header">
-                  <span className="role">Assistant</span>
+                  <span className="role">PM</span>
                 </div>
                 <div className="content">
                   <div className="typing-indicator">
@@ -102,7 +109,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ projectId }) => {
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyPress={handleKeyPress}
-          placeholder="Message @po..."
+          placeholder="Message PM..."
           rows={3}
         />
         <button onClick={handleSend} disabled={!isConnected}>Send</button>

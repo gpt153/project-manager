@@ -1,36 +1,46 @@
 import { useState } from 'react';
-import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
 import { ProjectNavigator } from '@/components/LeftPanel/ProjectNavigator';
 import { ChatInterface } from '@/components/MiddlePanel/ChatInterface';
 import { ScarActivityFeed } from '@/components/RightPanel/ScarActivityFeed';
+import { ResponsiveLayout } from '@/components/Layout/ResponsiveLayout';
+import { Project, ProjectColor } from '@/types/project';
+import { generateProjectColor } from '@/utils/colorGenerator';
 import './App.css';
 
 function App() {
-  const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
+  const [selectedProject, setSelectedProject] = useState<{
+    project: Project;
+    color: ProjectColor;
+  } | null>(null);
+
+  const handleProjectSelect = (project: Project) => {
+    const color = generateProjectColor(project.id);
+    setSelectedProject({ project, color });
+  };
 
   return (
     <div className="app">
-      <PanelGroup direction="horizontal">
-        <Panel defaultSize={20} minSize={15} maxSize={40}>
-          <ProjectNavigator onProjectSelect={setSelectedProjectId} />
-        </Panel>
-        <PanelResizeHandle className="resize-handle" />
-        <Panel defaultSize={40} minSize={30}>
-          {selectedProjectId ? (
-            <ChatInterface projectId={selectedProjectId} />
+      <ResponsiveLayout
+        leftPanel={<ProjectNavigator onProjectSelect={handleProjectSelect} />}
+        middlePanel={
+          selectedProject ? (
+            <ChatInterface
+              projectId={selectedProject.project.id}
+              projectName={selectedProject.project.name}
+              theme={selectedProject.color}
+            />
           ) : (
             <div className="empty-state">Select a project to start chatting</div>
-          )}
-        </Panel>
-        <PanelResizeHandle className="resize-handle" />
-        <Panel defaultSize={40} minSize={30}>
-          {selectedProjectId ? (
-            <ScarActivityFeed projectId={selectedProjectId} />
+          )
+        }
+        rightPanel={
+          selectedProject ? (
+            <ScarActivityFeed projectId={selectedProject.project.id} />
           ) : (
             <div className="empty-state">Select a project to view activity</div>
-          )}
-        </Panel>
-      </PanelGroup>
+          )
+        }
+      />
     </div>
   );
 }

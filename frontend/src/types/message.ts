@@ -3,6 +3,7 @@ export interface ChatMessage {
   role: 'user' | 'assistant' | 'system';
   content: string;
   timestamp: string;
+  sender?: string; // Optional: override display name
 }
 
 export interface WebSocketMessage {

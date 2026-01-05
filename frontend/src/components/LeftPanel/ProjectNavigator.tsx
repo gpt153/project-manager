@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { api } from '@/services/api';
-import { Project } from '@/types/project';
+import { Project, ProjectColor } from '@/types/project';
 import { DocumentViewer } from '@/components/DocumentViewer/DocumentViewer';
+import { generateProjectColor } from '@/utils/colorGenerator';
 
 interface ProjectNavigatorProps {
-  onProjectSelect: (projectId: string) => void;
+  onProjectSelect: (project: Project) => void;
 }
 
 export const ProjectNavigator: React.FC<ProjectNavigatorProps> = ({ onProjectSelect }) => {
@@ -16,6 +17,16 @@ export const ProjectNavigator: React.FC<ProjectNavigatorProps> = ({ onProjectSel
   const [expandedProjects, setExpandedProjects] = useState<Set<string>>(new Set());
   const [projectIssues, setProjectIssues] = useState<Map<string, any[]>>(new Map());
   const [loading, setLoading] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  // Generate colors for each project (memoized)
+  const projectColors = useMemo(() => {
+    const colorMap = new Map<string, ProjectColor>();
+    projects.forEach(project => {
+      colorMap.set(project.id, generateProjectColor(project.id));
+    });
+    return colorMap;
+  }, [projects]);
 
   useEffect(() => {
     const fetchProjects = async () => {
@@ -30,6 +41,28 @@ export const ProjectNavigator: React.FC<ProjectNavigatorProps> = ({ onProjectSel
     };
     fetchProjects();
   }, []);
+
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
+    try {
+      const data = await api.getProjects();
+      setProjects(data);
+      // Optionally re-fetch issues for expanded projects
+      const expandedIds = Array.from(expandedProjects);
+      for (const projectId of expandedIds) {
+        try {
+          const issues = await api.getProjectIssues(projectId, 'all');
+          setProjectIssues(prev => new Map(prev).set(projectId, issues));
+        } catch (error) {
+          console.error(`Failed to refresh issues for project ${projectId}:`, error);
+        }
+      }
+    } catch (error) {
+      console.error('Failed to refresh projects:', error);
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
 
   const toggleProject = async (projectId: string) => {
     const isExpanding = !expandedProjects.has(projectId);
@@ -63,19 +96,37 @@ export const ProjectNavigator: React.FC<ProjectNavigatorProps> = ({ onProjectSel
     <div className="project-navigator">
       <div className="header">
         <h2>Projects</h2>
-        <button onClick={() => {/* TODO: open create modal */}}>+</button>
+        <div className="header-actions">
+          <button
+            onClick={handleRefresh}
+            disabled={isRefreshing}
+            className="refresh-button"
+            title="Refresh project list"
+          >
+            {isRefreshing ? '↻' : '⟳'}
+          </button>
+          <button onClick={() => {/* TODO: open create modal */}}>+</button>
+        </div>
       </div>
       <ul className="project-list">
-        {projects.map((project) => (
-          <li key={project.id}>
-            <div className="project-header">
-              <span className="expand-icon" onClick={() => toggleProject(project.id)}>
-                {expandedProjects.has(project.id) ? '▼' : '▶'}
-              </span>
-              <span className="project-name" onClick={() => onProjectSelect(project.id)}>
-                {project.name}
-              </span>
-            </div>
+        {projects.map((project) => {
+          const color = projectColors.get(project.id);
+          return (
+            <li key={project.id}>
+              <div
+                className="project-header"
+                style={{
+                  backgroundColor: color?.light,
+                  color: color?.text,
+                }}
+              >
+                <span className="expand-icon" onClick={() => toggleProject(project.id)}>
+                  {expandedProjects.has(project.id) ? '▼' : '▶'}
+                </span>
+                <span className="project-name" onClick={() => onProjectSelect(project)}>
+                  {project.name}
+                </span>
+              </div>
             {expandedProjects.has(project.id) && (
               <ul className="issue-list">
                 <li className="issue-section">
@@ -126,8 +177,9 @@ export const ProjectNavigator: React.FC<ProjectNavigatorProps> = ({ onProjectSel
                 </li>
               </ul>
             )}
-          </li>
-        ))}
+            </li>
+          );
+        })}
       </ul>
       {showDocumentViewer && (
         <DocumentViewer

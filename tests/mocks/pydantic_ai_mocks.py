@@ -4,7 +4,7 @@ PydanticAI mocking utilities for testing.
 Provides mock implementations of PydanticAI agent components.
 """
 from typing import Any, Dict, Optional
-from unittest.mock import AsyncMock
+
 from pydantic import BaseModel
 
 
