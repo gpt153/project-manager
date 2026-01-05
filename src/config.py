@@ -61,6 +61,11 @@ class Settings(BaseSettings):
     scar_import_org: Optional[str] = None  # GitHub org to import all repos
     scar_projects_config: str = ".scar/projects.json"  # Config file path
 
+    # SCAR Integration (Test Adapter HTTP API)
+    scar_base_url: str = "http://localhost:3000"  # SCAR Test Adapter base URL
+    scar_timeout_seconds: int = 300  # Max wait time for SCAR command completion
+    scar_conversation_prefix: str = "pm-project-"  # Conversation ID prefix
+
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",

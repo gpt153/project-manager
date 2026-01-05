@@ -5,22 +5,27 @@ This service handles execution of SCAR commands (prime, plan-feature-github,
 execute-github, validate) and manages the workflow automation.
 """
 
-import asyncio
+import logging
 from datetime import datetime
 from enum import Enum
 from typing import Optional
 from uuid import UUID
 
+import httpx
 from pydantic import BaseModel
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from src.config import settings
 from src.database.models import (
     CommandType,
     ExecutionStatus,
     Project,
     ScarCommandExecution,
 )
+from src.scar.client import ScarClient
+
+logger = logging.getLogger(__name__)
 
 
 class ScarCommand(str, Enum):
@@ -96,110 +101,136 @@ async def execute_scar_command(
         execution.status = ExecutionStatus.RUNNING
         await session.commit()
 
-        # Build command
-        cmd_parts = ["/command-invoke", command.value]
-        if args:
-            cmd_parts.extend(args)
+        # Initialize SCAR client
+        client = ScarClient(settings)
 
-        # Execute (this is a placeholder - real implementation would use SCAR API)
-        # For now, we'll simulate execution
-        output, error = await _simulate_scar_execution(command, args)
+        # Send command to SCAR
+        logger.info(
+            f"Executing SCAR command: {command.value}",
+            extra={"project_id": str(project_id), "command": command.value, "args": args},
+        )
+
+        conversation_id = await client.send_command(project_id, command.value, args)
+
+        # Wait for completion
+        logger.info(
+            f"Polling SCAR for command completion",
+            extra={"conversation_id": conversation_id, "timeout": settings.scar_timeout_seconds},
+        )
+
+        messages = await client.wait_for_completion(
+            conversation_id, timeout=settings.scar_timeout_seconds
+        )
+
+        # Aggregate output from all messages
+        output = "\n".join(msg.message for msg in messages)
 
         # Calculate duration
         end_time = datetime.utcnow()
         duration = (end_time - start_time).total_seconds()
 
         # Update execution record
-        execution.status = ExecutionStatus.COMPLETED if not error else ExecutionStatus.FAILED
+        execution.status = ExecutionStatus.COMPLETED
         execution.completed_at = end_time
         execution.output = output
-        if error:
-            execution.error = error
 
         await session.commit()
 
+        logger.info(
+            f"SCAR command completed successfully",
+            extra={
+                "project_id": str(project_id),
+                "command": command.value,
+                "duration": duration,
+                "message_count": len(messages),
+            },
+        )
+
         return CommandResult(
-            success=not bool(error),
+            success=True,
             output=output,
-            error=error,
+            error=None,
             duration_seconds=duration,
         )
 
-    except Exception as e:
-        # Mark as failed
+    except httpx.ConnectError as e:
+        # SCAR not running
         end_time = datetime.utcnow()
         duration = (end_time - start_time).total_seconds()
 
+        error_msg = (
+            f"SCAR is not available. Ensure SCAR is running at {settings.scar_base_url}"
+        )
+
+        logger.error(
+            f"SCAR connection failed: {error_msg}",
+            extra={"project_id": str(project_id), "command": command.value, "error": str(e)},
+        )
+
         execution.status = ExecutionStatus.FAILED
         execution.completed_at = end_time
-        execution.error = str(e)
+        execution.error = error_msg
         await session.commit()
 
         return CommandResult(
             success=False,
             output="",
-            error=str(e),
+            error=error_msg,
             duration_seconds=duration,
         )
 
+    except TimeoutError as e:
+        # Command timed out
+        end_time = datetime.utcnow()
+        duration = (end_time - start_time).total_seconds()
 
-async def _simulate_scar_execution(
-    command: ScarCommand, args: Optional[list[str]] = None
-) -> tuple[str, Optional[str]]:
-    """
-    Simulate SCAR command execution.
+        error_msg = f"SCAR command timed out after {duration:.1f}s: {str(e)}"
 
-    In production, this would call the actual SCAR API or Claude Code integration.
-    For now, we simulate with realistic responses.
-
-    Args:
-        command: SCAR command to simulate
-        args: Optional command arguments
-
-    Returns:
-        tuple: (output, error) - error is None if successful
-    """
-    # Simulate execution time
-    await asyncio.sleep(0.5)
-
-    if command == ScarCommand.PRIME:
-        return (
-            "Primed project context successfully.\n"
-            "Analyzed 127 files, loaded key dependencies and patterns.\n"
-            "Ready for feature planning and implementation.",
-            None,
+        logger.error(
+            f"SCAR command timeout",
+            extra={"project_id": str(project_id), "command": command.value, "duration": duration},
         )
 
-    elif command == ScarCommand.PLAN_FEATURE_GITHUB:
-        feature_name = args[0] if args else "Feature"
-        return (
-            f"Created implementation plan for: {feature_name}\n"
-            f"Plan includes 5 steps across 8 files.\n"
-            f"Branch: feature/{feature_name.lower().replace(' ', '-')}\n"
-            "Plan document saved to .agents/plans/",
-            None,
+        execution.status = ExecutionStatus.FAILED
+        execution.completed_at = end_time
+        execution.error = error_msg
+        await session.commit()
+
+        return CommandResult(
+            success=False,
+            output="",
+            error=error_msg,
+            duration_seconds=duration,
         )
 
-    elif command == ScarCommand.EXECUTE_GITHUB:
-        return (
-            "Executed implementation plan successfully.\n"
-            "Modified 8 files, created 3 new files.\n"
-            "All tests passing.\n"
-            "Pull request created: #123",
-            None,
+    except Exception as e:
+        # Generic error
+        end_time = datetime.utcnow()
+        duration = (end_time - start_time).total_seconds()
+
+        error_msg = f"SCAR command failed: {str(e)}"
+
+        logger.error(
+            f"SCAR command failed with exception",
+            extra={
+                "project_id": str(project_id),
+                "command": command.value,
+                "error": str(e),
+                "error_type": type(e).__name__,
+            },
         )
 
-    elif command == ScarCommand.VALIDATE:
-        return (
-            "Validation complete.\n"
-            "✓ All tests passing (127/127)\n"
-            "✓ Code quality checks passed\n"
-            "✓ No security issues found\n"
-            "Ready for review and merge.",
-            None,
-        )
+        execution.status = ExecutionStatus.FAILED
+        execution.completed_at = end_time
+        execution.error = error_msg
+        await session.commit()
 
-    return ("Unknown command", "Command not recognized")
+        return CommandResult(
+            success=False,
+            output="",
+            error=error_msg,
+            duration_seconds=duration,
+        )
 
 
 def _command_to_type(command: ScarCommand) -> CommandType:
