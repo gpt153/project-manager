@@ -326,6 +326,6 @@ async def run_orchestrator(
         )
 
     # Save assistant response
-    await save_conversation_message(session, project_id, MessageRole.ASSISTANT, result.data)
+    await save_conversation_message(session, project_id, MessageRole.ASSISTANT, result.output)
 
-    return result.data
+    return result.output
