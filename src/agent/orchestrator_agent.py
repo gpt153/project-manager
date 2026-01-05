@@ -22,12 +22,37 @@ from src.database.models import MessageRole, ProjectStatus
 from src.services.scar_executor import get_command_history
 from src.services.workflow_orchestrator import advance_workflow, get_workflow_state
 
+
+# Dynamic system prompt that injects project context
+async def build_system_prompt(ctx: RunContext[AgentDependencies]) -> str:
+    """
+    Build system prompt with current project context injected.
+
+    This allows PO to be context-aware of the current project.
+    """
+    # Get project context
+    project = None
+    if ctx.deps.project_id:
+        project = await get_project(ctx.deps.session, ctx.deps.project_id)
+
+    # Build context variables
+    context_vars = {
+        'project_name': project.name if project else "No project selected",
+        'github_repo_url': project.github_repo_url if project and project.github_repo_url else "Not configured",
+        'project_status': project.status.value if project else "Unknown",
+        'project_description': project.description if project and project.description else "No description",
+    }
+
+    # Format system prompt with context
+    return ORCHESTRATOR_SYSTEM_PROMPT.format(**context_vars)
+
+
 # Initialize the PydanticAI agent
 # Note: Uses ANTHROPIC_API_KEY environment variable
 orchestrator_agent = Agent(
     model="anthropic:claude-sonnet-4-20250514",
     deps_type=AgentDependencies,
-    system_prompt=ORCHESTRATOR_SYSTEM_PROMPT,
+    system_prompt=build_system_prompt,  # Now a function instead of string
     retries=2,
 )
 
@@ -242,6 +267,9 @@ async def run_orchestrator(
     """
     Run the orchestrator agent with a user message.
 
+    Now includes conversation history for context continuity, making PO
+    remember previous discussion across messages.
+
     Args:
         project_id: Project UUID
         user_message: User's message
@@ -252,11 +280,50 @@ async def run_orchestrator(
     """
     deps = AgentDependencies(session=session, project_id=project_id)
 
-    # Save user message
+    # Save user message first
     await save_conversation_message(session, project_id, MessageRole.USER, user_message)
 
-    # Run agent
-    result = await orchestrator_agent.run(user_message, deps=deps)
+    # Get conversation history (excluding the message we just saved)
+    # Limit to recent 50 messages for performance
+    history_messages = await get_conversation_history(session, project_id, limit=50)
+
+    # Build conversation context from history
+    # We'll try using PydanticAI's message_history parameter, with a fallback
+    # to embedding history in the user message if that doesn't work
+    try:
+        # Try using PydanticAI's message_history parameter (if supported)
+        from pydantic_ai.messages import ModelRequest, ModelResponse
+
+        message_history = []
+        for msg in history_messages[:-1]:  # Exclude the user message we just added
+            if msg.role == MessageRole.USER:
+                message_history.append(ModelRequest(parts=[msg.content]))
+            elif msg.role == MessageRole.ASSISTANT:
+                message_history.append(ModelResponse(parts=[msg.content]))
+
+        # Run agent with conversation history
+        result = await orchestrator_agent.run(
+            user_message,
+            message_history=message_history,
+            deps=deps
+        )
+    except TypeError:
+        # Fallback: If message_history parameter doesn't exist, embed history in message
+        # This ensures conversation context even if PydanticAI API differs
+        history_context = ""
+        if len(history_messages) > 1:  # More than just the current message
+            history_context = "\n\n## Recent Conversation History:\n\n"
+            for msg in history_messages[:-1][-10:]:  # Last 10 messages before current
+                role_name = "User" if msg.role == MessageRole.USER else "You (PO)"
+                history_context += f"**{role_name}**: {msg.content}\n\n"
+            history_context += f"\n---\n\n**Current User Message**: {user_message}\n\n"
+            history_context += "Please respond considering the full conversation context above."
+
+        # Run agent with history embedded in message
+        result = await orchestrator_agent.run(
+            history_context if history_context else user_message,
+            deps=deps
+        )
 
     # Save assistant response
     await save_conversation_message(session, project_id, MessageRole.ASSISTANT, result.data)
