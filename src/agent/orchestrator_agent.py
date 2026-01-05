@@ -19,7 +19,11 @@ from src.agent.tools import (
     update_project_vision,
 )
 from src.database.models import MessageRole, ProjectStatus
-from src.services.scar_executor import get_command_history
+from src.services.scar_executor import (
+    ScarCommand,
+    execute_scar_command,
+    get_command_history,
+)
 from src.services.workflow_orchestrator import advance_workflow, get_workflow_state
 
 
@@ -256,6 +260,58 @@ async def get_scar_history(ctx: RunContext[AgentDependencies], limit: int = 5) -
         }
         for exec in history
     ]
+
+
+@orchestrator_agent.tool
+async def execute_scar(
+    ctx: RunContext[AgentDependencies], command: str, args: list[str] | None = None
+) -> dict:
+    """
+    Execute a SCAR command directly.
+
+    This tool allows you to run SCAR commands to perform development workflows:
+    - prime: Load codebase understanding
+    - plan-feature-github: Create implementation plan
+    - execute-github: Implement from plan
+    - validate: Run tests and validation
+
+    Args:
+        ctx: Agent context with dependencies
+        command: SCAR command name (prime, plan-feature-github, execute-github, validate)
+        args: Optional command arguments (e.g., feature description for planning)
+
+    Returns:
+        dict: Execution result with success, output, error, and duration
+    """
+    if not ctx.deps.project_id:
+        return {"success": False, "error": "No active project"}
+
+    # Map string commands to ScarCommand enum
+    command_map = {
+        "prime": ScarCommand.PRIME,
+        "plan-feature-github": ScarCommand.PLAN_FEATURE_GITHUB,
+        "execute-github": ScarCommand.EXECUTE_GITHUB,
+        "validate": ScarCommand.VALIDATE,
+    }
+
+    scar_cmd = command_map.get(command.lower())
+    if not scar_cmd:
+        return {
+            "success": False,
+            "error": f"Invalid command: {command}. Valid commands: {list(command_map.keys())}",
+        }
+
+    # Execute via scar_executor
+    result = await execute_scar_command(
+        ctx.deps.session, ctx.deps.project_id, scar_cmd, args or []
+    )
+
+    return {
+        "success": result.success,
+        "output": result.output,
+        "error": result.error,
+        "duration_seconds": result.duration_seconds,
+    }
 
 
 # Convenience function for running the agent
