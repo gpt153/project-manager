@@ -41,10 +41,14 @@ async def build_system_prompt(ctx: RunContext[AgentDependencies]) -> str:
 
     # Build context variables
     context_vars = {
-        'project_name': project.name if project else "No project selected",
-        'github_repo_url': project.github_repo_url if project and project.github_repo_url else "Not configured",
-        'project_status': project.status.value if project else "Unknown",
-        'project_description': project.description if project and project.description else "No description",
+        "project_name": project.name if project else "No project selected",
+        "github_repo_url": (
+            project.github_repo_url if project and project.github_repo_url else "Not configured"
+        ),
+        "project_status": project.status.value if project else "Unknown",
+        "project_description": (
+            project.description if project and project.description else "No description"
+        ),
     }
 
     # Format system prompt with context
@@ -302,9 +306,7 @@ async def execute_scar(
         }
 
     # Execute via scar_executor
-    result = await execute_scar_command(
-        ctx.deps.session, ctx.deps.project_id, scar_cmd, args or []
-    )
+    result = await execute_scar_command(ctx.deps.session, ctx.deps.project_id, scar_cmd, args or [])
 
     return {
         "success": result.success,
@@ -362,9 +364,7 @@ async def run_orchestrator(
 
             # Run agent with conversation history
             result = await orchestrator_agent.run(
-                user_message,
-                message_history=message_history,
-                deps=deps
+                user_message, message_history=message_history, deps=deps
             )
         except TypeError:
             pass
@@ -383,8 +383,7 @@ async def run_orchestrator(
 
         # Run agent with history embedded in message
         result = await orchestrator_agent.run(
-            history_context if history_context else user_message,
-            deps=deps
+            history_context if history_context else user_message, deps=deps
         )
 
     # Save assistant response

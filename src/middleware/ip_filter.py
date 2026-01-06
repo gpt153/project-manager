@@ -13,8 +13,7 @@ from fastapi import HTTPException, Request
 # GitHub webhook IP ranges (official GitHub IPs)
 # https://api.github.com/meta provides these dynamically
 GITHUB_WEBHOOK_IPS = os.getenv(
-    "GITHUB_WEBHOOK_IPS",
-    "140.82.112.0/20,143.55.64.0/20,192.30.252.0/22,185.199.108.0/22"
+    "GITHUB_WEBHOOK_IPS", "140.82.112.0/20,143.55.64.0/20,192.30.252.0/22,185.199.108.0/22"
 ).split(",")
 
 # Enable/disable IP filtering
@@ -53,18 +52,12 @@ async def verify_webhook_ip(request: Request) -> bool:
     # Get client IP
     client_ip_str = request.client.host if request.client else None
     if not client_ip_str:
-        raise HTTPException(
-            status_code=403,
-            detail="Cannot determine client IP address"
-        )
+        raise HTTPException(status_code=403, detail="Cannot determine client IP address")
 
     try:
         client_ip = ip_address(client_ip_str)
     except AddressValueError:
-        raise HTTPException(
-            status_code=403,
-            detail="Invalid client IP address"
-        )
+        raise HTTPException(status_code=403, detail="Invalid client IP address")
 
     # Check if IP is in allowed ranges
     for ip_range_str in GITHUB_WEBHOOK_IPS:
@@ -75,7 +68,4 @@ async def verify_webhook_ip(request: Request) -> bool:
             # Skip invalid ranges
             continue
 
-    raise HTTPException(
-        status_code=403,
-        detail=f"Webhook source IP {client_ip_str} not allowed"
-    )
+    raise HTTPException(status_code=403, detail=f"Webhook source IP {client_ip_str} not allowed")

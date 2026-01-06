@@ -3,6 +3,7 @@ Health check endpoints for monitoring and readiness probes.
 
 Provides detailed health information for different system components.
 """
+
 import httpx
 from fastapi import APIRouter, Response
 from sqlalchemy import text
@@ -39,7 +40,7 @@ async def database_health():
         return Response(
             content=f'{{"status": "unhealthy", "database": "disconnected", "error": "{str(e)}"}}',
             status_code=503,
-            media_type="application/json"
+            media_type="application/json",
         )
 
 
@@ -54,17 +55,10 @@ async def ai_service_health():
     try:
         # Simple ping to Anthropic API
         async with httpx.AsyncClient() as client:
-            await client.get(
-                "https://api.anthropic.com",
-                timeout=5.0
-            )
+            await client.get("https://api.anthropic.com", timeout=5.0)
         return {"status": "healthy", "ai_service": "reachable"}
     except Exception as e:
-        return {
-            "status": "degraded",
-            "ai_service": "unreachable",
-            "error": str(e)
-        }
+        return {"status": "degraded", "ai_service": "unreachable", "error": str(e)}
 
 
 @router.get("/ready")
@@ -102,5 +96,5 @@ async def readiness_probe():
         return Response(
             content=f'{{"status": "not ready", "database": "{db_status}", "ai_service": "{ai_status}"}}',
             status_code=503,
-            media_type="application/json"
+            media_type="application/json",
         )

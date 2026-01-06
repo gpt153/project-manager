@@ -17,7 +17,7 @@ DEFAULT_RATE_LIMIT = os.getenv("DEFAULT_RATE_LIMIT", "100/minute")
 limiter = Limiter(
     key_func=get_remote_address,
     default_limits=[DEFAULT_RATE_LIMIT],
-    storage_uri="memory://"  # Can be changed to redis:// for distributed systems
+    storage_uri="memory://",  # Can be changed to redis:// for distributed systems
 )
 
 
@@ -36,5 +36,5 @@ async def rate_limit_handler(request: Request, exc: RateLimitExceeded) -> Respon
         content='{"error": "Rate limit exceeded", "detail": "Too many requests. Please try again later."}',
         status_code=429,
         media_type="application/json",
-        headers={"Retry-After": str(exc.detail)}
+        headers={"Retry-After": str(exc.detail)},
     )

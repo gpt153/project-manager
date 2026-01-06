@@ -160,9 +160,7 @@ async def execute_scar_command(
         end_time = datetime.utcnow()
         duration = (end_time - start_time).total_seconds()
 
-        error_msg = (
-            f"SCAR is not available. Ensure SCAR is running at {settings.scar_base_url}"
-        )
+        error_msg = f"SCAR is not available. Ensure SCAR is running at {settings.scar_base_url}"
 
         logger.error(
             f"SCAR connection failed: {error_msg}",
