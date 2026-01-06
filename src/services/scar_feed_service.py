@@ -88,15 +88,15 @@ async def stream_scar_activity(
     """
     logger.info(f"Starting SCAR activity stream for project {project_id}")
 
-    # Track the last activity ID we've seen
-    last_id = None
+    # Track the last activity timestamp we've seen
+    last_timestamp = None
 
     # Get initial activities
     activities = await get_recent_scar_activity(
         session, project_id, limit=10, verbosity_level=verbosity_level
     )
     if activities:
-        last_id = activities[-1]["id"]
+        last_timestamp = activities[-1]["timestamp"]
         for activity in activities:
             yield activity
 
@@ -104,14 +104,16 @@ async def stream_scar_activity(
     while True:
         await asyncio.sleep(2)  # Poll every 2 seconds
 
-        # Query for activities newer than last_id
+        # Query for activities newer than last_timestamp
         # Note: verbosity filtering done in Python (line 54) since it's a @property
-        if last_id:
+        if last_timestamp:
+            # Convert ISO timestamp string to datetime for comparison
+            last_dt = datetime.fromisoformat(last_timestamp)
             query = (
                 select(ScarCommandExecution)
                 .where(
                     ScarCommandExecution.project_id == project_id,
-                    ScarCommandExecution.id > UUID(last_id),
+                    ScarCommandExecution.started_at > last_dt,
                 )
                 .order_by(ScarCommandExecution.started_at.asc())
             )
@@ -142,7 +144,7 @@ async def stream_scar_activity(
                 ),
                 "phase": activity.phase.name if activity.phase else None,
             }
-            last_id = activity_dict["id"]
+            last_timestamp = activity_dict["timestamp"]
             yield activity_dict
 
 

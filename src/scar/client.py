@@ -94,8 +94,7 @@ class ScarClient:
 
         # Send /repo command to switch codebase
         repo_request = ScarMessageRequest(
-            conversationId=conversation_id,
-            message=f"/repo {repo_name}"
+            conversationId=conversation_id, message=f"/repo {repo_name}"
         )
 
         async with httpx.AsyncClient(timeout=10.0) as client:
@@ -111,7 +110,11 @@ class ScarClient:
         )
 
     async def send_command(
-        self, project_id: UUID, command: str, args: Optional[list[str]] = None, github_repo_url: Optional[str] = None
+        self,
+        project_id: UUID,
+        command: str,
+        args: Optional[list[str]] = None,
+        github_repo_url: Optional[str] = None,
     ) -> str:
         """
         Send a command to SCAR and return conversation ID for polling.
