@@ -41,28 +41,47 @@ async def get_recent_scar_activity(
     result = await session.execute(query)
     activities = result.scalars().all()
 
-    activity_list = [
-        {
+    activity_list = []
+
+    for activity in reversed(activities):  # Reverse to get chronological order
+        base_timestamp = (
+            activity.started_at
+            if activity.started_at
+            else (activity.completed_at if activity.completed_at else datetime.utcnow())
+        )
+
+        # Always add the status summary
+        activity_list.append({
             "id": str(activity.id),
-            "timestamp": (
-                activity.started_at.isoformat()
-                if activity.started_at
-                else (
-                    activity.completed_at.isoformat()
-                    if activity.completed_at
-                    else datetime.utcnow().isoformat()
-                )
-            ),
-            "source": activity.source,  # Uses @property
+            "timestamp": base_timestamp.isoformat(),
+            "source": activity.source,
             "message": (
                 f"{activity.command_type.value}: {activity.status.value}"
                 if activity.status
                 else activity.command_type.value
             ),
             "phase": activity.phase.name if activity.phase else None,
-        }
-        for activity in reversed(activities)  # Reverse to get chronological order
-    ]
+        })
+
+        # If verbosity >= 2 and output exists, parse detailed steps
+        if verbosity_level >= 2 and activity.output:
+            lines = activity.output.split('\n')
+            for i, line in enumerate(lines):
+                line = line.strip()
+                if not line or len(line) < 3:
+                    continue
+
+                # Add detailed activity for each significant line
+                # Use microsecond offsets to preserve ordering
+                detail_timestamp = base_timestamp.replace(microsecond=i)
+
+                activity_list.append({
+                    "id": f"{activity.id}-detail-{i}",
+                    "timestamp": detail_timestamp.isoformat(),
+                    "source": "scar-detail",
+                    "message": line,
+                    "phase": activity.phase.name if activity.phase else None,
+                })
 
     logger.debug(f"Retrieved {len(activity_list)} SCAR activities for project {project_id}")
     return activity_list
