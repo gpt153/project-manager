@@ -41,18 +41,33 @@ export const ScarActivityFeed: React.FC<ScarActivityFeedProps> = ({ projectId })
         {activities.length === 0 ? (
           <div className="empty-state">No SCAR activity yet. Activity will appear here when commands are executed.</div>
         ) : (
-          activities.map((activity) => (
-            <div key={activity.id} className="activity-item">
-              <span className="source" style={{ color: getSourceColor(activity.source) }}>
-                [{activity.source}]
-              </span>
-              <span className="timestamp">
-                {new Date(activity.timestamp).toLocaleTimeString()}
-              </span>
-              <div className="message">{activity.message}</div>
-              {activity.phase && <div className="phase">Phase: {activity.phase}</div>}
-            </div>
-          ))
+          activities.map((activity) => {
+            // Add icon based on message content
+            let icon = '';
+            const msg = activity.message.toLowerCase();
+            if (msg.includes('bash:') || msg.includes('git ') || msg.includes('npm ') || msg.includes('python ')) {
+              icon = '🔧 ';
+            } else if (msg.includes('read') || msg.includes('reading')) {
+              icon = '📖 ';
+            } else if (msg.includes('write') || msg.includes('writing') || msg.includes('edit')) {
+              icon = '✏️ ';
+            } else if (msg.includes('analyz') || msg.includes('process')) {
+              icon = '⚡ ';
+            }
+
+            return (
+              <div key={activity.id} className="activity-item">
+                <span className="source" style={{ color: getSourceColor(activity.source) }}>
+                  [{activity.source}]
+                </span>
+                <span className="timestamp">
+                  {new Date(activity.timestamp).toLocaleTimeString()}
+                </span>
+                <div className="message">{icon}{activity.message}</div>
+                {activity.phase && <div className="phase">Phase: {activity.phase}</div>}
+              </div>
+            );
+          })
         )}
         <div ref={activitiesEndRef} />
       </div>
