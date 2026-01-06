@@ -20,10 +20,16 @@ export const useScarFeed = (projectId: string, verbosity: number = 2) => {
       console.log('SSE connected');
     };
 
-    eventSource.onmessage = (event) => {
+    // Listen for named 'activity' events (backend sends: event: activity)
+    eventSource.addEventListener('activity', (event) => {
       const activity: ScarActivity = JSON.parse(event.data);
       setActivities((prev) => [...prev, activity]);
-    };
+    });
+
+    // Listen for heartbeat events to maintain connection
+    eventSource.addEventListener('heartbeat', (event) => {
+      console.log('SSE heartbeat:', event.data);
+    });
 
     eventSource.onerror = (error) => {
       console.error('SSE error:', error);
