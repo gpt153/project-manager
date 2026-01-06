@@ -10,7 +10,6 @@ from typing import List
 
 from fastapi import HTTPException, Request
 
-
 # GitHub webhook IP ranges (official GitHub IPs)
 # https://api.github.com/meta provides these dynamically
 GITHUB_WEBHOOK_IPS = os.getenv(

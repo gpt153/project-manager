@@ -116,7 +116,7 @@ async def execute_scar_command(
 
         # Wait for completion
         logger.info(
-            f"Polling SCAR for command completion",
+            "Polling SCAR for command completion",
             extra={"conversation_id": conversation_id, "timeout": settings.scar_timeout_seconds},
         )
 
@@ -139,7 +139,7 @@ async def execute_scar_command(
         await session.commit()
 
         logger.info(
-            f"SCAR command completed successfully",
+            "SCAR command completed successfully",
             extra={
                 "project_id": str(project_id),
                 "command": command.value,
@@ -189,7 +189,7 @@ async def execute_scar_command(
         error_msg = f"SCAR command timed out after {duration:.1f}s: {str(e)}"
 
         logger.error(
-            f"SCAR command timeout",
+            "SCAR command timeout",
             extra={"project_id": str(project_id), "command": command.value, "duration": duration},
         )
 
@@ -213,7 +213,7 @@ async def execute_scar_command(
         error_msg = f"SCAR command failed: {str(e)}"
 
         logger.error(
-            f"SCAR command failed with exception",
+            "SCAR command failed with exception",
             extra={
                 "project_id": str(project_id),
                 "command": command.value,
