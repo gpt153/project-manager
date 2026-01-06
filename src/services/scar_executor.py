@@ -107,7 +107,7 @@ async def execute_scar_command(
         # Send command to SCAR
         logger.info(
             f"Executing SCAR command: {command.value}",
-            extra={"project_id": str(project_id), "command": command.value, "args": args},
+            extra={"project_id": str(project_id), "command": command.value, "command_args": args},
         )
 
         conversation_id = await client.send_command(project_id, command.value, args)
