@@ -110,7 +110,9 @@ async def execute_scar_command(
             extra={"project_id": str(project_id), "command": command.value, "command_args": args},
         )
 
-        conversation_id = await client.send_command(project_id, command.value, args)
+        conversation_id = await client.send_command(
+            project_id, command.value, args, github_repo_url=project.github_repo_url
+        )
 
         # Wait for completion
         logger.info(
