@@ -74,7 +74,7 @@ class ScarClient:
         """
         Set up SCAR workspace for the project.
 
-        Sends /setcwd command to SCAR to set the working directory.
+        Sends /repo command to SCAR to switch to the registered codebase.
 
         Args:
             conversation_id: Conversation ID for SCAR
@@ -83,29 +83,31 @@ class ScarClient:
         Raises:
             httpx.HTTPError: If request fails
         """
-        workspace_path = self._derive_workspace_path(github_repo_url)
+        # Extract repo name from URL
+        repo_part = github_repo_url.rstrip("/").split("/")[-1]
+        repo_name = repo_part.replace(".git", "")
 
         logger.info(
-            f"Setting SCAR workspace: {workspace_path}",
+            f"Switching SCAR to codebase: {repo_name}",
             extra={"conversation_id": conversation_id, "github_repo": github_repo_url},
         )
 
-        # Send /setcwd command
-        setcwd_request = ScarMessageRequest(
+        # Send /repo command to switch codebase
+        repo_request = ScarMessageRequest(
             conversationId=conversation_id,
-            message=f"/setcwd {workspace_path}"
+            message=f"/repo {repo_name}"
         )
 
         async with httpx.AsyncClient(timeout=10.0) as client:
             response = await client.post(
                 f"{self.base_url}/test/message",
-                json=setcwd_request.model_dump(),
+                json=repo_request.model_dump(),
             )
             response.raise_for_status()
 
         logger.info(
-            "SCAR workspace set successfully",
-            extra={"workspace_path": workspace_path},
+            "SCAR codebase switched successfully",
+            extra={"repo_name": repo_name},
         )
 
     async def send_command(
