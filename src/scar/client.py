@@ -51,16 +51,76 @@ class ScarClient:
         """
         return f"{self.conversation_prefix}{project_id}"
 
+    def _derive_workspace_path(self, github_repo_url: str) -> str:
+        """
+        Derive workspace path from GitHub repository URL.
+
+        Args:
+            github_repo_url: GitHub repository URL (e.g., https://github.com/owner/repo)
+
+        Returns:
+            str: Workspace path (e.g., /workspace/repo)
+        """
+        # Extract repo name from URL
+        # https://github.com/owner/repo.git -> repo
+        # https://github.com/owner/repo -> repo
+        repo_part = github_repo_url.rstrip("/").split("/")[-1]
+        repo_name = repo_part.replace(".git", "")
+
+        # SCAR convention: /workspace/<repo-name>
+        return f"/workspace/{repo_name}"
+
+    async def _setup_workspace(self, conversation_id: str, github_repo_url: str) -> None:
+        """
+        Set up SCAR workspace for the project.
+
+        Sends /setcwd command to SCAR to set the working directory.
+
+        Args:
+            conversation_id: Conversation ID for SCAR
+            github_repo_url: GitHub repository URL
+
+        Raises:
+            httpx.HTTPError: If request fails
+        """
+        workspace_path = self._derive_workspace_path(github_repo_url)
+
+        logger.info(
+            f"Setting SCAR workspace: {workspace_path}",
+            extra={"conversation_id": conversation_id, "github_repo": github_repo_url},
+        )
+
+        # Send /setcwd command
+        setcwd_request = ScarMessageRequest(
+            conversationId=conversation_id,
+            message=f"/setcwd {workspace_path}"
+        )
+
+        async with httpx.AsyncClient(timeout=10.0) as client:
+            response = await client.post(
+                f"{self.base_url}/test/message",
+                json=setcwd_request.model_dump(),
+            )
+            response.raise_for_status()
+
+        logger.info(
+            "SCAR workspace set successfully",
+            extra={"workspace_path": workspace_path},
+        )
+
     async def send_command(
-        self, project_id: UUID, command: str, args: Optional[list[str]] = None
+        self, project_id: UUID, command: str, args: Optional[list[str]] = None, github_repo_url: Optional[str] = None
     ) -> str:
         """
         Send a command to SCAR and return conversation ID for polling.
+
+        Automatically sets up the workspace before executing the command.
 
         Args:
             project_id: Project UUID
             command: SCAR command to execute (e.g., "prime", "plan-feature-github")
             args: Optional command arguments
+            github_repo_url: Optional GitHub repository URL for workspace setup
 
         Returns:
             str: Conversation ID for polling messages
@@ -69,6 +129,10 @@ class ScarClient:
             httpx.HTTPError: If request fails
         """
         conversation_id = self._build_conversation_id(project_id)
+
+        # Set up workspace if github_repo_url provided
+        if github_repo_url:
+            await self._setup_workspace(conversation_id, github_repo_url)
 
         # Build command string
         command_str = f"/command-invoke {command}"
