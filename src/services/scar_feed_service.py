@@ -50,10 +50,14 @@ async def get_recent_scar_activity(
             else (activity.completed_at if activity.completed_at else datetime.utcnow())
         )
 
+        # Convert SQLAlchemy datetime to native Python datetime to avoid greenlet errors
+        # when calling .replace() in async context
+        base_timestamp_native = datetime.fromisoformat(base_timestamp.isoformat())
+
         # Always add the status summary
         activity_list.append({
             "id": str(activity.id),
-            "timestamp": base_timestamp.isoformat(),
+            "timestamp": base_timestamp_native.isoformat(),
             "source": activity.source,
             "message": (
                 f"{activity.command_type.value}: {activity.status.value}"
@@ -73,7 +77,7 @@ async def get_recent_scar_activity(
 
                 # Add detailed activity for each significant line
                 # Use microsecond offsets to preserve ordering
-                detail_timestamp = base_timestamp.replace(microsecond=i)
+                detail_timestamp = base_timestamp_native.replace(microsecond=i)
 
                 activity_list.append({
                     "id": f"{activity.id}-detail-{i}",
