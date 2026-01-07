@@ -272,13 +272,18 @@ async def test_run_orchestrator_with_topic_change_warning(db_session):
     # Add conversation history with topic switch
     from src.agent.tools import save_conversation_message
 
-    await save_conversation_message(
+    # Save messages - these will auto-create the first topic
+    msg1 = await save_conversation_message(
         db_session, project.id, MessageRole.USER, "Let's discuss the SSE feed"
     )
-    await save_conversation_message(
+    msg2 = await save_conversation_message(
         db_session, project.id, MessageRole.ASSISTANT, "Sure, the SSE feed..."
     )
     await db_session.commit()
+
+    # Refresh messages to ensure relationships are loaded
+    await db_session.refresh(msg1)
+    await db_session.refresh(msg2)
 
     # Mock the agent run method to capture the prompt
     captured_prompt = None
