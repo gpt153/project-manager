@@ -180,12 +180,8 @@ def test_detect_topic_change_with_new_topic_phrase():
     """Test that detect_topic_change identifies 'let's discuss' phrases"""
     now = datetime.now(timezone.utc)
     messages = [
-        MagicMock(
-            content="Previous topic", timestamp=now - timedelta(minutes=5), role=MessageRole.USER
-        ),
-        MagicMock(
-            content="Response", timestamp=now - timedelta(minutes=4), role=MessageRole.ASSISTANT
-        ),
+        MagicMock(content="Previous topic", timestamp=now - timedelta(minutes=5), role=MessageRole.USER),
+        MagicMock(content="Response", timestamp=now - timedelta(minutes=4), role=MessageRole.ASSISTANT),
         MagicMock(content="lets discuss something else", timestamp=now, role=MessageRole.USER),
     ]
 
@@ -354,6 +350,4 @@ async def test_run_orchestrator_with_recency_weighting(db_session):
         assert "CURRENT CONVERSATION (Most Important)" in captured_prompt
         assert "Earlier Context (Only If Relevant)" in captured_prompt
         # Most recent messages should appear before older ones
-        assert captured_prompt.index("CURRENT CONVERSATION") < captured_prompt.index(
-            "Earlier Context"
-        )
+        assert captured_prompt.index("CURRENT CONVERSATION") < captured_prompt.index("Earlier Context")
