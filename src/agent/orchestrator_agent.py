@@ -418,10 +418,10 @@ async def run_orchestrator(
     # Save user message first (this handles topic detection)
     await save_conversation_message(session, project_id, MessageRole.USER, user_message)
 
-    # Get conversation history - ONLY from active topic
-    # This ensures we don't bleed context from old topics
+    # Get conversation history - include all topics for topic change detection
+    # We need to see messages from previous topics to detect when user switches topics
     history_messages = await get_conversation_history(
-        session, project_id, limit=50, active_topic_only=True  # Only get current topic
+        session, project_id, limit=50, active_topic_only=False  # Get all topics for comparison
     )
 
     # Build conversation context from history
