@@ -32,6 +32,7 @@ from telegram_bot import (
 
 # ==================== Fixtures ====================
 
+
 @pytest.fixture
 def temp_sessions_dir(monkeypatch):
     """Create a temporary sessions directory for testing."""
@@ -56,6 +57,7 @@ def mock_session_id():
 
 
 # ==================== Session Management Tests ====================
+
 
 class TestSaveUserSession:
     """Tests for save_user_session function."""
@@ -313,7 +315,9 @@ class TestClearUserSession:
         # session_id should be removed
         assert "session_id" not in data
 
-    def test_clear_session_updates_timestamp(self, temp_sessions_dir, mock_user_id, mock_session_id):
+    def test_clear_session_updates_timestamp(
+        self, temp_sessions_dir, mock_user_id, mock_session_id
+    ):
         """Test that clearing session updates last_updated timestamp."""
         save_user_session(mock_user_id, mock_session_id, "/path")
 
@@ -340,7 +344,9 @@ class TestClearUserSession:
         session_file = temp_sessions_dir / f"{mock_user_id}.json"
         assert not session_file.exists()
 
-    def test_clear_session_preserves_created_at(self, temp_sessions_dir, mock_user_id, mock_session_id):
+    def test_clear_session_preserves_created_at(
+        self, temp_sessions_dir, mock_user_id, mock_session_id
+    ):
         """Test that clearing session preserves created_at timestamp."""
         save_user_session(mock_user_id, mock_session_id, "/path")
 
@@ -360,6 +366,7 @@ class TestClearUserSession:
 
 # ==================== Message Splitting Tests ====================
 
+
 class TestSendLongMessage:
     """Tests for send_long_message function."""
 
@@ -376,10 +383,7 @@ class TestSendLongMessage:
         await send_long_message(chat_id, short_text, mock_context)
 
         # Should be called once with full text
-        mock_context.bot.send_message.assert_called_once_with(
-            chat_id=chat_id,
-            text=short_text
-        )
+        mock_context.bot.send_message.assert_called_once_with(chat_id=chat_id, text=short_text)
 
     @pytest.mark.asyncio
     async def test_long_message_splits(self):
@@ -469,18 +473,18 @@ class TestSendLongMessage:
         await send_long_message(chat_id, empty_text, mock_context)
 
         # Should still send (empty message)
-        mock_context.bot.send_message.assert_called_once_with(
-            chat_id=chat_id,
-            text=empty_text
-        )
+        mock_context.bot.send_message.assert_called_once_with(chat_id=chat_id, text=empty_text)
 
 
 # ==================== JSON Structure Validation Tests ====================
 
+
 class TestSessionFileStructure:
     """Tests for session file JSON structure."""
 
-    def test_session_file_has_required_fields(self, temp_sessions_dir, mock_user_id, mock_session_id):
+    def test_session_file_has_required_fields(
+        self, temp_sessions_dir, mock_user_id, mock_session_id
+    ):
         """Test that session files contain all required fields."""
         save_user_session(mock_user_id, mock_session_id, "/path")
 
@@ -528,6 +532,7 @@ class TestSessionFileStructure:
 
 
 # ==================== Integration Tests ====================
+
 
 class TestSessionWorkflow:
     """Integration tests for complete session workflows."""

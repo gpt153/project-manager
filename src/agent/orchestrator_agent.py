@@ -271,8 +271,7 @@ async def get_scar_history(
         history = [
             exec
             for exec in history
-            if exec.started_at
-            and exec.started_at.replace(tzinfo=timezone.utc) > cutoff_time
+            if exec.started_at and exec.started_at.replace(tzinfo=timezone.utc) > cutoff_time
         ]
 
     return [
@@ -461,7 +460,9 @@ async def run_orchestrator(
         if len(history_messages) > 1:  # More than just the current message
             if topic_changed:
                 # Topic changed - only use recent messages, add warning
-                history_context = "\n\n⚠️ **IMPORTANT: The user has switched topics or corrected you.**\n\n"
+                history_context = (
+                    "\n\n⚠️ **IMPORTANT: The user has switched topics or corrected you.**\n\n"
+                )
                 history_context += "## CURRENT TOPIC (Focus on this):\n\n"
                 # Only last 4 messages (2 turns)
                 for msg in history_messages[-5:-1][-4:]:

@@ -47,8 +47,7 @@ load_dotenv()
 
 # Configure logging
 logging.basicConfig(
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    level=logging.INFO
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO
 )
 logger = logging.getLogger(__name__)
 
@@ -61,6 +60,7 @@ MAX_TELEGRAM_MESSAGE_LENGTH = 4096
 
 
 # ==================== Session Management ====================
+
 
 def save_user_session(user_id: int, session_id: str, cwd: Optional[str] = None):
     """
@@ -83,7 +83,7 @@ def save_user_session(user_id: int, session_id: str, cwd: Optional[str] = None):
     session_data = {
         "session_id": session_id,
         "cwd": cwd or existing_data.get("cwd"),
-        "last_updated": datetime.utcnow().isoformat() + "Z"
+        "last_updated": datetime.utcnow().isoformat() + "Z",
     }
 
     # Preserve created_at timestamp
@@ -196,7 +196,7 @@ def clear_user_session(user_id: int):
             new_data = {
                 "cwd": data.get("cwd"),
                 "created_at": data.get("created_at"),
-                "last_updated": datetime.utcnow().isoformat() + "Z"
+                "last_updated": datetime.utcnow().isoformat() + "Z",
             }
 
             with open(session_file, "w") as f:
@@ -208,6 +208,7 @@ def clear_user_session(user_id: int):
 
 
 # ==================== Command Handlers ====================
+
 
 async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Handle /start command - welcome message."""
@@ -264,7 +265,7 @@ Just send me a regular message to chat! I'll remember the context of our convers
 
 Your conversations are private and stored locally per user."""
 
-    await update.message.reply_text(help_message, parse_mode='Markdown')
+    await update.message.reply_text(help_message, parse_mode="Markdown")
 
 
 async def setcwd_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -294,8 +295,7 @@ async def setcwd_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     if not os.path.isdir(path):
         await update.message.reply_text(
-            f"❌ Path is not a directory: {path}\n\n"
-            "Please provide a valid directory path."
+            f"❌ Path is not a directory: {path}\n\n" "Please provide a valid directory path."
         )
         return
 
@@ -317,8 +317,7 @@ async def getcwd_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     cwd = get_user_cwd(user_id)
 
     await update.message.reply_text(
-        f"📁 Your current working directory:\n{cwd}\n\n"
-        "Use /setcwd to change it."
+        f"📁 Your current working directory:\n{cwd}\n\n" "Use /setcwd to change it."
     )
 
 
@@ -354,8 +353,7 @@ async def searchcwd_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = " ".join(context.args).lower()
 
     await update.message.reply_text(
-        f"🔍 Searching for directories matching '{query}'...\n"
-        "This may take a moment..."
+        f"🔍 Searching for directories matching '{query}'...\n" "This may take a moment..."
     )
 
     try:
@@ -367,19 +365,23 @@ async def searchcwd_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
         search_paths.append(home)
 
         # Add common Windows locations if on Windows
-        if os.name == 'nt':
-            search_paths.extend([
-                Path("C:\\Users"),
-                Path("C:\\Projects"),
-                Path("D:\\") if Path("D:\\").exists() else None,
-            ])
+        if os.name == "nt":
+            search_paths.extend(
+                [
+                    Path("C:\\Users"),
+                    Path("C:\\Projects"),
+                    Path("D:\\") if Path("D:\\").exists() else None,
+                ]
+            )
         else:
             # Add common Unix/Linux locations
-            search_paths.extend([
-                Path("/home"),
-                Path("/opt"),
-                Path("/var"),
-            ])
+            search_paths.extend(
+                [
+                    Path("/home"),
+                    Path("/opt"),
+                    Path("/var"),
+                ]
+            )
 
         # Remove None values
         search_paths = [p for p in search_paths if p and p.exists()]
@@ -447,6 +449,7 @@ async def searchcwd_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 # ==================== Message Handler ====================
 
+
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """
     Handle regular text messages and interface with Claude SDK.
@@ -473,7 +476,9 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         sentry_sdk.set_user({"id": str(user_id), "username": user.username or "unknown"})
 
         # Create Sentry span for agent invocation
-        with sentry_sdk.start_span(op="gen_ai.invoke_agent", name="invoke_agent Claude Code Bot") as agent_span:
+        with sentry_sdk.start_span(
+            op="gen_ai.invoke_agent", name="invoke_agent Claude Code Bot"
+        ) as agent_span:
             # Set initial context
             agent_span.set_data("gen_ai.system", "anthropic")
             agent_span.set_data("gen_ai.request.model", "claude-sonnet-4-5")
@@ -508,9 +513,9 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
                     "mcp_servers": {
                         "sequential-thinking": {
                             "command": "npx",
-                            "args": ["-y", "@modelcontextprotocol/server-sequential-thinking"]
+                            "args": ["-y", "@modelcontextprotocol/server-sequential-thinking"],
                         }
-                    }
+                    },
                 }
 
                 # Add resume parameter if we have a session ID
@@ -529,7 +534,9 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 num_tools_used = 0
 
                 # Create Claude SDK client and send query
-                with sentry_sdk.start_span(op="ai.chat_completions.create.anthropic", name="Claude SDK Query") as llm_span:
+                with sentry_sdk.start_span(
+                    op="ai.chat_completions.create.anthropic", name="Claude SDK Query"
+                ) as llm_span:
                     # Set LLM request metadata
                     llm_span.set_data("gen_ai.request.streaming", True)
                     llm_span.set_data("gen_ai.request.model", "claude-sonnet-4-5")
@@ -545,21 +552,36 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
                                     if isinstance(block, TextBlock):
                                         # Send text block immediately as a separate message
                                         if block.text.strip():
-                                            await send_long_message(update.message.chat_id, block.text, context)
+                                            await send_long_message(
+                                                update.message.chat_id, block.text, context
+                                            )
                                             total_response_length += len(block.text)
-                                            logger.info(f"Sent text block to user {user_id}, length: {len(block.text)}")
+                                            logger.info(
+                                                f"Sent text block to user {user_id}, length: {len(block.text)}"
+                                            )
                                     elif isinstance(block, ToolUseBlock):
                                         # Create span for tool execution (retroactive - tool already executed)
                                         logger.info(f"Creating Sentry span for tool: {block.name}")
-                                        with sentry_sdk.start_span(op="gen_ai.execute_tool", name=f"execute_tool {block.name}") as tool_span:
-                                            tool_span.set_data("gen_ai.operation.name", "execute_tool")
+                                        with sentry_sdk.start_span(
+                                            op="gen_ai.execute_tool",
+                                            name=f"execute_tool {block.name}",
+                                        ) as tool_span:
+                                            tool_span.set_data(
+                                                "gen_ai.operation.name", "execute_tool"
+                                            )
                                             tool_span.set_data("tool_name", block.name)
                                             tool_span.set_data("gen_ai.system", "anthropic")
 
                                             # Serialize tool input (truncate if too large)
-                                            tool_input_str = json.dumps(block.input) if hasattr(block, 'input') else "{}"
+                                            tool_input_str = (
+                                                json.dumps(block.input)
+                                                if hasattr(block, "input")
+                                                else "{}"
+                                            )
                                             if len(tool_input_str) > 1000:
-                                                tool_input_str = tool_input_str[:1000] + "... (truncated)"
+                                                tool_input_str = (
+                                                    tool_input_str[:1000] + "... (truncated)"
+                                                )
                                             tool_span.set_data("tool_input", tool_input_str)
 
                                             # Add small delay to give span measurable duration
@@ -571,17 +593,21 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
                                         tool_message = f"🔧 {block.name.upper()}"
 
                                         # Add brief command/input info (truncated)
-                                        if hasattr(block, 'input') and block.input:
+                                        if hasattr(block, "input") and block.input:
                                             tool_input = block.input
                                             brief_info = None
 
                                             # Extract relevant info based on tool type
                                             if block.name == "Bash" and "command" in tool_input:
                                                 cmd = tool_input["command"]
-                                                brief_info = cmd[:100] + "..." if len(cmd) > 100 else cmd
+                                                brief_info = (
+                                                    cmd[:100] + "..." if len(cmd) > 100 else cmd
+                                                )
                                             elif block.name == "Read" and "file_path" in tool_input:
                                                 brief_info = f"Reading: {tool_input['file_path']}"
-                                            elif block.name == "Write" and "file_path" in tool_input:
+                                            elif (
+                                                block.name == "Write" and "file_path" in tool_input
+                                            ):
                                                 brief_info = f"Writing: {tool_input['file_path']}"
                                             elif block.name == "Edit" and "file_path" in tool_input:
                                                 brief_info = f"Editing: {tool_input['file_path']}"
@@ -597,12 +623,18 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
                                                 tool_message += f"\n{brief_info}"
 
                                         # Send tool message immediately
-                                        await context.bot.send_message(chat_id=update.message.chat_id, text=tool_message)
+                                        await context.bot.send_message(
+                                            chat_id=update.message.chat_id, text=tool_message
+                                        )
                                         num_tools_used += 1
-                                        logger.info(f"Sent tool usage to user {user_id}: {tool_message[:50]}...")
+                                        logger.info(
+                                            f"Sent tool usage to user {user_id}: {tool_message[:50]}..."
+                                        )
                                     elif isinstance(block, ToolResultBlock):
                                         # Log tool results for debugging
-                                        logger.info(f"Tool result received: tool_use_id={block.tool_use_id if hasattr(block, 'tool_use_id') else 'unknown'}")
+                                        logger.info(
+                                            f"Tool result received: tool_use_id={block.tool_use_id if hasattr(block, 'tool_use_id') else 'unknown'}"
+                                        )
 
                             elif isinstance(message, ResultMessage):
                                 # Capture session ID for persistence
@@ -610,22 +642,36 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
                                 logger.info(f"Received session ID: {new_session_id}")
 
                                 # Capture token usage and cost metrics in Sentry
-                                if hasattr(message, 'usage') and message.usage:
-                                    llm_span.set_data("gen_ai.usage.input_tokens", message.usage.get("input_tokens", 0))
-                                    llm_span.set_data("gen_ai.usage.output_tokens", message.usage.get("output_tokens", 0))
-                                    llm_span.set_data("gen_ai.usage.cache_read_input_tokens", message.usage.get("cache_read_input_tokens", 0))
-                                    llm_span.set_data("gen_ai.usage.cache_creation_input_tokens", message.usage.get("cache_creation_input_tokens", 0))
+                                if hasattr(message, "usage") and message.usage:
+                                    llm_span.set_data(
+                                        "gen_ai.usage.input_tokens",
+                                        message.usage.get("input_tokens", 0),
+                                    )
+                                    llm_span.set_data(
+                                        "gen_ai.usage.output_tokens",
+                                        message.usage.get("output_tokens", 0),
+                                    )
+                                    llm_span.set_data(
+                                        "gen_ai.usage.cache_read_input_tokens",
+                                        message.usage.get("cache_read_input_tokens", 0),
+                                    )
+                                    llm_span.set_data(
+                                        "gen_ai.usage.cache_creation_input_tokens",
+                                        message.usage.get("cache_creation_input_tokens", 0),
+                                    )
 
-                                if hasattr(message, 'total_cost_usd') and message.total_cost_usd:
+                                if hasattr(message, "total_cost_usd") and message.total_cost_usd:
                                     llm_span.set_data("gen_ai.cost_usd", message.total_cost_usd)
 
-                                if hasattr(message, 'duration_ms') and message.duration_ms:
+                                if hasattr(message, "duration_ms") and message.duration_ms:
                                     llm_span.set_data("gen_ai.duration_ms", message.duration_ms)
 
-                                if hasattr(message, 'duration_api_ms') and message.duration_api_ms:
-                                    llm_span.set_data("gen_ai.api_duration_ms", message.duration_api_ms)
+                                if hasattr(message, "duration_api_ms") and message.duration_api_ms:
+                                    llm_span.set_data(
+                                        "gen_ai.api_duration_ms", message.duration_api_ms
+                                    )
 
-                                if hasattr(message, 'num_turns') and message.num_turns:
+                                if hasattr(message, "num_turns") and message.num_turns:
                                     llm_span.set_data("gen_ai.num_turns", message.num_turns)
 
                 # Set final span data
@@ -641,24 +687,42 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 logger.error(f"Error handling message from user {user_id}: {e}", exc_info=True)
 
                 # Set rich context for error tracking in Sentry
-                sentry_sdk.set_context("user", {
-                    "id": user_id,
-                    "username": user.username or "unknown",
-                })
+                sentry_sdk.set_context(
+                    "user",
+                    {
+                        "id": user_id,
+                        "username": user.username or "unknown",
+                    },
+                )
 
-                sentry_sdk.set_context("session", {
-                    "session_id": session_id if 'session_id' in locals() else None,
-                    "cwd": cwd if 'cwd' in locals() else None,
-                })
+                sentry_sdk.set_context(
+                    "session",
+                    {
+                        "session_id": session_id if "session_id" in locals() else None,
+                        "cwd": cwd if "cwd" in locals() else None,
+                    },
+                )
 
-                sentry_sdk.set_context("message", {
-                    "preview": user_message[:100] if user_message else "",
-                    "length": len(user_message) if user_message else 0,
-                })
+                sentry_sdk.set_context(
+                    "message",
+                    {
+                        "preview": user_message[:100] if user_message else "",
+                        "length": len(user_message) if user_message else 0,
+                    },
+                )
 
-                sentry_sdk.set_context("bot_config", {
-                    "allowed_tools": ["Read", "Write", "Bash", "Edit", "mcp__sequential-thinking"],
-                })
+                sentry_sdk.set_context(
+                    "bot_config",
+                    {
+                        "allowed_tools": [
+                            "Read",
+                            "Write",
+                            "Bash",
+                            "Edit",
+                            "mcp__sequential-thinking",
+                        ],
+                    },
+                )
 
                 # Capture exception in Sentry with context
                 sentry_sdk.capture_exception(e)
@@ -693,7 +757,9 @@ async def send_long_message(chat_id: int, text: str, context: ContextTypes.DEFAU
 
         for line in lines:
             # If adding this line would exceed limit, start new chunk
-            if len(current_chunk) + len(line) + 1 > MAX_TELEGRAM_MESSAGE_LENGTH - 100:  # Leave buffer
+            if (
+                len(current_chunk) + len(line) + 1 > MAX_TELEGRAM_MESSAGE_LENGTH - 100
+            ):  # Leave buffer
                 if current_chunk:
                     chunks.append(current_chunk)
                     current_chunk = line
@@ -737,7 +803,7 @@ def main():
             integrations=[
                 LoggingIntegration(
                     level=logging.INFO,  # Capture info and above as breadcrumbs
-                    event_level=logging.ERROR  # Send errors as events
+                    event_level=logging.ERROR,  # Send errors as events
                 ),
             ],
         )

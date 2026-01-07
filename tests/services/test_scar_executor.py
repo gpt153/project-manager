@@ -2,6 +2,7 @@
 Tests for SCAR command execution service.
 """
 
+from datetime import datetime
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
@@ -39,7 +40,11 @@ async def test_execute_prime_command(db_session):
 
         # Mock wait_for_completion to return messages
         mock_messages = [
-            ScarMessage(message="Primed project context successfully", isComplete=True)
+            ScarMessage(
+                message="Primed project context successfully",
+                timestamp=datetime.utcnow(),
+                direction="received",
+            )
         ]
         mock_client.wait_for_completion.return_value = mock_messages
 
@@ -75,7 +80,11 @@ async def test_execute_plan_command(db_session):
 
         # Mock wait_for_completion to return messages
         mock_messages = [
-            ScarMessage(message="Created implementation plan for Test Feature", isComplete=True)
+            ScarMessage(
+                message="Created implementation plan for Test Feature",
+                timestamp=datetime.utcnow(),
+                direction="received",
+            )
         ]
         mock_client.wait_for_completion.return_value = mock_messages
 
@@ -131,7 +140,11 @@ async def test_get_command_history(db_session):
         mock_client.send_command.return_value = "test-conversation-id"
 
         # Mock wait_for_completion to return messages
-        mock_messages = [ScarMessage(message="Command executed", isComplete=True)]
+        mock_messages = [
+            ScarMessage(
+                message="Command executed", timestamp=datetime.utcnow(), direction="received"
+            )
+        ]
         mock_client.wait_for_completion.return_value = mock_messages
 
         # Execute multiple commands
@@ -170,7 +183,11 @@ async def test_get_last_successful_command(db_session):
         mock_client.send_command.return_value = "test-conversation-id"
 
         # Mock wait_for_completion to return messages
-        mock_messages = [ScarMessage(message="Command executed", isComplete=True)]
+        mock_messages = [
+            ScarMessage(
+                message="Command executed", timestamp=datetime.utcnow(), direction="received"
+            )
+        ]
         mock_client.wait_for_completion.return_value = mock_messages
 
         # Execute command
@@ -208,7 +225,11 @@ async def test_command_execution_tracking(db_session):
         mock_client.send_command.return_value = "test-conversation-id"
 
         # Mock wait_for_completion to return messages
-        mock_messages = [ScarMessage(message="Validation complete", isComplete=True)]
+        mock_messages = [
+            ScarMessage(
+                message="Validation complete", timestamp=datetime.utcnow(), direction="received"
+            )
+        ]
         mock_client.wait_for_completion.return_value = mock_messages
 
         # Execute command

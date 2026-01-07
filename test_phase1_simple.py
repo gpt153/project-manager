@@ -55,9 +55,9 @@ def detect_topic_change(messages: list, current_message: str) -> bool:
 
 
 # Run tests
-print("="*60)
+print("=" * 60)
 print("Phase 1: Topic Change Detection Tests")
-print("="*60)
+print("=" * 60)
 print()
 
 # Test 1: Correction phrase
@@ -124,9 +124,9 @@ assert result is True
 print("  ✓ PASS - Handles naive timestamps")
 
 print()
-print("="*60)
+print("=" * 60)
 print("✅ All tests passed!")
-print("="*60)
+print("=" * 60)
 print()
 print("Phase 1 Implementation Summary:")
 print("  ✓ Recency weighting implemented")

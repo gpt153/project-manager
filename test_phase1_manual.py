@@ -44,8 +44,12 @@ def test_detect_topic_change_with_new_topic_phrase():
     print("Test 2: New topic phrase detection...")
     now = datetime.now(timezone.utc)
     messages = [
-        MagicMock(content="Previous topic", timestamp=now - timedelta(minutes=5), role=MessageRole.USER),
-        MagicMock(content="Response", timestamp=now - timedelta(minutes=4), role=MessageRole.ASSISTANT),
+        MagicMock(
+            content="Previous topic", timestamp=now - timedelta(minutes=5), role=MessageRole.USER
+        ),
+        MagicMock(
+            content="Response", timestamp=now - timedelta(minutes=4), role=MessageRole.ASSISTANT
+        ),
         MagicMock(content="lets discuss something else", timestamp=now, role=MessageRole.USER),
     ]
 
@@ -146,8 +150,14 @@ def test_all_correction_phrases():
 
     for phrase in correction_phrases:
         messages = [
-            MagicMock(content="Previous", timestamp=now - timedelta(minutes=1), role=MessageRole.USER),
-            MagicMock(content=f"Test message with {phrase} something", timestamp=now, role=MessageRole.USER),
+            MagicMock(
+                content="Previous", timestamp=now - timedelta(minutes=1), role=MessageRole.USER
+            ),
+            MagicMock(
+                content=f"Test message with {phrase} something",
+                timestamp=now,
+                role=MessageRole.USER,
+            ),
         ]
         result = detect_topic_change(messages, f"Test message with {phrase} something")
         assert result is True, f"Should detect phrase: {phrase}"
@@ -156,10 +166,10 @@ def test_all_correction_phrases():
 
 
 if __name__ == "__main__":
-    print("="*60)
+    print("=" * 60)
     print("Phase 1 Manual Test Suite")
     print("Testing: detect_topic_change() function")
-    print("="*60)
+    print("=" * 60)
     print()
 
     try:
@@ -171,9 +181,9 @@ if __name__ == "__main__":
         test_all_correction_phrases()
 
         print()
-        print("="*60)
+        print("=" * 60)
         print("✅ All tests passed!")
-        print("="*60)
+        print("=" * 60)
         print()
         print("Phase 1 implementation verified:")
         print("  ✓ Topic change detection working")
@@ -184,15 +194,16 @@ if __name__ == "__main__":
 
     except AssertionError as e:
         print()
-        print("="*60)
+        print("=" * 60)
         print(f"❌ Test failed: {e}")
-        print("="*60)
+        print("=" * 60)
         exit(1)
     except Exception as e:
         print()
-        print("="*60)
+        print("=" * 60)
         print(f"❌ Unexpected error: {e}")
-        print("="*60)
+        print("=" * 60)
         import traceback
+
         traceback.print_exc()
         exit(1)
