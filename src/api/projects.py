@@ -10,6 +10,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.database.connection import get_session
+from src.database.models import Project
 from src.services.project_service import (
     ProjectCreate,
     create_project,
@@ -17,6 +18,8 @@ from src.services.project_service import (
     get_conversation_history,
     get_project_with_stats,
 )
+from src.services.topic_manager import create_new_topic
+from sqlalchemy import select
 
 logger = logging.getLogger(__name__)
 
@@ -130,4 +133,61 @@ async def get_project_messages(
         logger.error(f"Error retrieving messages for project {project_id}: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to retrieve messages"
+        )
+
+
+@router.post("/projects/{project_id}/reset", response_model=dict)
+async def reset_project_conversation(
+    project_id: UUID, session: AsyncSession = Depends(get_session)
+):
+    """
+    Reset conversation context for a project.
+
+    This creates a new conversation topic, effectively clearing the context
+    while preserving message history.
+
+    Args:
+        project_id: Project UUID
+        session: Database session
+
+    Returns:
+        Success message with new topic ID
+
+    Raises:
+        404: Project not found
+        500: Failed to reset conversation
+    """
+    try:
+        # Verify project exists
+        result = await session.execute(select(Project).where(Project.id == project_id))
+        project = result.scalar_one_or_none()
+
+        if not project:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, detail=f"Project {project_id} not found"
+            )
+
+        # Create new topic (this automatically ends the previous one)
+        new_topic = await create_new_topic(
+            session, project_id, title="Reset - New Conversation", summary="User requested context reset"
+        )
+
+        await session.commit()
+
+        logger.info(f"Reset conversation for project {project_id}, new topic: {new_topic.id}")
+
+        return {
+            "success": True,
+            "message": "Conversation context reset successfully",
+            "new_topic_id": str(new_topic.id),
+            "previous_messages_preserved": True,
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error resetting conversation for project {project_id}: {e}", exc_info=True)
+        await session.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to reset conversation context",
         )
