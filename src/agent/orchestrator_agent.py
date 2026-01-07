@@ -236,13 +236,23 @@ async def continue_workflow(ctx: RunContext[AgentDependencies]) -> str:
 
 
 @orchestrator_agent.tool
-async def get_scar_history(ctx: RunContext[AgentDependencies], limit: int = 5) -> list[dict]:
+async def get_scar_history(
+    ctx: RunContext[AgentDependencies], limit: int = 5, only_recent: bool = True
+) -> list[dict]:
     """
-    Get recent SCAR command execution history.
+    Get SCAR command execution history.
+
+    ⚠️ IMPORTANT: Only call this when:
+    - User explicitly asks about SCAR status
+    - User asks "what has SCAR done?"
+    - You need to check if a command completed
+
+    DO NOT call this automatically for context. It may contain old, irrelevant information.
 
     Args:
         ctx: Agent context with dependencies
         limit: Maximum number of executions to return
+        only_recent: Only return executions from last 30 minutes (default: True)
 
     Returns:
         list[dict]: Recent command executions
@@ -251,6 +261,19 @@ async def get_scar_history(ctx: RunContext[AgentDependencies], limit: int = 5) -
         return [{"error": "No active project"}]
 
     history = await get_command_history(ctx.deps.session, ctx.deps.project_id, limit)
+
+    # Filter by recency if requested
+    if only_recent:
+        from datetime import datetime, timedelta, timezone
+
+        cutoff_time = datetime.now(timezone.utc) - timedelta(minutes=30)
+
+        history = [
+            exec
+            for exec in history
+            if exec.started_at
+            and exec.started_at.replace(tzinfo=timezone.utc) > cutoff_time
+        ]
 
     return [
         {
@@ -316,6 +339,61 @@ async def execute_scar(
     }
 
 
+def detect_topic_change(messages: list, current_message: str) -> bool:
+    """
+    Detect if conversation topic has changed based on explicit signals.
+
+    Args:
+        messages: Recent conversation history
+        current_message: Current user message to analyze
+
+    Returns:
+        True if topic change detected, False otherwise
+    """
+    # Check for explicit topic corrections
+    correction_phrases = [
+        "but we weren't discussing",
+        "but we werent discussing",
+        "we were talking about",
+        "not about that",
+        "different topic",
+        "let's discuss",
+        "lets discuss",
+        "switching topics",
+        "new topic",
+        "back to",
+    ]
+
+    current_lower = current_message.lower()
+    for phrase in correction_phrases:
+        if phrase in current_lower:
+            return True
+
+    # Check for time gaps (>1 hour between messages)
+    if len(messages) >= 2:
+        from datetime import timezone
+
+        last_msg = messages[-1]
+        prev_msg = messages[-2]
+
+        # Ensure timestamps are timezone-aware
+        if last_msg.timestamp.tzinfo is None:
+            last_time = last_msg.timestamp.replace(tzinfo=timezone.utc)
+        else:
+            last_time = last_msg.timestamp
+
+        if prev_msg.timestamp.tzinfo is None:
+            prev_time = prev_msg.timestamp.replace(tzinfo=timezone.utc)
+        else:
+            prev_time = prev_msg.timestamp
+
+        time_gap = (last_time - prev_time).total_seconds()
+        if time_gap > 3600:  # 1 hour
+            return True
+
+    return False
+
+
 # Convenience function for running the agent
 async def run_orchestrator(
     project_id: UUID,
@@ -372,14 +450,40 @@ async def run_orchestrator(
     if True:  # Use fallback method
         # Fallback: If message_history parameter doesn't exist, embed history in message
         # This ensures conversation context even if PydanticAI API differs
+
+        # Detect topic change
+        topic_changed = detect_topic_change(history_messages, user_message)
+
+        # Build conversation context with recency weighting
         history_context = ""
         if len(history_messages) > 1:  # More than just the current message
-            history_context = "\n\n## Recent Conversation History:\n\n"
-            for msg in history_messages[:-1][-10:]:  # Last 10 messages before current
-                role_name = "User" if msg.role == MessageRole.USER else "You (PM)"
-                history_context += f"**{role_name}**: {msg.content}\n\n"
+            if topic_changed:
+                # Topic changed - only use recent messages, add warning
+                history_context = "\n\n⚠️ **IMPORTANT: The user has switched topics or corrected you.**\n\n"
+                history_context += "## CURRENT TOPIC (Focus on this):\n\n"
+                # Only last 4 messages (2 turns)
+                for msg in history_messages[-5:-1][-4:]:
+                    role_name = "User" if msg.role == MessageRole.USER else "You (PM)"
+                    history_context += f"**{role_name}**: {msg.content}\n\n"
+            else:
+                # Normal flow - use weighted context
+                recent_messages = history_messages[-7:-1]  # Last 6 messages (3 turns)
+                older_messages = history_messages[-21:-7] if len(history_messages) > 7 else []
+
+                history_context = "\n\n## CURRENT CONVERSATION (Most Important):\n\n"
+                for msg in recent_messages:
+                    role_name = "User" if msg.role == MessageRole.USER else "You (PM)"
+                    history_context += f"**{role_name}**: {msg.content}\n\n"
+
+                if older_messages:
+                    history_context += "\n\n## Earlier Context (Only If Relevant):\n\n"
+                    for msg in older_messages[-5:]:  # Max 5 older messages
+                        role_name = "User" if msg.role == MessageRole.USER else "You (PM)"
+                        history_context += f"**{role_name}**: {msg.content}\n\n"
+
+            # Add current message
             history_context += f"\n---\n\n**Current User Message**: {user_message}\n\n"
-            history_context += "Please respond considering the full conversation context above."
+            history_context += "Please respond considering the conversation context above."
 
         # Run agent with history embedded in message
         result = await orchestrator_agent.run(
