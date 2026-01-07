@@ -2,11 +2,9 @@
 Unit tests for the Topic Manager service.
 """
 
-from datetime import datetime, timedelta, timezone
-from uuid import uuid4
+from datetime import datetime, timedelta
 
 import pytest
-from sqlalchemy import select
 
 from src.database.models import ConversationMessage, ConversationTopic, MessageRole, Project
 from src.services.topic_manager import (
