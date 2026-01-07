@@ -32,8 +32,10 @@ async def websocket_chat_endpoint(websocket: WebSocket, project_id: UUID):
 
     Protocol:
         Client -> Server: {"content": "user message"}
+        Client -> Server: {"action": "reset"}
         Server -> Client: {"type": "chat", "data": {"id": "...", "role": "assistant", "content": "...", "timestamp": "..."}}
         Server -> Client: {"type": "status", "data": {"status": "connected|disconnected", "message": "..."}}
+        Server -> Client: {"type": "reset", "data": {"success": true, "message": "...", "new_topic_id": "..."}}
         Server -> Client: {"type": "error", "data": {"code": "...", "message": "..."}}
     """
     connection_id = str(uuid4())
@@ -55,6 +57,44 @@ async def websocket_chat_endpoint(websocket: WebSocket, project_id: UUID):
 
             try:
                 message_data = json.loads(data)
+
+                # Handle reset action
+                if message_data.get("action") == "reset":
+                    from src.services.topic_manager import create_new_topic
+
+                    async with async_session_maker() as session:
+                        try:
+                            new_topic = await create_new_topic(
+                                session,
+                                project_id,
+                                title="Reset - New Conversation",
+                                summary="User requested context reset via WebSocket",
+                            )
+                            await session.commit()
+
+                            await ws_manager.send_personal_message(
+                                {
+                                    "type": "reset",
+                                    "data": {
+                                        "success": True,
+                                        "message": "✅ Conversation context has been reset. Starting fresh!",
+                                        "new_topic_id": str(new_topic.id),
+                                    },
+                                },
+                                connection_id,
+                            )
+                            logger.info(
+                                f"Reset conversation for project {project_id} via WebSocket"
+                            )
+                        except Exception as reset_error:
+                            logger.error(f"Error resetting conversation: {reset_error}")
+                            await session.rollback()
+                            await ws_manager.send_error(
+                                connection_id, "RESET_ERROR", "Failed to reset conversation context"
+                            )
+                    continue
+
+                # Handle regular chat message
                 user_content = message_data.get("content", "").strip()
 
                 if not user_content:

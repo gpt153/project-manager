@@ -66,6 +66,7 @@ class OrchestratorTelegramBot:
         self.application.add_handler(CommandHandler("help", self.help_command))
         self.application.add_handler(CommandHandler("status", self.status_command))
         self.application.add_handler(CommandHandler("continue", self.continue_command))
+        self.application.add_handler(CommandHandler("reset", self.reset_command))
         self.application.add_handler(
             MessageHandler(filters.TEXT & ~filters.COMMAND, self.handle_message)
         )
@@ -120,6 +121,7 @@ class OrchestratorTelegramBot:
             "/start - Start a new project\n"
             "/status - Check current project status\n"
             "/continue - Continue to next workflow phase\n"
+            "/reset - Reset conversation context\n"
             "/help - Show this help message\n\n"
             "**How it works:**\n"
             "1. 💭 **Brainstorm** - Tell me your idea\n"
@@ -127,6 +129,7 @@ class OrchestratorTelegramBot:
             "3. 🎯 **Plan** - We'll create an implementation plan\n"
             "4. 💻 **Build** - I'll implement the features\n"
             "5. ✅ **Validate** - We'll test everything\n\n"
+            "💡 **Tip:** Use /reset if I seem confused or off-topic!\n\n"
             "Just chat with me naturally, and I'll guide you through each step!"
         )
 
@@ -188,6 +191,46 @@ class OrchestratorTelegramBot:
                 await self._check_and_send_approval_gates(update, project_id, session)
             else:
                 await update.message.reply_text(f"❌ Error: {message}", parse_mode="Markdown")
+
+    async def reset_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+        """
+        Handle /reset command - reset conversation context.
+
+        Args:
+            update: Telegram update
+            context: Handler context
+        """
+        project_id_str = context.chat_data.get("project_id")
+
+        if not project_id_str:
+            await update.message.reply_text("No active project. Use /start to begin a new project.")
+            return
+
+        project_id = UUID(project_id_str)
+
+        async with self.db_session_maker() as session:
+            from src.services.topic_manager import create_new_topic
+
+            # Create new topic (ends previous one)
+            new_topic = await create_new_topic(
+                session,
+                project_id,
+                title="Reset - New Conversation",
+                summary="User requested context reset via Telegram",
+            )
+            await session.commit()
+
+            reset_message = (
+                "✅ **Conversation Reset**\n\n"
+                "🔄 Your conversation context has been cleared.\n"
+                "📝 Previous messages are preserved but won't affect future responses.\n"
+                "💬 Starting fresh - what would you like to discuss?"
+            )
+
+            logger.info(
+                f"Reset conversation for project {project_id} via Telegram, new topic: {new_topic.id}"
+            )
+            await update.message.reply_text(reset_message, parse_mode="Markdown")
 
     async def handle_message(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         """

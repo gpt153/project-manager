@@ -51,6 +51,12 @@ export const useWebSocket = (projectId: string) => {
         if (chatMessage.role === 'assistant') {
           setIsTyping(false);
         }
+      } else if (wsMessage.type === 'reset') {
+        // Handle reset confirmation
+        console.log('Context reset:', wsMessage.data);
+        // Clear local messages to show fresh start
+        setMessages([]);
+        setIsTyping(false);
       }
     };
 
@@ -78,5 +84,11 @@ export const useWebSocket = (projectId: string) => {
     }
   };
 
-  return { messages, isConnected, sendMessage, isLoadingHistory, isTyping };
+  const resetContext = () => {
+    if (wsRef.current?.readyState === WebSocket.OPEN) {
+      wsRef.current.send(JSON.stringify({ action: 'reset' }));
+    }
+  };
+
+  return { messages, isConnected, sendMessage, resetContext, isLoadingHistory, isTyping };
 };
