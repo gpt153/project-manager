@@ -13,8 +13,9 @@ interface ChatInterfaceProps {
 }
 
 export const ChatInterface: React.FC<ChatInterfaceProps> = ({ projectId, projectName, theme }) => {
-  const { messages, isConnected, sendMessage, isLoadingHistory, isTyping } = useWebSocket(projectId);
+  const { messages, isConnected, sendMessage, resetContext, isLoadingHistory, isTyping } = useWebSocket(projectId);
   const [input, setInput] = useState('');
+  const [showResetConfirm, setShowResetConfirm] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -35,6 +36,11 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ projectId, project
     }
   };
 
+  const handleReset = () => {
+    resetContext();
+    setShowResetConfirm(false);
+  };
+
   return (
     <div
       className="chat-interface"
@@ -42,10 +48,27 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ projectId, project
     >
       <div className="chat-header">
         <h2>Chat with {projectName}</h2>
-        <span className={`status ${isConnected ? 'connected' : 'disconnected'}`}>
-          {isConnected ? '● Connected' : '○ Disconnected'}
-        </span>
+        <div className="header-actions">
+          <span className={`status ${isConnected ? 'connected' : 'disconnected'}`}>
+            {isConnected ? '● Connected' : '○ Disconnected'}
+          </span>
+          <button
+            className="reset-button"
+            onClick={() => setShowResetConfirm(true)}
+            title="Reset conversation context"
+            disabled={!isConnected}
+          >
+            🔄 Reset
+          </button>
+        </div>
       </div>
+      {showResetConfirm && (
+        <div className="reset-confirmation">
+          <p>⚠️ Reset conversation context? This will start a new topic but preserve message history.</p>
+          <button onClick={handleReset}>Confirm Reset</button>
+          <button onClick={() => setShowResetConfirm(false)}>Cancel</button>
+        </div>
+      )}
       <div className="messages">
         {isLoadingHistory ? (
           <div className="loading-state">Loading conversation history...</div>

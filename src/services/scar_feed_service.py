@@ -55,21 +55,23 @@ async def get_recent_scar_activity(
         base_timestamp_native = datetime.fromisoformat(base_timestamp.isoformat())
 
         # Always add the status summary
-        activity_list.append({
-            "id": str(activity.id),
-            "timestamp": base_timestamp_native.isoformat(),
-            "source": activity.source,
-            "message": (
-                f"{activity.command_type.value}: {activity.status.value}"
-                if activity.status
-                else activity.command_type.value
-            ),
-            "phase": activity.phase.name if activity.phase else None,
-        })
+        activity_list.append(
+            {
+                "id": str(activity.id),
+                "timestamp": base_timestamp_native.isoformat(),
+                "source": activity.source,
+                "message": (
+                    f"{activity.command_type.value}: {activity.status.value}"
+                    if activity.status
+                    else activity.command_type.value
+                ),
+                "phase": activity.phase.name if activity.phase else None,
+            }
+        )
 
         # If verbosity >= 2 and output exists, parse detailed steps
         if verbosity_level >= 2 and activity.output:
-            lines = activity.output.split('\n')
+            lines = activity.output.split("\n")
             for i, line in enumerate(lines):
                 line = line.strip()
                 if not line or len(line) < 3:
@@ -79,13 +81,15 @@ async def get_recent_scar_activity(
                 # Use microsecond offsets to preserve ordering
                 detail_timestamp = base_timestamp_native.replace(microsecond=i)
 
-                activity_list.append({
-                    "id": f"{activity.id}-detail-{i}",
-                    "timestamp": detail_timestamp.isoformat(),
-                    "source": "scar-detail",
-                    "message": line,
-                    "phase": activity.phase.name if activity.phase else None,
-                })
+                activity_list.append(
+                    {
+                        "id": f"{activity.id}-detail-{i}",
+                        "timestamp": detail_timestamp.isoformat(),
+                        "source": "scar-detail",
+                        "message": line,
+                        "phase": activity.phase.name if activity.phase else None,
+                    }
+                )
 
     logger.debug(f"Retrieved {len(activity_list)} SCAR activities for project {project_id}")
     return activity_list

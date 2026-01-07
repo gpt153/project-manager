@@ -13,7 +13,7 @@ from src.agent.orchestrator_agent import (
     run_orchestrator,
 )
 from src.agent.tools import AgentDependencies
-from src.database.models import ConversationMessage, MessageRole, Project, ProjectStatus
+from src.database.models import MessageRole, Project, ProjectStatus
 
 
 @pytest.mark.asyncio
@@ -265,7 +265,6 @@ async def test_run_orchestrator_with_topic_change_warning(db_session):
     await db_session.refresh(project)
 
     # Add conversation history with topic switch
-    now = datetime.now(timezone.utc)
     from src.agent.tools import save_conversation_message
 
     await save_conversation_message(
@@ -290,8 +289,10 @@ async def test_run_orchestrator_with_topic_change_warning(db_session):
         mock_agent_run.side_effect = mock_run
 
         # Send message with topic correction
-        response = await run_orchestrator(
-            project.id, "but we weren't discussing the sse feed, we were talking about chat features", db_session
+        await run_orchestrator(
+            project.id,
+            "but we weren't discussing the sse feed, we were talking about chat features",
+            db_session,
         )
 
         # Verify the warning was included in the prompt
@@ -342,7 +343,7 @@ async def test_run_orchestrator_with_recency_weighting(db_session):
         mock_agent_run.side_effect = mock_run
 
         # Send new message
-        response = await run_orchestrator(project.id, "New current message", db_session)
+        await run_orchestrator(project.id, "New current message", db_session)
 
         # Verify prompt structure
         assert captured_prompt is not None

@@ -7,8 +7,8 @@ export interface ChatMessage {
 }
 
 export interface WebSocketMessage {
-  type: 'chat' | 'status' | 'error';
-  data: ChatMessage | StatusUpdate | ErrorMessage;
+  type: 'chat' | 'status' | 'error' | 'reset';
+  data: ChatMessage | StatusUpdate | ErrorMessage | ResetConfirmation;
 }
 
 export interface StatusUpdate {
@@ -19,4 +19,10 @@ export interface StatusUpdate {
 export interface ErrorMessage {
   code: string;
   message: string;
+}
+
+export interface ResetConfirmation {
+  success: boolean;
+  message: string;
+  new_topic_id: string;
 }
