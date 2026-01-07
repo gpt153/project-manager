@@ -416,12 +416,17 @@ async def run_orchestrator(
     """
     deps = AgentDependencies(session=session, project_id=project_id)
 
-    # Save user message first
+    # Save user message first (this handles topic detection)
     await save_conversation_message(session, project_id, MessageRole.USER, user_message)
 
-    # Get conversation history (excluding the message we just saved)
-    # Limit to recent 50 messages for performance
-    history_messages = await get_conversation_history(session, project_id, limit=50)
+    # Get conversation history - ONLY from active topic
+    # This ensures we don't bleed context from old topics
+    history_messages = await get_conversation_history(
+        session,
+        project_id,
+        limit=50,
+        active_topic_only=True  # Only get current topic
+    )
 
     # Build conversation context from history
     # We'll try using PydanticAI's message_history parameter, with a fallback

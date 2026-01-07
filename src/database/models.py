@@ -11,6 +11,7 @@ from uuid import uuid4
 
 from sqlalchemy import (
     BigInteger,
+    Boolean,
     Column,
     DateTime,
     Enum,
@@ -115,6 +116,9 @@ class Project(Base):
     conversation_messages = relationship(
         "ConversationMessage", back_populates="project", cascade="all, delete-orphan"
     )
+    conversation_topics = relationship(
+        "ConversationTopic", back_populates="project", cascade="all, delete-orphan"
+    )
     workflow_phases = relationship(
         "WorkflowPhase", back_populates="project", cascade="all, delete-orphan"
     )
@@ -135,6 +139,27 @@ class Project(Base):
         return f"<Project(id={self.id}, name={self.name}, status={self.status})>"
 
 
+class ConversationTopic(Base):
+    """Tracks conversation topic segments within a project"""
+
+    __tablename__ = "conversation_topics"
+
+    id = Column(PGUUID(as_uuid=True), primary_key=True, default=uuid4)
+    project_id = Column(PGUUID(as_uuid=True), ForeignKey("projects.id"), nullable=False)
+    topic_title = Column(String(255), nullable=True)
+    topic_summary = Column(Text, nullable=True)
+    started_at = Column(DateTime, nullable=False, default=datetime.utcnow)
+    ended_at = Column(DateTime, nullable=True)
+    is_active = Column(Boolean, nullable=False, default=True)
+
+    # Relationships
+    project = relationship("Project", back_populates="conversation_topics")
+    messages = relationship("ConversationMessage", back_populates="topic", cascade="all, delete-orphan")
+
+    def __repr__(self) -> str:
+        return f"<ConversationTopic(id={self.id}, title={self.topic_title}, active={self.is_active})>"
+
+
 class ConversationMessage(Base):
     """Stores conversation history for projects"""
 
@@ -142,6 +167,7 @@ class ConversationMessage(Base):
 
     id = Column(PGUUID(as_uuid=True), primary_key=True, default=uuid4)
     project_id = Column(PGUUID(as_uuid=True), ForeignKey("projects.id"), nullable=False)
+    topic_id = Column(PGUUID(as_uuid=True), ForeignKey("conversation_topics.id"), nullable=True)
     role = Column(Enum(MessageRole), nullable=False)
     content = Column(Text, nullable=False)
     timestamp = Column(DateTime, nullable=False, default=datetime.utcnow)
@@ -149,6 +175,7 @@ class ConversationMessage(Base):
 
     # Relationships
     project = relationship("Project", back_populates="conversation_messages")
+    topic = relationship("ConversationTopic", back_populates="messages")
 
     # Note: 'metadata' property removed - conflicts with SQLAlchemy reserved name
     # Web UI should use 'message_metadata' field directly
